@@ -1,0 +1,89 @@
+/**
+ * Any CSS included here will be global. The classic template
+ * bundles Infima by default. Infima is a CSS framework designed to
+ * work well for content-centric websites.
+ */
+
+/* Global theme variables */
+:root {
+  --ifm-color-primary: #4a2377;
+  --ifm-color-primary-dark: #44206d;
+  --ifm-color-primary-darker: #3f1e65;
+  --ifm-color-primary-darkest: #371a59;
+  --ifm-color-primary-light: #502681;
+  --ifm-color-primary-lighter: #57298c;
+  --ifm-color-primary-lightest: #602e9b;
+
+  --ifm-code-font-size: 95%;
+  --docusaurus-highlighted-code-line-bg: rgba(74, 35, 119, 0.08);
+
+  --ifm-font-family-base: "Inter", "Avenir Next", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --ifm-heading-font-family: "Inter", "Avenir Next", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --ifm-font-size-base: 19px;
+  --ifm-line-height-base: 1.65;
+}
+
+/* Dark theme */
+[data-theme='dark'] {
+  --ifm-color-primary: #8c5fd3;
+  --ifm-color-primary-dark: #7e4fcb;
+  --ifm-color-primary-darker: #7746c7;
+  --ifm-color-primary-darkest: #6337ae;
+  --ifm-color-primary-light: #9a6fdb;
+  --ifm-color-primary-lighter: #a379df;
+  --ifm-color-primary-lightest: #b692e7;
+
+  --docusaurus-highlighted-code-line-bg: rgba(140, 197, 227, 0.14);
+}
+
+/* Base font application */
+html,
+body {
+  font-family: var(--ifm-font-family-base);
+  font-size: var(--ifm-font-size-base);
+  line-height: var(--ifm-line-height-base);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Headings */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.navbar__title,
+.menu__link,
+.table-of-contents__link {
+  font-family: var(--ifm-heading-font-family);
+}
+
+/* Slightly stronger hierarchy */
+h1,
+h2,
+h3 {
+  font-weight: 600;
+}
+
+h4,
+h5,
+h6 {
+  font-weight: 500;
+}
+
+/* Tables look better with Avenir-style fonts */
+table {
+  font-size: 0.96rem;
+}
+
+/* Improve paragraph readability in docs */
+.markdown p,
+.markdown li {
+  line-height: 1.7;
+}
+
+/* KaTeX sizing */
+.katex {
+  font-size: 1.04em;
+}
