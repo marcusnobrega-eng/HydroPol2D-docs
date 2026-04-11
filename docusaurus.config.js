@@ -58,7 +58,7 @@ const config = {
 
   themeConfig:
     ({
-      image: 'img/docusaurus-social-card.jpg',
+      image: 'img/social_card.png',
 
       colorMode: {
         defaultMode: 'light',

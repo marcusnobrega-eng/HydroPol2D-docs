@@ -1,5 +1,6 @@
 import React from 'react';
 import Layout from '@theme/Layout';
+import Link from '@docusaurus/Link';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import {
   Droplets,
@@ -91,9 +92,9 @@ export default function Home() {
         </p>
 
         <div className={styles.buttons}>
-          <a className="button button--primary button--lg" href="/docs/intro">
+          <Link className="button button--primary button--lg" to="/docs/getting-started/overview">
             Documentation
-          </a>
+          </Link>
           <a
             className="button button--secondary button--lg"
             href="https://github.com/marcusnobrega-eng/HydroPol2D"
