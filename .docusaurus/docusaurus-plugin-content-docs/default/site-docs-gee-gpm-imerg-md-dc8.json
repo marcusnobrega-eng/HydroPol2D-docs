@@ -1,0 +1,25 @@
+{
+  "id": "GEE/GPM_IMERG",
+  "title": "GPM IMERG Rainfall Data Extraction",
+  "description": "This standalone Google Earth Engine (GEE) script automates the extraction of high-resolution satellite rainfall data from NASA's GPM (Global Precipitation Measurement) IMERG dataset for any catchment worldwide.",
+  "source": "@site/docs/GEE/GPM_IMERG.md",
+  "sourceDirName": "GEE",
+  "slug": "/GEE/GPM_IMERG",
+  "permalink": "/HydroPol2D-docs/docs/GEE/GPM_IMERG",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "title": "GPM IMERG Rainfall Data Extraction"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "HydroPol2D Daily Forcing Data",
+    "permalink": "/HydroPol2D-docs/docs/GEE/DailyForcing"
+  },
+  "next": {
+    "title": "Mathematical Overview",
+    "permalink": "/HydroPol2D-docs/docs/theory/overview"
+  }
+}

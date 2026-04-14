@@ -40,6 +40,8 @@ const sidebars = {
       items: [
         'GEE/overview',
         'GEE/DailyForcing',
+        'GEE/GPM',
+        'GEE/python_hp2d'
       ],
     },
     {

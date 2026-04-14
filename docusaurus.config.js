@@ -61,9 +61,9 @@ const config = {
       image: 'img/social_card.png',
 
       colorMode: {
-        defaultMode: 'light',
+        defaultMode: 'dark',
         disableSwitch: false,
-        respectPrefersColorScheme: true,
+        respectPrefersColorScheme: false, 
       },
 
       navbar: {

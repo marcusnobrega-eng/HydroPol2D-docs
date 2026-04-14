@@ -1,0 +1,25 @@
+{
+  "id": "GEE/python_hp2d",
+  "title": "HP2D Input Maps + Forcing w/ Python",
+  "description": "This workflow automates the generation of all spatial inputs required for hydrological modeling using HydroPol2D.",
+  "source": "@site/docs/GEE/python_hp2d.md",
+  "sourceDirName": "GEE",
+  "slug": "/GEE/python_hp2d",
+  "permalink": "/HydroPol2D-docs/docs/GEE/python_hp2d",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "title": "HP2D Input Maps + Forcing w/ Python"
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "GPM IMERG Rainfall Data Extraction",
+    "permalink": "/HydroPol2D-docs/docs/GEE/GPM"
+  },
+  "next": {
+    "title": "Mathematical Overview",
+    "permalink": "/HydroPol2D-docs/docs/theory/overview"
+  }
+}
