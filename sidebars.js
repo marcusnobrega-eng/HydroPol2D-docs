@@ -45,6 +45,14 @@ const sidebars = {
       ],
     },
     {
+      type: 'category',
+      label: 'Examples',
+      items: [
+        'Examples/RainfallRunoff',
+        'Examples/RainfallRunoffReal'
+      ],
+    },
+    {
     type: 'category',
     label: 'Background/Theory',
     items: [
