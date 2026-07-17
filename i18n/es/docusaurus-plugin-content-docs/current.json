@@ -1,0 +1,38 @@
+{
+  "version.label": {
+    "message": "Actual",
+    "description": "The label for version current"
+  },
+  "sidebar.tutorialSidebar.category.Getting Started": {
+    "message": "Primeros pasos",
+    "description": "The label for category 'Getting Started' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.Inputs": {
+    "message": "Entradas",
+    "description": "The label for category 'Inputs' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.Configuration": {
+    "message": "Configuracion",
+    "description": "The label for category 'Configuration' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.Validation": {
+    "message": "Validación",
+    "description": "The label for category 'Validation' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.Hydrodynamics and Routing": {
+    "message": "Hidrodinámica y enrutamiento",
+    "description": "The label for category 'Hydrodynamics and Routing' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.Google Earth Engine": {
+    "message": "Google Earth Engine",
+    "description": "The label for category 'Google Earth Engine' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.Examples": {
+    "message": "Ejemplos",
+    "description": "The label for category 'Examples' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.Theory": {
+    "message": "Teoria",
+    "description": "The label for category 'Theory' in sidebar 'tutorialSidebar'"
+  }
+}

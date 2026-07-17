@@ -111,7 +111,6 @@ If `flag_reduce_dem` is activated, river cells elevation are reduced to account 
 | $\mathrm{B2\_path}$ | — | Path to pollutant-related parameter raster |
 | $\mathrm{W1\_path}$ | — | Path to pollutant wash-off parameter raster |
 | $\mathrm{W2\_path}$ | — | Path to pollutant wash-off parameter raster |
-| $\mathrm{Subgrid\_DEM\_path}$ | — | Path to high-resolution DEM for subgrid computations |
 | $\mathrm{hydropol2d\_tools}$ | — | Path to HydroPol2D function library |
 
 ---

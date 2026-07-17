@@ -4,54 +4,38 @@ title: Overview
 
 # HydroPol2D
 
-HydroPol2D is a distributed, physically based hydrological and hydrodynamic modeling framework designed to simulate coupled surface and subsurface processes at high spatial resolution.
+HydroPol2D is a raster-based hydrologic-hydrodynamic model for coupled surface water, vadose-zone storage, groundwater, water quality, snow, and hazard diagnostics.
 
-The model integrates key components of the terrestrial water cycle, including overland flow routing, infiltration, evapotranspiration, groundwater dynamics, snow processes, and pollutant transport, within a unified raster-based computational environment.
+This documentation describes the model as it is currently implemented. It also distinguishes between validated pathways, diagnostic pathways, and features that remain paused or experimental.
 
----
+## Current scope
 
-## Core Capabilities
+The current codebase includes:
 
-HydroPol2D enables the simulation of complex hydrologic systems through:
+- canopy interception, evapotranspiration, snow, infiltration, and layered vadose storage;
+- groundwater recharge, capillary rise, asynchronous saturated-groundwater updates, and 2D Boussinesq flow when baseflow is active;
+- surface routing with local inertial, full momentum, diffusive D4, kinematic D4, and cellular automata options;
+- water-quality transport and outlet export;
+- optional human-instability diagnostics.
 
-- **Surface flow routing** using Cellular Automata and Local Inertial formulations  
-- **Infiltration and vadose zone processes** based on physically consistent parameterizations  
-- **Groundwater–surface water interactions**, including recharge and exfiltration  
-- **Evapotranspiration and interception dynamics**  
-- **Snow accumulation and melt processes**  
-- **Water quality transport and transformation**  
-- **GPU-accelerated computation** for large-scale, high-resolution domains  
+## How HydroPol2D advances a run
 
----
+At a high level, HydroPol2D advances the coupled system in this order:
 
-## Modeling Approach
+1. apply rainfall, inflow, and meteorological forcing;
+2. update interception, snow, evapotranspiration, infiltration, and vadose storage;
+3. accumulate recharge and capillary exchange for groundwater;
+4. route surface water with the selected routing family;
+5. update groundwater heads when the groundwater scheduler is due;
+6. return exfiltration, saturation excess, water quality, and optional hazard diagnostics to the evolving state.
 
-HydroPol2D adopts a spatially distributed approach in which all variables are represented on raster grids, enabling seamless integration of geospatial datasets such as digital elevation models (DEMs), land use/land cover maps, and soil properties.
+This sequencing is what links the hydrologic, groundwater, routing, and diagnostic modules into one model.
 
-The model is designed to balance physical realism and computational efficiency, supporting both research-oriented simulations and engineering applications.
+## How to read the documentation
 
----
+For most users, the clearest reading order is:
 
-## Applications
-
-HydroPol2D can be applied to a wide range of hydrological and environmental problems, including:
-
-- Urban flood modeling and risk assessment  
-- Watershed-scale hydrological analysis  
-- Dam-break and flood wave propagation  
-- Climate and land-use change impact studies  
-- Environmental hazard and resilience assessment  
-- Water quality and pollutant transport modeling  
-
----
-
-## Design Philosophy
-
-HydroPol2D is developed as a modular and extensible framework, allowing users to:
-
-- Configure simulations based on data availability and objectives  
-- Select among multiple process representations and numerical schemes  
-- Integrate new modules and datasets as needed  
-- Maintain transparency in model assumptions and computational methods  
-
-The model is implemented in MATLAB and supports both CPU and GPU execution, enabling flexible deployment across a range of computational environments.
+1. [Configuration Overview](../configuration/overview) for the public controls and flags.
+2. [Mathematical Overview](../theory/overview) for the governing equations and conceptual structure.
+3. [Validation Overview](../validation/overview) for the evidence supporting each module.
+4. [Examples](../Examples/RainfallRunoff) for reproducible case-study workflows.

@@ -112,6 +112,18 @@ These areas are characterized by:
 
 The impervious fraction parameter is used to represent this behavior and must be carefully assigned for urban land use classes.
 
+### Fractional impervious raster override
+
+HydroPol2D can also ingest an optional `ImperviousFraction_path` raster. When present, it refines the cellwise impervious fraction beyond the class-based LULC assignment.
+
+Current implementation details:
+
+- raster values may be given in `[0,1]` or `[0,100]` percent,
+- the raster is aligned to the DEM internally,
+- built-up / explicitly impervious LULC classes are still forced to remain fully impervious.
+
+So the LULC table still defines the base impervious behavior, while the impervious-fraction raster provides a spatial refinement on top of that base.
+
 ---
 
 ## Resolution and Alignment

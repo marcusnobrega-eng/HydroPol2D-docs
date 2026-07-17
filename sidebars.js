@@ -21,6 +21,7 @@ const sidebars = {
         'inputs/dtb',
         'inputs/lai',
         'inputs/albedo',
+        'inputs/additional-spatial-inputs',
         'inputs/parameter-tables',
         'inputs/optional-forcing',
       ],
@@ -36,7 +37,28 @@ const sidebars = {
     },
     {
       type: 'category',
-      label: 'GEE Codes',
+      label: 'Validation',
+      items: [
+        'validation/overview',
+        'validation/phase1-status',
+        'validation/hydrologic-modules',
+        'validation/groundwater-recharge',
+        {
+          type: 'category',
+          label: 'Hydrodynamics and Routing',
+          link: {
+            type: 'doc',
+            id: 'validation/hydrodynamics-routing',
+          },
+          items: ['validation/neal-subgrid'],
+        },
+        'validation/ancillary-modules',
+        'validation/limitations',
+      ],
+    },
+    {
+      type: 'category',
+      label: 'Google Earth Engine',
       items: [
         'GEE/overview',
         'GEE/DailyForcing',
@@ -55,13 +77,14 @@ const sidebars = {
     },
     {
     type: 'category',
-    label: 'Background/Theory',
+    label: 'Theory',
     items: [
       'theory/overview',
       'theory/hydrologic-model',
-      'theory/hydrodynamic-model',
-      'theory/water-quality-model',
       'theory/groundwater-model',
+      'theory/hydrodynamic-model',
+      'theory/human-instability',
+      'theory/water-quality-model',
     ],
   },
   ],

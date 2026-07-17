@@ -4,135 +4,145 @@ title: Model Flags
 
 # Model Flags
 
-HydroPol2D is controlled through a set of binary and categorical flags defined in `General_Data.xlsx`.
-
-These flags determine:
-
-- which physical processes are active  
-- how forcing is applied  
-- which numerical schemes are used  
-- how outputs are generated  
-
-Each flag must be set consistently with the selected modeling approach.
+HydroPol2D is controlled through binary and categorical flags defined in `General_Data.xlsx`. This page documents the public behavior exposed by those flags and highlights where a flag activates a validated default path versus a diagnostic or experimental pathway.
 
 ---
 
-## Boundary Condition Flags
+## Boundary and Forcing Flags
 
 | Flag | Description |
-|------|------------|
-| $\mathrm{flag\_rainfall}$ | Activates rainfall forcing over the domain |
-| $\mathrm{flag\_spatial\_rainfall}$ | Uses spatially distributed rainfall instead of uniform rainfall |
-| $\mathrm{flag\_ETP}$ | Activates evapotranspiration computation via meteorological forcing |
-| $\mathrm{flag\_input\_rainfall\_map}$ | Uses raster-based rainfall input (e.g., satellite or gridded products) |
-| $\mathrm{flag\_rainfall\_multiple\_runs}$ | Under Development |
-| $\mathrm{flag\_data\_source}$ | Under Development |
-| $\mathrm{flag\_inflow}$ | Activates inflow hydrograph boundary conditions |
-| $\mathrm{flag\_satellite\_rainfall}$ | Uses satellite-derived rainfall products |
-| $\mathrm{flag\_alternated\_blocks}$ | Activates Alternating Block design storm method |
-| $\mathrm{flag\_huff}$ | Activates Huff storm distribution method |
-| $\mathrm{flag\_stage\_hydrograph}$ | Applies stage (water level) boundary condition |
-| $\mathrm{flag\_input\_ETP\_map}$ | Uses raster-based evapotranspiration inputs |
+|---|---|
+| $\mathrm{flag\_rainfall}$ | Activates rainfall forcing over the domain. |
+| $\mathrm{flag\_spatial\_rainfall}$ | Uses spatially distributed rainfall instead of uniform rainfall. |
+| $\mathrm{flag\_ETP}$ | Activates evapotranspiration computation from meteorological forcing. |
+| $\mathrm{flag\_input\_rainfall\_map}$ | Uses raster-based rainfall input. |
+| $\mathrm{flag\_rainfall\_multiple\_runs}$ | Under development. |
+| $\mathrm{flag\_data\_source}$ | Under development. |
+| $\mathrm{flag\_inflow}$ | Activates inflow hydrograph boundary conditions. |
+| $\mathrm{flag\_satellite\_rainfall}$ | Uses satellite-derived rainfall products. |
+| $\mathrm{flag\_alternated\_blocks}$ | Activates the Alternating Block design-storm method. |
+| $\mathrm{flag\_huff}$ | Activates the Huff storm distribution method. |
+| $\mathrm{flag\_stage\_hydrograph}$ | Applies stage (water-level) boundary conditions. |
+| $\mathrm{flag\_input\_ETP\_map}$ | Uses raster-based evapotranspiration inputs. |
 
 ---
 
-## Hydrologic–Hydrodynamic–Water Quality Flags
+## Process and Routing Flags
 
 | Flag | Description |
-|------|------------|
-| $\mathrm{flag\_infiltration}$ | Activates infiltration into the soil |
-| $\mathrm{flag\_critical}$ | Limits flow velocity to the critical flow (Froude = 1) |
-| $\mathrm{flag\_D8}$ | Activates D8 flow routing scheme |
-| $\mathrm{flag\_CA}$ | Activates Cellular Automata routing |
-| $\mathrm{flag\_inertial}$ | Activates Local Inertial shallow water equations (recommended default) |
-| $\mathrm{flag\_waterbalance}$ | Distributed mass balance errors in inflow cells (default 0) |
-| $\mathrm{flag\_waterquality}$ | Activates water quality transport module |
-| $\mathrm{flag\_reservoir}$ | Activates reservoir internal boundary conditions |
-| $\mathrm{flag\_wq\_model}$ | Defines which wash-off model to use|
-| $\mathrm{flag\_groundwater\_modeling}$ | Activates groundwater recharge computation |
-| $\mathrm{flag\_real\_time\_satellite\_rainfall}$ | Enables real-time satellite rainfall ingestion with Persiann |
-| $\mathrm{flag\_dam\_break}$ | (Under Development) |
-| $\mathrm{flag\_human\_instability}$ | Activates human stability hazard modeling |
-| $\mathrm{flag\_boundary}$ | Enforce all boundary cells as outlet cells |
-| $\mathrm{flag\_numerical\_scheme}$ | 1: local inertial model, 2: upwind scheme, 3: central scheme |
-| $\mathrm{flag\_outlet\_type}$ | 1: normal flow, 2: critical flow |
-| $\mathrm{flag\_adaptive\_timestepping}$ | Celerity-based, 2: Celerity + Advection-based stability criteria (1 as default) |
-| $\mathrm{flag\_neglect\_infiltration\_river}$ | Disables infiltration in river cells |
-| $\mathrm{flag\_subgrid}$ | Activates subgrid hydraulic representation |
-| $\mathrm{flag\_spatial\_albedo}$ | Uses spatially distributed albedo instead of uniform values |
-| $\mathrm{flag\_river\_rasters}$ | Uses raster-based river geometry inputs |
-| $\mathrm{flag\_baseflow}$ | Solves 2D Boussinesq Equation for Aquifers|
-| $\mathrm{flag\_kinematic}$ | Activates kinematic wave approximation |
-| $\mathrm{flag\_diffusive}$ | Activates diffusive wave routing |
-| $\mathrm{flag\_DTM}$ | Uses digital terrain model corrections or processing |
-| $\mathrm{flag\_abstraction}$ | Activates water abstraction or withdrawal processes |
-| $\mathrm{flag\_overbanks}$ | Activates floodplain overflow dynamics with a subgrid model|
-| $\mathrm{flag\_snow\_modeling}$ | Activates snow accumulation and melt processes |
-| $\mathrm{flag\_WQ\_Rasters}$ | Uses raster-based pollutant inputs |
+|---|---|
+| $\mathrm{flag\_infiltration}$ | Activates infiltration into the soil and vadose storage. |
+| $\mathrm{flag\_groundwater\_modeling}$ | Activates groundwater recharge and local groundwater-table coupling. With layered soil enabled, this follows the current default layered vadose-groundwater path. |
+| $\mathrm{flag\_groundwater\_async}$ | Uses asynchronous saturated-groundwater updates while keeping vadose exchange coupled every surface step. Recommended when groundwater is active. |
+| $\mathrm{groundwater\_target\_dt\_min}$ | Target groundwater update interval in minutes. |
+| $\mathrm{groundwater\_min\_dt\_min}$ | Minimum groundwater update interval in minutes. |
+| $\mathrm{groundwater\_max\_head\_change\_m}$ | Maximum accumulated groundwater head change before forcing an update. |
+| $\mathrm{groundwater\_courant}$ | Safety factor used in the explicit groundwater timestep cap. |
+| $\mathrm{flag\_capillary\_rise}$ | Enables layered capillary rise from shallow groundwater into vadose storage. |
+| $\mathrm{flag\_baseflow}$ | Activates 2D Boussinesq lateral groundwater routing. |
+| $\mathrm{flag\_snow\_modeling}$ | Activates snow accumulation, melt, and sublimation. |
+| $\mathrm{flag\_waterquality}$ | Activates water-quality transport. |
+| $\mathrm{flag\_wq\_model}$ | Selects the pollutant build-up/washoff model. |
+| $\mathrm{flag\_human\_instability}$ | Activates human-instability diagnostics. Publicly documented implemented modes are `1` and `3`; mode `2` is not implemented. |
+| $\mathrm{flag\_reservoir}$ | Activates reservoir or internal hydraulic-control logic. |
+| $\mathrm{flag\_critical}$ | Applies a critical-flow limiter where supported by the routing family. |
+| $\mathrm{flag\_boundary}$ | Enforces all boundary cells as outlet cells. |
+| $\mathrm{flag\_neglect\_infiltration\_river}$ | Disables infiltration in river cells. |
+| $\mathrm{flag\_real\_time\_satellite\_rainfall}$ | Enables real-time satellite rainfall ingestion with Persiann. |
+| $\mathrm{flag\_dam\_break}$ | Under development. |
+| $\mathrm{flag\_river\_rasters}$ | Uses raster-based river geometry inputs. |
+| $\mathrm{flag\_spatial\_albedo}$ | Uses spatially distributed albedo instead of uniform values. |
+| $\mathrm{flag\_DTM}$ | Uses digital terrain model corrections or processing. |
+| $\mathrm{flag\_abstraction}$ | Activates water abstraction or withdrawal processes. |
+| $\mathrm{flag\_WQ\_Rasters}$ | Uses raster-based pollutant inputs. |
+
+---
+
+## Routing-Family Flags
+
+| Flag | Description |
+|---|---|
+| $\mathrm{flag\_inertial}$ | Activates the local inertial shallow-water solver. This is the recommended default routing family. |
+| $\mathrm{flag\_full\_momentum}$ | Activates the full-momentum shallow-water solver. Use as an alternative to the other major routing families, not in combination with them. |
+| $\mathrm{flag\_diffusive}$ | Activates diffusive D4 routing driven by water-surface slope. |
+| $\mathrm{flag\_kinematic}$ | Activates kinematic D4 routing driven by bed slope and donor depth. |
+| $\mathrm{flag\_CA}$ | Activates Cellular Automata routing. |
+| $\mathrm{flag\_D8}$ | Activates a secondary D8 routing pathway. This should be treated as limited-scope rather than a full parallel theory family. |
+| $\mathrm{flag\_subgrid}$ | Activates the Neal (2012) rectangular channel representation when used with local-inertial routing and `flag_overbanks = 1`. |
+| $\mathrm{flag\_overbanks}$ | Separates channel and floodplain conveyance and applies the bankfull storage transition in Neal (2012) mode. |
+| $\mathrm{flag\_numerical\_scheme}$ | Selects the local inertial scheme variant: `1` Bates, `2` upwind, `3` centered. Applies to the inertial family, not to full momentum, diffusive, kinematic, or CA routing. |
+| $\mathrm{flag\_outlet\_type}$ | Outlet treatment: `1` normal flow, `2` critical flow. |
+| $\mathrm{flag\_adaptive\_timestepping}$ | Selects adaptive time-step control. |
+
+---
+
+## Neal (2012) Subgrid Model Configuration
+
+The supported channel-subgrid mode follows [Neal et al. (2012)](https://doi.org/10.1029/2012WR012514). Use the following flag combination:
+
+| Flag | Required value |
+|---|---:|
+| `flag_inertial` | `1` |
+| `flag_subgrid` | `1` |
+| `flag_overbanks` | `1` |
+| `flag_full_momentum` | `0` |
+| `flag_diffusive` | `0` |
+| `flag_kinematic` | `0` |
+| `flag_CA` | `0` |
+| `flag_river_rasters` | `1` when channel geometry is supplied as rasters |
+
+The active channel cells require both `RiverWidths_path` and `RiverDepths_path`. Channel width and depth must be positive, and channel width must be smaller than the model-cell resolution. The channel Manning coefficient is assigned through the river or in-bank roughness input. The surrounding LULC roughness supplies the floodplain Manning coefficient.
+
+The solver computes channel and floodplain discharge separately on each orthogonal face and updates cell storage in volume space. The formulation and validation range are described in [Hydrodynamic Model](../theory/hydrodynamic-model#115-neal-2012-subgrid-model) and [Neal (2012) Subgrid Model Validation](../validation/neal-subgrid).
 
 ---
 
 ## Performance Flags
 
 | Flag | Description |
-|------|------------|
-| $\mathrm{flag\_GPU}$ | Enables GPU acceleration |
-| $\mathrm{flag\_single}$ | Uses single precision arithmetic for performance optimization |
+|---|---|
+| $\mathrm{flag\_GPU}$ | Enables GPU acceleration. |
+| $\mathrm{flag\_single}$ | Uses single-precision arithmetic for performance optimization. |
 
 ---
 
-## Initial Condition Flags
+## Initial-Condition Flags
 
 | Flag | Description |
-|------|------------|
-| $\mathrm{flag\_warmup}$ | Activates model warm-up period to stabilize initial conditions |
-| $\mathrm{flag\_initial\_buildup}$ | Initializes pollutant buildup conditions |
+|---|---|
+| $\mathrm{flag\_warmup}$ | Activates model warm-up for state stabilization. |
+| $\mathrm{flag\_initial\_buildup}$ | Initializes pollutant buildup conditions. |
 
 ---
 
-## DEM Treatment Tools
+## DEM and Terrain Processing Flags
 
 | Flag | Description |
-|------|------------|
-| $\mathrm{flag\_resample}$ | Activates raster resampling to target resolution |
-| $\mathrm{flag\_smoothening}$ | Applies DEM smoothing filter |
-| $\mathrm{flag\_trunk}$ | Smooth only the main river trunk from DEM |
-| $\mathrm{flag\_fill\_DEM}$ | Fills sinks in DEM for hydrological consistency |
-| $\mathrm{flag\_smooth\_cells}$ | Applies cell-level smoothing to terrain |
-| $\mathrm{flag\_reduce\_DEM}$ | Reduces DEM resolution at river cells|
+|---|---|
+| $\mathrm{flag\_resample}$ | Activates raster resampling to a target resolution. |
+| $\mathrm{flag\_smoothening}$ | Applies DEM smoothing. |
+| $\mathrm{flag\_trunk}$ | Smooths only the main river trunk. |
+| $\mathrm{flag\_fill\_DEM}$ | Fills DEM sinks for hydrologic consistency. |
+| $\mathrm{flag\_smooth\_cells}$ | Applies cell-level terrain smoothing. |
+| $\mathrm{flag\_reduce\_DEM}$ | Reduces DEM elevation in river cells to account for channel bathymetry. |
 
 ---
 
-## Extra Flags
+## Output and Utility Flags
 
 | Flag | Description |
-|------|------------|
-| $\mathrm{flag\_export\_maps}$ | Enables export of raster outputs |
-| $\mathrm{flag\_dashboard}$ | Activates dashboard-style outputs or visualization |
-| $\mathrm{flag\_elapsed\_time}$ | Tracks simulation runtime |
-| $\mathrm{flag\_obs\_gauges}$ | Activates output extraction at observation gauge locations |
+|---|---|
+| $\mathrm{flag\_export\_maps}$ | Enables export of raster outputs. |
+| $\mathrm{flag\_dashboard}$ | Activates dashboard-style outputs or visualization. |
+| $\mathrm{flag\_elapsed\_time}$ | Tracks simulation runtime. |
+| $\mathrm{flag\_obs\_gauges}$ | Activates output extraction at observation gauges. |
 
 ---
 
 ## Notes
 
-- Flags must be used consistently to avoid conflicting configurations  
-- Only one routing scheme should be active at a time (e.g., inertial vs diffusive vs kinematic)  
-- Subgrid and raster-based river options should not be combined unless explicitly supported  
-- Adaptive time stepping is strongly recommended for numerical stability  
-- GPU execution requires compatible data structures and hardware  
-
----
-
-## Summary
-
-Flags define the structure of a HydroPol2D simulation.
-
-They control:
-
-- physics  
-- numerics  
-- forcing  
-- outputs  
-
-Correct configuration of these flags is essential for stable and physically meaningful simulations.
+- Only one major routing family should be active at a time: `flag_full_momentum`, `flag_inertial`, `flag_diffusive`, `flag_kinematic`, or `flag_CA`.
+- The Neal (2012) channel-subgrid mode requires local-inertial routing, `flag_subgrid = 1`, and `flag_overbanks = 1`.
+- `flag_D8` should be treated as secondary/limited-scope rather than as another report-ready routing family.
+- Groundwater async scheduling and capillary rise are public configuration behaviors, not hidden internal details.
+- Human-instability mode `2` is not implemented and should not be presented as an available public method.

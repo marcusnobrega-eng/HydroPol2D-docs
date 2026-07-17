@@ -4,6 +4,16 @@ title: Hydrodynamic Model
 
 # Hydrodynamic Model
 
+HydroPol2D currently includes five major surface-routing families:
+
+- local inertial,
+- full momentum,
+- diffusive D4,
+- kinematic D4,
+- cellular automata.
+
+Only one of these major routing formulations should be active at a time. The current code enforces this routing-family exclusivity through the corresponding model flags. D8 support remains a limited-scope secondary pathway.
+
 ## 1. Local Inertial Flow Routing
 
 ### 1.1 General rationale
@@ -24,7 +34,7 @@ From a modeling standpoint, the local inertial formulation is a good compromise 
 - rainfall-driven flood simulations,
 - fluvial routing with inflow and stage boundaries,
 - urban and floodplain applications,
-- and subgrid-enhanced coarse-grid calculations,
+- and controlled routing benchmarks across several numerical approximations,
 
 all within a modular hydrologic–hydrodynamic framework. The local inertial model is therefore the hydrodynamic core that connects the rainfall–runoff generation modules to the spatial redistribution of surface water. 
 
@@ -100,7 +110,7 @@ where:
 - $z$ is bed elevation $[\mathrm{L}]$
 - $h$ is water depth $[\mathrm{L}]$
 
-In the current implementation, HydroPol2D explicitly preserves the **DEM bed elevation** for slope calculations, even when subgrid invert elevations are used for lookup-table interpolation. In other words, the pressure-gradient term is always based on the real coarse-grid DEM bed, not on the subgrid invert. This is a deliberate design choice in the updated March 2026 implementation. 
+In the standard validated implementation, HydroPol2D uses the DEM bed elevation directly for slope calculations.
 
 At the east face between cells $i$ and $i+1$, the face bed elevation is taken as
 
@@ -332,43 +342,7 @@ This wet–dry logic is one of the reasons the model remains robust in flood exp
 
 ---
 
-### 1.8 Subgrid hydraulic representation inside the local inertial solver
-
-A major strength of HydroPol2D is that the local inertial solver can be coupled with subgrid hydraulic properties. In this mode, a high-resolution DEM is used offline to precompute, for each coarse cell and each face:
-
-- wetted area,
-- wetted width,
-- and related hydraulic properties
-
-as functions of water depth. These are stored in lookup tables. 
-
-In the updated implementation, when `flag_subgrid = 1` and overbank routing is not being handled by the classical channel–floodplain splitter, HydroPol2D replaces the coarse face depth by a lookup-based depth:
-
-$$
-H_{\mathrm{f}} = \frac{A_{\mathrm{face}}}{\Delta x}
-$$
-
-where:
-
-- $A_{\mathrm{face}}$ is wetted face area obtained from the subgrid table $[\mathrm{L}^2]$
-- $\Delta x$ is coarse-grid resolution $[\mathrm{L}]$
-
-The face width used to convert unit discharge to volumetric discharge is also taken from the subgrid table:
-
-$$
-Q = q\,W_{\mathrm{f}}
-$$
-
-where:
-
-- $Q$ is face discharge $[\mathrm{L}^3\,\mathrm{T}^{-1}]$
-- $W_{\mathrm{f}}$ is wetted face width $[\mathrm{L}]$
-
-This is a very important modeling choice. It means HydroPol2D is not merely correcting the storage term with subgrid information; it is also correcting the **momentum depth** and the **flow width**, which directly influence the hydraulic routing. The result is a much more realistic coarse-grid routing response over strongly heterogeneous topography. 
-
----
-
-### 1.9 Unit conversion and face discharge bookkeeping
+### 1.8 Unit conversion and face discharge bookkeeping
 
 Internally, the inertial solver works with **unit discharge** $q$ in
 
@@ -400,7 +374,7 @@ where:
 
 - $A_{\mathrm{cell}}$ is cell area $[\mathrm{L}^2]$
 
-This bookkeeping is necessary because HydroPol2D couples the hydrodynamic fluxes to hydrologic terms that are tracked in depth units such as $\mathrm{mm}$ or $\mathrm{mm/h}$. The updated March 2026 implementation explicitly emphasizes that in subgrid mode, this conversion must use the **face width** rather than the coarse cell width. 
+This bookkeeping is necessary because HydroPol2D couples the hydrodynamic fluxes to hydrologic terms that are tracked in depth units such as $\mathrm{mm}$ or $\mathrm{mm/h}$.
 
 ---
 
@@ -465,7 +439,7 @@ where:
 
 - $A_{\mathrm{eff}}$ is the effective storage area of the cell $[\mathrm{L}^2]$
 
-In the coarse-grid case, $A_{\mathrm{eff}}$ is simply the cell area. In the subgrid channel / overbank formulation, however, the effective area may depend on whether the water level is in-bank or overbank, and the model updates this area dynamically. 
+In the validated coarse-grid workflow, $A_{\mathrm{eff}}$ is the cell area.
 
 The code then enforces
 
@@ -525,10 +499,8 @@ First, it retains the dominant hydraulics needed for flood propagation:
 
 Second, it is computationally efficient enough to be used over large raster domains and under GPU execution.
 
-Third, it integrates naturally with HydroPol2D’s advanced features:
+Third, it integrates naturally with HydroPol2D’s validated process coupling:
 
-- subgrid tables,
-- overbank transitions,
 - hydraulic controls,
 - outlet conditions,
 - and hydrologic source–sink coupling.
@@ -537,7 +509,105 @@ For these reasons, it provides the best balance between physical realism and com
 
 ---
 
-### 1.15 Summary
+### 1.15 Neal (2012) subgrid model
+
+HydroPol2D includes the rectangular channel-subgrid formulation proposed by [Neal et al. (2012)](https://doi.org/10.1029/2012WR012514). This extension is used when a river is narrower than the raster cell. It embeds a channel within the coarse cell while retaining two-dimensional floodplain routing on the surrounding cell area.
+
+Let $\Delta x$ be the coarse-cell width, $z_f$ the floodplain elevation, $H$ the channel bank height, and $w$ the channel width, where $0<w<\Delta x$. The channel-bed elevation is
+
+$$
+z_c = z_f-H.
+$$
+
+The model depth $h$ is measured above $z_c$. Water remains in the rectangular channel while $h\le H$ and spreads over the coarse cell when $h>H$.
+
+#### Channel flow at a cell face
+
+The channel water-surface elevation is
+
+$$
+y_c=z_c+h.
+$$
+
+For adjacent cells $i$ and $j$, the water-surface slope and face flow depth are
+
+$$
+S_c=\frac{y_{c,j}-y_{c,i}}{\Delta x},
+$$
+
+$$
+h_{c,f}=\max\!\left[\max(y_{c,i},y_{c,j})-
+\max(z_{c,i},z_{c,j}),0\right].
+$$
+
+The shared channel width is the smaller of the two cell widths,
+
+$$
+w_{c,f}=\min(w_i,w_j).
+$$
+
+The channel flow area and hydraulic radius are
+
+$$
+A_c=w_{c,f}h_{c,f},
+\qquad
+R_c=\frac{A_c}{w_{c,f}+2h_{c,f}}.
+$$
+
+The channel discharge is updated with the local-inertial equation
+
+$$
+Q_c^{t+\Delta t}=
+\frac{Q_c^t-gA_c\Delta t S_c}
+{1+g\Delta t n_c^2|Q_c^t|/(R_c^{4/3}A_c)},
+$$
+
+where $n_c$ is the channel Manning coefficient.
+
+#### Floodplain flow at a cell face
+
+Floodplain depth is measured above the coarse DEM:
+
+$$
+h_f=\max(h+z_c-z_f,0),
+\qquad y_f=z_f+h_f.
+$$
+
+The floodplain face slope and depth are computed from $y_f$ and $z_f$ in the same way as the channel terms. The local-inertial update uses unit discharge $q_f$:
+
+$$
+q_f^{t+\Delta t}=
+\frac{q_f^t-gh_{f,f}\Delta t S_f}
+{1+g\Delta t n_f^2|q_f^t|/h_{f,f}^{7/3}},
+$$
+
+where $n_f$ is the floodplain Manning coefficient. The floodplain and total face discharges are
+
+$$
+Q_f=q_f(\Delta x-w_{c,f}),
+\qquad
+Q=Q_c+Q_f.
+$$
+
+HydroPol2D applies this split on orthogonal D4 faces. The outlet uses the same channel and floodplain components as the internal faces.
+
+#### Conservative storage transition
+
+The cell continuity equation is evaluated in volume space. For a channel cell,
+
+$$
+V(h)=
+\begin{cases}
+\Delta x\,w\,h, & h\le H,\\[4pt]
+\Delta x\,w\,H+\Delta x^2(h-H), & h>H.
+\end{cases}
+$$
+
+Thus, the active water-surface area $\mathrm{d}V/\mathrm{d}h$ changes from $\Delta xw$ in-bank to $\Delta x^2$ overbank. Routing fluxes and hydrologic source or sink terms update $V$ first. HydroPol2D then inverts the same piecewise relation to recover $h$. This avoids a mass discontinuity when the water level crosses bankfull.
+
+The active configuration and geometry inputs are documented under [Neal (2012) subgrid model configuration](../configuration/flags#neal-2012-subgrid-model-configuration). Controlled validation results are provided in [Neal (2012) Subgrid Model Validation](../validation/neal-subgrid).
+
+### 1.16 Summary
 
 In HydroPol2D, the Local Inertial Model is a depth-integrated raster-based routing formulation in which:
 
@@ -553,7 +623,6 @@ The solver supports:
 - the original Bates scheme,
 - an upwind-stabilized scheme,
 - a centered stabilized scheme,
-- subgrid hydraulic lookup tables,
 - outlet controls,
 - reservoir controls,
 - wet–dry front handling,
@@ -563,9 +632,302 @@ This makes it the main hydrodynamic engine of HydroPol2D for physically based su
 
 ---
 
-## 2. Cellular Automata Flow Routing
+## 2. Full-Momentum Flow Routing
 
-### 2.1 Conceptual formulation
+### 2.1 General rationale
+
+HydroPol2D also includes a **full-momentum shallow-water solver** for cases where the local inertial approximation is not sufficient. This option is intended for controlled hydraulic benchmarks and applications where convective acceleration, wave propagation, or stronger dynamic effects need to be represented more explicitly.
+
+The full-momentum model solves the conservative two-dimensional shallow-water equations on the raster grid. In HydroPol2D, this is implemented as a finite-volume routing core with explicit storage and momentum states.
+
+The solver is activated through the full-momentum routing flag in the model configuration. It should be used as an alternative to, not simultaneously with, local inertial, kinematic, diffusive, D8, or CA routing.
+
+---
+
+### 2.2 Conservative shallow-water equations
+
+The conserved state vector is
+
+$$
+\mathbf{U}
+=
+\begin{bmatrix}
+h \\
+hu \\
+hv
+\end{bmatrix}
+$$
+
+where:
+
+- $h$ is water depth $[\mathrm{L}]$
+- $u$ is depth-averaged velocity in the $x$ direction $[\mathrm{L}\,\mathrm{T}^{-1}]$
+- $v$ is depth-averaged velocity in the $y$ direction $[\mathrm{L}\,\mathrm{T}^{-1}]$
+- $hu$ and $hv$ are unit discharges or momentum variables $[\mathrm{L}^2\,\mathrm{T}^{-1}]$
+
+The governing equations are written as
+
+$$
+\frac{\partial \mathbf{U}}{\partial t}
++
+\frac{\partial \mathbf{F}(\mathbf{U})}{\partial x}
++
+\frac{\partial \mathbf{G}(\mathbf{U})}{\partial y}
+=
+\mathbf{S}_{\mathrm{bed}}
++
+\mathbf{S}_{\mathrm{fric}}
+$$
+
+with fluxes
+
+$$
+\mathbf{F}(\mathbf{U})
+=
+\begin{bmatrix}
+hu \\
+\dfrac{(hu)^2}{h} + \dfrac{1}{2}gh^2 \\
+\dfrac{(hu)(hv)}{h}
+\end{bmatrix}
+$$
+
+and
+
+$$
+\mathbf{G}(\mathbf{U})
+=
+\begin{bmatrix}
+hv \\
+\dfrac{(hu)(hv)}{h} \\
+\dfrac{(hv)^2}{h} + \dfrac{1}{2}gh^2
+\end{bmatrix}
+$$
+
+where $g$ is gravitational acceleration.
+
+The bed-slope source terms represent topographic forcing:
+
+$$
+\mathbf{S}_{\mathrm{bed}}
+=
+\begin{bmatrix}
+0 \\
+-gh\,\dfrac{\partial z}{\partial x} \\
+-gh\,\dfrac{\partial z}{\partial y}
+\end{bmatrix}
+$$
+
+and the friction source terms represent Manning resistance.
+
+---
+
+### 2.3 Numerical fluxes and momentum memory
+
+HydroPol2D computes full-momentum fluxes with an HLL-type finite-volume solver. At each cell face, left and right reconstructed states are used to compute mass flux and momentum flux. The update is conservative in the sense that flux leaving one cell enters the adjacent cell with opposite sign.
+
+Unlike the local inertial solver, the full-momentum model must carry momentum from one time step to the next. HydroPol2D stores:
+
+- the current cell-centered $hu$ state,
+- the current cell-centered $hv$ state,
+- face mass fluxes converted back to HydroPol2D depth-rate units,
+- outlet sink terms.
+
+This momentum memory is what makes the model a true dynamic-wave solver rather than a discharge recalculation based only on the current water-surface slope.
+
+---
+
+### 2.4 Bed slope, friction, and wetting-drying treatment
+
+The full-momentum solver includes several numerical protections for raster flood simulation:
+
+- dry and inactive cells are treated as solid walls;
+- very shallow cells are cleaned to avoid undefined velocities;
+- momentum is limited by a maximum admissible velocity;
+- Manning friction is applied with a semi-implicit or exact implicit update;
+- a draining limiter prevents a face flux from removing more water than is available.
+
+The Manning friction update damps momentum according to local depth, roughness, and velocity magnitude. Conceptually, the momentum components are relaxed by a denominator of the form
+
+$$
+1 + g\,n^2\,\Delta t\,\frac{\sqrt{u^2+v^2}}{h^{4/3}}
+$$
+
+where $n$ is Manning's roughness coefficient. This prevents unrealistically large momentum in shallow water while retaining dynamic propagation where water depth is sufficient.
+
+Hydrostatic reconstruction is available for complex terrain and well-balanced bed-slope treatment, while the default controlled-benchmark pathway uses the robust HLL flux/source treatment implemented in the current solver.
+
+---
+
+### 2.5 Continuity update and HydroPol2D coupling
+
+After the HLL fluxes are computed, the depth update follows the finite-volume balance:
+
+$$
+h^{t+\Delta t}
+=
+h^t
+-
+\frac{\Delta t}{\Delta x}
+\left(
+F_h^{E} - F_h^{W}
++
+G_h^{N} - G_h^{S}
+\right)
+$$
+
+where $F_h$ and $G_h$ are the mass-flux components through the cell faces.
+
+HydroPol2D then converts the face fluxes to the same bookkeeping convention used by the rest of the model:
+
+$$
+q_{\mathrm{mm/h}}
+=
+\frac{Q}{A_{\mathrm{cell}}}
+1000
+3600
+$$
+
+This allows the full-momentum solver to remain compatible with hydrologic source/sink terms, water-quality transport, reservoir controls, and boundary-condition diagnostics.
+
+---
+
+### 2.6 Boundary conditions and hydraulic controls
+
+The full-momentum model supports the same practical boundary-condition architecture used by HydroPol2D routing:
+
+- closed reflective walls along inactive or exterior faces,
+- outlet sink cells with normal-depth or critical-depth behavior,
+- imposed inflow hydrograph boundaries,
+- prescribed stage hydrograph boundaries,
+- reservoir and internal rating-curve control structures.
+
+For closed boundaries, normal mass flux is zero, but wall-pressure effects are accounted for in the momentum update. This is important for stable behavior near domain edges and inactive cells.
+
+Outlet fluxes are converted to a volume sink and removed from the local water storage, subject to available water constraints.
+
+---
+
+### 2.7 Current validation evidence
+
+The full-momentum solver is part of the Phase 1 validation package. Current report-ready evidence includes:
+
+- tilted-plane runoff against the analytical kinematic-wave limit;
+- V-tilted catchment mass-conservation and bilateral-symmetry checks;
+- Ritter dry-bed dam-break analytical profiles;
+- non-breaking wave propagation and profile comparison;
+- prescribed stage-boundary enforcement;
+- inflow hydrograph and reservoir/control-structure bookkeeping where full-momentum routing is used.
+
+These tests validate the full-momentum implementation as a controlled dynamic-wave routing option. They do not imply field calibration for a particular watershed.
+
+---
+
+### 2.8 Practical use of the full-momentum solver
+
+The full-momentum solver is intended for runs where the added advective and local-acceleration terms matter enough to justify the extra cost. In HydroPol2D, it should be treated as a standalone routing-family choice, not as a layer on top of the lighter routing options.
+
+---
+
+## 3. Diffusive and Kinematic D4 Routing
+
+HydroPol2D implements both **diffusive** and **kinematic** wave routing through a shared conservative D4 solver. These modes are lighter than the local inertial and full-momentum solvers, but they still use explicit face-based fluxes, conservative volume updates, outlet handling, and reservoir/control coupling.
+
+### 3.1 Shared conservative routing structure
+
+In both modes, HydroPol2D routes water across the four orthogonal neighbors of each cell and updates the cell depth through a conservative volume balance:
+
+$$
+h^{t+\Delta t}
+=
+h^t
++
+\frac{V_{\mathrm{in}} - V_{\mathrm{out}}}{A_{\mathrm{cell}}}
+$$
+
+where:
+
+- $h$ is cell water depth $[\mathrm{L}]$
+- $V_{\mathrm{in}}$ and $V_{\mathrm{out}}$ are incoming and outgoing volumes over the substep $[\mathrm{L}^3]$
+- $A_{\mathrm{cell}}$ is the active cell area $[\mathrm{L}^2]$
+
+The routing interval is internally subdivided when needed. The current code estimates the number of substeps from a Manning-type velocity estimate and a Courant-style target so that steep slopes or deep water do not destabilize the explicit update.
+
+### 3.2 Diffusive mode
+
+In diffusive mode, the driving slope is the **water-surface slope** between adjacent cells. For a face shared by left and right cells,
+
+$$
+\eta = z + h
+$$
+
+$$
+S_f = \frac{\eta_L - \eta_R}{\Delta x}
+$$
+
+with hydrostatically reconstructed face depth
+
+$$
+H_f = \max\!\left(\max(\eta_L,\eta_R) - z_f,\,0\right)
+$$
+
+The face unit discharge is then evaluated with a Manning-type flux law:
+
+$$
+q_f
+=
+\operatorname{sign}(S_f)
+\frac{H_f^{5/3}}{n}
+\sqrt{|S_f|}
+$$
+
+This mode can represent backwater-like redistribution driven by water-surface gradients while remaining much cheaper than solving a momentum equation.
+
+### 3.3 Kinematic mode
+
+In kinematic mode, the driving slope is the **bed slope**, not the water-surface slope:
+
+$$
+S_b = \frac{z_L - z_R}{\Delta x}
+$$
+
+The code then applies a donor-depth rule:
+
+- if $S_b > 0$, the left cell is the donor and its depth drives the flux,
+- if $S_b < 0$, the right cell is the donor and its depth drives the flux.
+
+Using donor depth $H_{\mathrm{donor}}$, the unit discharge is
+
+$$
+q_f
+=
+\operatorname{sign}(S_b)
+\frac{H_{\mathrm{donor}}^{5/3}}{n_{\mathrm{donor}}}
+\sqrt{|S_b|}
+$$
+
+This makes the kinematic route strictly slope-directed and prevents it from representing the same backwater behavior captured by the diffusive, inertial, or full-momentum solvers.
+
+### 3.4 Shared controls, outlet handling, and coupling
+
+Both D4 wave modes share the same conservative routing machinery for:
+
+- internal substepping,
+- available-storage limiting so a donor cell cannot export more volume than it contains,
+- optional critical-flow limiting,
+- outlet discharge removal,
+- reservoir and hydraulic-control interaction.
+
+As with the other routing families, rainfall, infiltration, evapotranspiration, groundwater feedback, and other source/sink terms are handled by the coupled HydroPol2D framework around the routing update.
+
+### 3.5 Scope and caveats
+
+The D4 diffusive and kinematic modes are part of the implemented routing family and are used in current controlled validation benchmarks. However:
+
+- they should be treated as alternatives to, not combinations with, local inertial or full momentum,
+- D8 support should be considered a limited-scope secondary pathway rather than a parallel theory family,
+## 4. Cellular Automata Flow Routing
+
+### 4.1 Conceptual formulation
 
 In addition to the Local Inertial Model, HydroPol2D provides a **Cellular Automata (CA) routing scheme** as a simplified alternative for surface flow propagation.
 
@@ -584,7 +946,7 @@ This formulation is particularly useful for:
 
 ---
 
-### 2.2 Water surface representation
+### 4.2 Water surface representation
 
 As in the inertial model, the driving variable is the water surface elevation:
 
@@ -600,7 +962,7 @@ where:
 
 ---
 
-### 2.3 Driving gradient and flow direction
+### 4.3 Driving gradient and flow direction
 
 Flow between a cell $i$ and a neighboring cell $j$ is driven by the difference:
 
@@ -618,7 +980,7 @@ This ensures that water flows only **downhill in terms of free surface**, preven
 
 ---
 
-### 2.4 Available transferable volume
+### 4.4 Available transferable volume
 
 The potential volume that can be transferred from cell $i$ to neighbor $j$ is estimated as:
 
@@ -633,7 +995,7 @@ where:
 
 ---
 
-### 2.5 Flow partitioning
+### 4.5 Flow partitioning
 
 The total transferable volume from a cell is distributed among its neighbors proportionally:
 
@@ -663,7 +1025,7 @@ where:
 
 ---
 
-### 2.6 Velocity estimation
+### 4.6 Velocity estimation
 
 Although the CA model does not explicitly solve momentum equations, a characteristic velocity is estimated using Manning’s equation:
 
@@ -681,7 +1043,7 @@ This velocity is used to control the **rate of water redistribution**.
 
 ---
 
-### 2.7 Outflow computation
+### 4.7 Outflow computation
 
 The total outflow from a cell is computed as:
 
@@ -697,7 +1059,7 @@ where:
 
 ---
 
-### 2.8 Depth update
+### 4.8 Depth update
 
 After redistribution, the water depth is updated as:
 
@@ -728,7 +1090,7 @@ ensuring physical consistency.
 
 ---
 
-### 2.9 Stability and robustness
+### 4.9 Stability and robustness
 
 The CA model is inherently stable because:
 
@@ -744,7 +1106,7 @@ However, the method is:
 
 ---
 
-### 2.10 Comparison with Local Inertial Model
+### 4.10 Comparison with Local Inertial Model
 
 | Feature | Local Inertial Model | Cellular Automata |
 |--------|----------------------|-------------------|
@@ -757,7 +1119,7 @@ However, the method is:
 
 ---
 
-### 2.11 When to use the CA model
+### 4.11 When to use the CA model
 
 The Cellular Automata model is recommended when:
 
@@ -772,10 +1134,12 @@ For physically based flood propagation, the **Local Inertial Model remains the p
 
 ## Summary
 
-The Cellular Automata model in HydroPol2D provides a **mass-conservative, gradient-driven routing alternative** that complements the Local Inertial Model.
+HydroPol2D supports a routing family that now publicly includes:
 
-While less physically detailed, it offers:
+- **local inertial** routing as the default physically based flood solver,
+- **full momentum** routing for dynamic-wave benchmarks and stronger momentum effects,
+- **diffusive D4** routing driven by water-surface slope,
+- **kinematic D4** routing driven by bed slope and donor depth,
+- **cellular automata** routing for fast, simplified redistribution.
 
-- excellent numerical stability,
-- low computational cost,
-- and robustness for large-domain simulations.
+All of these routes share HydroPol2D’s broader coupling with hydrologic inputs, groundwater feedback, outlet bookkeeping, and hydraulic controls, but only one major routing formulation should be active in a given run. D8 remains secondary in scope.

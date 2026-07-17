@@ -31,23 +31,23 @@ For this reason, raster classes and table indices must match exactly.
 
 ## LULC Parameter Table
 
-The LULC table defines surface-related properties controlling flow resistance, interception, imperviousness, and pollutant-related behavior.
+The LULC table defines surface-related properties controlling flow resistance, interception, imperviousness, pollutant-related behavior, and root-zone depth when layered soil storage is active.
 
 ### Example structure
 
-| Land Cover | Index | $n$<br />$(\mathrm{s\,m^{-1/3}})$ | $h_0$<br />$(\mathrm{mm})$ | $d_0$<br />$(\mathrm{mm})$ | $C_1$ | $C_2$ | $C_3$ | $C_4$ | $\mathrm{index\_impervious}$ |
-|:----------:|:-----:|:---------------------------------:|:--------------------------:|:--------------------------:|:-----:|:-----:|:-----:|:-----:|:----------------------------:|
-| Tree cover | 10 | 0.10 | 0 | 0 | 10 | 0.20 | 800 | 1.20 | 50 |
-| Shrubland | 20 | 0.08 | 0 | 0 | 12 | 0.20 | 900 | 1.20 | NaN |
-| Grassland | 30 | 0.06 | 0 | 0 | 15 | 0.22 | 1000 | 1.20 | NaN |
-| Cropland | 40 | 0.05 | 0 | 0 | 30 | 0.25 | 1400 | 1.30 | NaN |
-| Built-up | 50 | 0.03 | 0 | 0 | 80 | 0.30 | 2000 | 1.30 | NaN |
-| Bare / sparse vegetation | 60 | 0.035 | 0 | 0 | 45 | 0.25 | 1600 | 1.25 | NaN |
-| Snow and ice | 70 | 0.02 | 0 | 0 | 1 | 0.10 | 200 | 1.10 | NaN |
-| Permanent water bodies | 80 | 0.035 | 0 | 0 | 0 | 0 | 0 | 0 | NaN |
-| Herbaceous wetland | 90 | 0.12 | 0 | 0 | 8 | 0.18 | 700 | 1.20 | NaN |
-| Mangroves | 95 | 0.15 | 0 | 0 | 8 | 0.18 | 700 | 1.20 | NaN |
-| Moss and lichen | 100 | 0.08 | 0 | 0 | 5 | 0.15 | 500 | 1.15 | NaN |
+| Land Cover | Index | $n$<br />$(\mathrm{s\,m^{-1/3}})$ | $h_0$<br />$(\mathrm{mm})$ | $d_0$<br />$(\mathrm{mm})$ | $C_1$ | $C_2$ | $C_3$ | $C_4$ | $\mathrm{index\_impervious}$ | $\mathrm{root\_depth\_m}$ |
+|:----------:|:-----:|:---------------------------------:|:--------------------------:|:--------------------------:|:-----:|:-----:|:-----:|:-----:|:----------------------------:|:--------------------------:|
+| Tree cover | 10 | 0.10 | 0 | 0 | 10 | 0.20 | 800 | 1.20 | 50 | 1.50 |
+| Shrubland | 20 | 0.08 | 0 | 0 | 12 | 0.20 | 900 | 1.20 | NaN | 1.00 |
+| Grassland | 30 | 0.06 | 0 | 0 | 15 | 0.22 | 1000 | 1.20 | NaN | 0.60 |
+| Cropland | 40 | 0.05 | 0 | 0 | 30 | 0.25 | 1400 | 1.30 | NaN | 1.00 |
+| Built-up | 50 | 0.03 | 0 | 0 | 80 | 0.30 | 2000 | 1.30 | NaN | 0.00 |
+| Bare / sparse vegetation | 60 | 0.035 | 0 | 0 | 45 | 0.25 | 1600 | 1.25 | NaN | 0.10 |
+| Snow and ice | 70 | 0.02 | 0 | 0 | 1 | 0.10 | 200 | 1.10 | NaN | 0.00 |
+| Permanent water bodies | 80 | 0.035 | 0 | 0 | 0 | 0 | 0 | 0 | NaN | 0.00 |
+| Herbaceous wetland | 90 | 0.12 | 0 | 0 | 8 | 0.18 | 700 | 1.20 | NaN | 0.40 |
+| Mangroves | 95 | 0.15 | 0 | 0 | 8 | 0.18 | 700 | 1.20 | NaN | 1.00 |
+| Moss and lichen | 100 | 0.08 | 0 | 0 | 5 | 0.15 | 500 | 1.15 | NaN | 0.15 |
 
 *Table 1. HydroPol2D LULC parameter table. The `Index` values must match the categorical values in the LULC raster.*
 
@@ -58,32 +58,35 @@ The LULC table defines surface-related properties controlling flow resistance, i
 - $d_0$: initial surface storage parameter
 - $C_1$–$C_4$: coefficients associated with the pollutant build-up and wash-off formulation
 - $\mathrm{index\_impervious}$: identifier used to associate a class with impervious behavior
+- $\mathrm{root\_depth\_m}$: vegetation-controlled root-zone depth used by the layered soil/vadose model
 
 The values shown above correspond to the current HydroPol2D parameter table and should be revised as needed for the adopted classification scheme and study area.
+
+In the current implementation, `root_depth_m` is the supported way to provide root-depth input to the model. There is no separate root-depth raster path; root depth is assigned per LULC class and then mapped to the grid through the categorical LULC raster.
 
 ---
 
 ## Soil Parameter Table
 
-The soil table defines the hydraulic properties used to estimate infiltration and near-surface storage behavior.
+The soil table defines the base hydraulic properties used to estimate infiltration, layered vadose storage, recharge, and groundwater behavior.
 
 ### Example structure
 
-| Soil Type | Index | $K_{\mathrm{sat}}$<br />$(\mathrm{mm\,h^{-1}})$ | $n$ | $\alpha$<br />$(\mathrm{m^{-1}})$ | $\theta_{\mathrm{sat}}$<br />$(\mathrm{cm^3\,cm^{-3}})$ | $\theta_{\mathrm{r}}$<br />$(\mathrm{cm^3\,cm^{-3}})$ | $\theta_{\mathrm{i}}$<br />$(\mathrm{cm^3\,cm^{-3}})$ | $S_{\mathrm{y}}$ | $K_{\mathrm{g,sat}}$<br />$(\mathrm{mm\,h^{-1}})$ | $\mathrm{DTB}$<br />$(\mathrm{m})$ |
-|:---------:|:-----:|:-----------------------------------------------:|:---:|:----------------------------------:|:--------------------------------------------------------:|:------------------------------------------------------:|:------------------------------------------------------:|:---------------:|:---------------------------------------------------:|:--------------------------------:|
-| Clay | 1 | 0.3 | 1.09 | 0.8 | 0.385 | 0.068 | 0.20 | 0.03 | 6 | 1 |
-| Silty Clay | 2 | 0.5 | 1.23 | 1.0 | 0.423 | 0.089 | 0.22 | 0.04 | 10 | 1 |
-| Sandy Clay | 3 | 0.6 | 1.31 | 1.5 | 0.321 | 0.075 | 0.17 | 0.06 | 12 | 1 |
-| Clay Loam | 4 | 1.0 | 1.31 | 1.9 | 0.309 | 0.095 | 0.16 | 0.08 | 20 | 1 |
-| Silty Clay Loam | 5 | 1.0 | 1.23 | 1.5 | 0.432 | 0.089 | 0.22 | 0.09 | 20 | 1 |
-| Sandy Clay Loam | 6 | 1.5 | 1.48 | 3.0 | 0.330 | 0.065 | 0.17 | 0.11 | 30 | 1 |
-| Silty Loam | 7 | 7.6 | 1.41 | 4.5 | 0.434 | 0.067 | 0.22 | 0.14 | 152 | 1 |
-| Loam | 8 | 3.4 | 1.56 | 3.6 | 0.486 | 0.078 | 0.25 | 0.18 | 68 | 1 |
-| Sandy Loam | 9 | 10.9 | 1.89 | 7.5 | 0.412 | 0.065 | 0.21 | 0.22 | 218 | 1 |
-| Silt | 10 | 3.4 | 1.37 | 4.0 | 0.486 | 0.067 | 0.24 | 0.12 | 68 | 1 |
-| Loamy Sand | 11 | 29.9 | 2.28 | 14.5 | 0.401 | 0.057 | 0.20 | 0.25 | 598 | 1 |
-| Sand | 12 | 117.8 | 2.68 | 14.5 | 0.417 | 0.045 | 0.21 | 0.30 | 2356 | 1 |
-| Water | 0 | 0.3 | 1.09 | 0.8 | 0.385 | 0.068 | 0.20 | 0.03 | 6 | 1 |
+| Soil Type | Index | $K_{\mathrm{sat}}$<br />$(\mathrm{mm\,h^{-1}})$ | $n$ | $\alpha$<br />$(\mathrm{m^{-1}})$ | $\theta_{\mathrm{sat}}$ | $\theta_{\mathrm{r}}$ | $\theta_{\mathrm{i}}$ | $S_{\mathrm{y}}$ | $K_{\mathrm{g,sat}}$<br />$(\mathrm{mm\,h^{-1}})$ | $\mathrm{DTB}$<br />$(\mathrm{m})$ | $K_s$ near | $K_s$ root | $K_s$ transmission |
+|:---------:|:-----:|:-----------------------------------------------:|:---:|:----------------------------------:|:----------------------:|:--------------------:|:--------------------:|:---------------:|:---------------------------------------------------:|:--------------------------------:|:------------:|:----------:|:--------------------:|
+| Clay | 1 | 0.3 | 1.09 | 0.8 | 0.385 | 0.068 | 0.0997 | 0.03 | 6 | 1 | 1 | 1 | 1 |
+| Silty Clay | 2 | 0.5 | 1.23 | 1.0 | 0.423 | 0.089 | 0.1224 | 0.04 | 10 | 1 | 1 | 1 | 1 |
+| Sandy Clay | 3 | 0.6 | 1.31 | 1.5 | 0.321 | 0.075 | 0.0996 | 0.06 | 12 | 1 | 1 | 1 | 1 |
+| Clay Loam | 4 | 1.0 | 1.31 | 1.9 | 0.309 | 0.095 | 0.1164 | 0.08 | 20 | 1 | 1 | 1 | 1 |
+| Silty Clay Loam | 5 | 1.0 | 1.23 | 1.5 | 0.432 | 0.089 | 0.1233 | 0.09 | 20 | 1 | 1 | 1 | 1 |
+| Sandy Clay Loam | 6 | 1.5 | 1.48 | 3.0 | 0.330 | 0.065 | 0.0915 | 0.11 | 30 | 1 | 1 | 1 | 1 |
+| Silty Loam | 7 | 7.6 | 1.41 | 4.5 | 0.434 | 0.067 | 0.1220 | 0.14 | 152 | 1 | 1 | 1 | 1 |
+| Loam | 8 | 3.4 | 1.56 | 3.6 | 0.486 | 0.078 | 0.1104 | 0.18 | 68 | 1 | 1 | 1 | 1 |
+| Sandy Loam | 9 | 10.9 | 1.89 | 7.5 | 0.412 | 0.065 | 0.1287 | 0.22 | 218 | 1 | 1 | 1 | 1 |
+| Silt | 10 | 3.4 | 1.37 | 4.0 | 0.486 | 0.067 | 0.1234 | 0.12 | 68 | 1 | 1 | 1 | 1 |
+| Loamy Sand | 11 | 29.9 | 2.28 | 14.5 | 0.401 | 0.057 | 0.1172 | 0.25 | 598 | 1 | 1 | 1 | 1 |
+| Sand | 12 | 117.8 | 2.68 | 14.5 | 0.417 | 0.045 | 0.1225 | 0.30 | 2356 | 1 | 1 | 1 | 1 |
+| Water | 0 | 0.3 | 1.09 | 0.8 | 0.385 | 0.068 | 0.0997 | 0.03 | 6 | 1 | 1 | 1 | 1 |
 
 *Table 2. HydroPol2D soil parameter table. The `Index` values must match the categorical values in the soil raster.*
 
@@ -98,8 +101,13 @@ The soil table defines the hydraulic properties used to estimate infiltration an
 - $S_{\mathrm{y}}$: specific yield
 - $K_{\mathrm{g,sat}}$: saturated conductivity associated with subsurface or groundwater parameterization
 - $\mathrm{DTB}$: depth to bedrock or effective storage depth
+- `Ks_multiplier_near_surface`: multiplier applied to base $K_{\mathrm{sat}}$ in the near-surface layer
+- `Ks_multiplier_root_zone`: multiplier applied to base $K_{\mathrm{sat}}$ in the root-zone layer
+- `Ks_multiplier_transmission`: multiplier applied to base $K_{\mathrm{sat}}$ in the transmission layer
 
-Only the **surface or near-surface soil class** is used in HydroPol2D to estimate infiltration capacity.
+The categorical soil class defines the base hydraulic properties for the column. The layered implementation assigns those properties to the near-surface, root-zone, and transmission-zone layers, then applies optional conductivity multipliers where they are provided.
+
+LULC controls root-zone depth. Depth to bedrock and the current water-table position constrain the final layer thicknesses, so physically impossible layer geometries collapse or truncate rather than producing negative storage.
 
 The values shown above correspond to the current HydroPol2D soil parameter table and should be revised as needed for the adopted soil classification and simulation scenario.
 

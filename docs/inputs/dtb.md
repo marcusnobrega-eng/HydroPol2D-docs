@@ -21,6 +21,8 @@ DTB is used to define:
 
 Within the model, DTB acts as a **geometric constraint** on storage rather than a fully resolved vertical profile.
 
+DTB should not be confused with the optional initial groundwater-table raster. In the current model, `DTB_path` defines soil-column thickness, while `GW_table_path` defines the initial saturated head/elevation when groundwater initialization is provided explicitly.
+
 ---
 
 ## Representation

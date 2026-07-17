@@ -6,7 +6,7 @@ title: Soil
 
 Soil data defines the hydraulic response of the land surface and controls the rate at which water infiltrates into the subsurface in HydroPol2D.
 
-Within the current formulation of the model, soil properties are used primarily to estimate **infiltration capacity and near-surface storage behavior**, rather than to explicitly resolve deep vertical flow.
+Within the current formulation of the model, soil properties are used to estimate **infiltration capacity, layered vadose-zone storage, drainage/recharge, capillary rise, and groundwater storage behavior**.
 
 ---
 
@@ -14,10 +14,11 @@ Within the current formulation of the model, soil properties are used primarily 
 
 The soil input is used to represent:
 
-- Infiltration capacity at the surface  
-- Near-surface soil water storage  
-- Effective hydraulic conductivity  
-- Initial soil moisture conditions (when not provided as a spatial field)  
+- Infiltration capacity at the surface
+- Near-surface, root-zone, and transmission-zone water storage
+- Effective hydraulic conductivity by layer
+- Initial soil moisture conditions (when not provided as a spatial field)
+- Groundwater specific yield and saturated hydraulic conductivity
 
 These properties directly influence the generation of runoff and the timing of the hydrological response.
 
@@ -35,7 +36,14 @@ This structure allows the model to:
 - Maintain consistency across the domain  
 - Separate spatial data from parameter definition  
 
-Only the **surface or near-surface soil classification** is used in HydroPol2D for estimating infiltration capacity. Deeper soil layering is not explicitly represented in the standard configuration.
+The soil map still provides one categorical soil class per model cell. That class defines the base hydraulic parameters for the column. The current layered implementation then partitions the available vadose depth into:
+
+- a near-surface layer, with default target depth of $0.10\,\mathrm{m}$;
+- a root-zone layer, whose depth is defined by the LULC class;
+- a transmission-zone layer below the root zone;
+- a groundwater zone beginning at the current water table.
+
+The layer geometry adapts to depth to bedrock and groundwater position. If root depth is shallower than the near-surface layer, the explicit root-zone layer collapses into the near-surface layer. If bedrock or the water table is shallower than the requested root depth, the root zone is truncated to the available vadose depth.
 
 ---
 
@@ -43,11 +51,13 @@ Only the **surface or near-surface soil classification** is used in HydroPol2D f
 
 Hydraulic parameters are defined externally and associated with soil classes. Typical parameters include:
 
-- Saturated hydraulic conductivity (Ks)  
-- Soil porosity  
-- Residual water content  
-- Soil water retention parameters (e.g., Van Genuchten parameters)  
-- Initial soil moisture (when not prescribed as a spatial field)  
+- Saturated hydraulic conductivity (Ks)
+- Soil porosity
+- Residual water content
+- Soil water retention parameters (e.g., Van Genuchten parameters)
+- Initial soil moisture (when not prescribed as a spatial field)
+- Specific yield and groundwater saturated conductivity
+- Optional layer multipliers for saturated hydraulic conductivity
 
 These parameters must be physically consistent and representative of the soil classes defined in the raster.
 
@@ -146,6 +156,6 @@ In many cases, simplifying the number of soil classes improves model stability a
 
 ## Summary
 
-In HydroPol2D, soil data is used to control infiltration and near-surface hydrological response.
+In HydroPol2D, soil data is used to control infiltration, layered vadose storage, recharge, groundwater storage, and groundwater feedback to the surface.
 
-The model relies on a categorical soil representation coupled with externally defined hydraulic parameters. Proper definition and mapping of these parameters is essential for obtaining reliable simulations.
+The model relies on a categorical soil representation coupled with externally defined hydraulic parameters, LULC-based root-zone depths, and optional layer multipliers. Proper definition and mapping of these parameters is essential for obtaining reliable simulations.

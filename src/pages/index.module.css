@@ -166,6 +166,57 @@
   background: rgba(255, 255, 255, 0.18);
 }
 
+.languageRow {
+  margin-top: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+}
+
+.languageLabel {
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.98rem;
+  font-weight: 500;
+}
+
+.languagePills {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.languagePill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1rem;
+  border-radius: 999px;
+  color: #ffffff;
+  text-decoration: none;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(10px);
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.languagePill:hover {
+  color: #ffffff;
+  text-decoration: none;
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.languagePillActive {
+  background: rgba(255, 255, 255, 0.24);
+  border-color: rgba(255, 255, 255, 0.34);
+}
+
 /* =========================
    FEATURES
    ========================= */

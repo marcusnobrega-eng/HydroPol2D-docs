@@ -14,11 +14,13 @@ The groundwater component of HydroPol2D represents the coupled dynamics of:
 - groundwater exfiltration to the surface,
 - and groundwater interaction with river cells.
 
-The current implementation combines two complementary components:
+The current implementation combines three complementary components:
 
-1. a **recharge module**, which computes the flux from the vadose zone to groundwater using a reduced Richards-consistent Darcy closure based on the van Genuchten–Mualem constitutive relations, and
+1. a **layered vadose/recharge module**, which moves water through near-surface, root-zone, and transmission-zone storage using a reduced Richards-consistent Darcy closure based on the van Genuchten–Mualem constitutive relations,
 
-2. a **two-dimensional Boussinesq groundwater flow solver**, which routes saturated flow laterally across the domain and returns exfiltration to the land surface when the groundwater table rises above the local surface elevation.
+2. a **capillary-rise exchange module**, which can move water upward from shallow groundwater into available vadose storage, and
+
+3. a **two-dimensional Boussinesq groundwater flow solver**, which routes saturated flow laterally across the domain and returns exfiltration to the land surface when the groundwater table rises above the local surface elevation.
 
 This structure allows HydroPol2D to represent dynamic coupling between:
 
@@ -41,15 +43,20 @@ This structure allows HydroPol2D to represent dynamic coupling between:
 
 ## 2. General Conceptual Structure
 
-The groundwater model is solved after infiltration and vadose-zone update. Its logic is:
+The groundwater model is coupled with two clocks. Vadose-zone exchange is evaluated every surface-water time step because infiltration and evapotranspiration need fast soil-moisture feedback. Saturated groundwater heads are updated less frequently, usually on a daily target time step unless stability or head-change limits require a shorter update.
+
+The logic is:
 
 1. compute the water table position from the current groundwater head,
 2. determine the maximum unsaturated storage permitted by the current water table depth,
-3. compute recharge from the vadose zone to groundwater,
-4. solve lateral groundwater flow using a 2D Boussinesq equation,
-5. compute groundwater exfiltration to the surface,
-6. correct vadose storage if the rising water table reduces the available unsaturated storage,
-7. update surface water depth accordingly.
+3. compute drainage/recharge from vadose layers to groundwater during the current surface step,
+4. compute capillary rise from groundwater to the vadose layers when enabled,
+5. accumulate the net exchange volume in the groundwater scheduler,
+6. update saturated groundwater heads when the scheduler is due,
+7. solve lateral groundwater flow using a 2D Boussinesq equation when baseflow is active,
+8. compute groundwater exfiltration to the surface,
+9. correct vadose storage if the rising water table reduces the available unsaturated storage,
+10. update surface water depth accordingly.
 
 The principal variables are:
 
@@ -60,6 +67,21 @@ The principal variables are:
 - $q_{\mathrm{exf}}$ = exfiltration flux from groundwater to the surface $[\mathrm{L}\,\mathrm{T}^{-1}]$
 - $S_y$ = specific yield $[-]$
 - $K$ = saturated hydraulic conductivity $[\mathrm{L}\,\mathrm{T}^{-1}]$
+
+### 2.1 Asynchronous scheduler
+
+The asynchronous scheduler is active by default when groundwater modeling is enabled. The principal controls are:
+
+| Control | Default | Meaning |
+|---|---:|---|
+| `flag_groundwater_async` | 1 | Uses slower saturated-groundwater updates instead of updating heads every surface step. |
+| `groundwater_target_dt_min` | 1440 | Target groundwater update interval, in minutes. |
+| `groundwater_min_dt_min` | 1 | Minimum groundwater update interval, in minutes. |
+| `groundwater_max_head_change_m` | 0.25 | Forces an update when accumulated exchange would change head by this amount. |
+| `groundwater_courant` | 0.25 | Stability factor for the Boussinesq groundwater timestep estimate. |
+| `flag_capillary_rise` | 1 | Enables simple layered capillary rise when layered soil storage is present. |
+
+Pending recharge, capillary rise, and net exchange are stored as scheduler state variables. When a groundwater update runs, the accumulated net exchange depth is divided by the elapsed groundwater interval to form the recharge term passed to the saturated solver.
 
 ---
 
@@ -104,14 +126,14 @@ This variable is central to the coupling between vadose storage and groundwater.
 
 ### 3.1 Maximum unsaturated storage
 
-The maximum water that can be stored in the unsaturated zone is defined as
+The maximum water that can be stored in the unsaturated zone is defined using the current **active storage above residual water content** convention:
 
 $$
 S_{\mathrm{UZ,max}}
 =
 z_{\mathrm{wt}}
 \left(
-\theta_{\mathrm{sat}} - \theta_i
+\theta_{\mathrm{sat}} - \theta_r
 \right)
 $$
 
@@ -119,192 +141,144 @@ where:
 
 - $S_{\mathrm{UZ,max}}$ = maximum unsaturated storage $[\mathrm{L}]$
 - $\theta_{\mathrm{sat}}$ = saturated volumetric water content $[-]$
-- $\theta_i$ = initial or reference volumetric water content $[-]$
+- $\theta_r$ = residual volumetric water content $[-]$
 
-Thus, as the water table rises, the vadose zone shrinks and the storage capacity available for infiltration decreases.
+Thus, as the water table rises, the vadose zone shrinks and the storage capacity available for infiltration decreases. When layered soil storage is active, the code evaluates this limit through the explicit capacities of the near-surface, root-zone, and transmission-zone stores after truncation by the current water-table position.
 
 ---
 
-## 4. Recharge from the Vadose Zone
+## 4. Default Layered Vadose-to-Groundwater Exchange
 
-Recharge is computed using the function `simulate_groundwater_recharge`, which receives infiltration from the infiltration module and updates vadose-zone storage consistently.
+Recharge is computed from the current vadose storage after the infiltration module has already moved water from the surface into the soil. This avoids double-counting infiltration. The current default pathway is layered:
 
-### 4.1 Input infiltration
+- near-surface storage,
+- root-zone storage,
+- transmission-zone storage,
+- groundwater recharge.
 
-The infiltration module provides the infiltration flux:
+### 4.1 Surface-step coupling
 
-$$
-i
-\quad [\mathrm{L}\,\mathrm{T}^{-1}]
-$$
+Vadose exchange is evaluated every surface-water step because infiltration and evapotranspiration need immediate soil-moisture feedback. In the current implementation, infiltration is first accepted by the infiltration module, stored in the vadose layers, and only then allowed to drain downward toward groundwater.
 
-internally stored in HydroPol2D as `Hydro_States.f` in $\mathrm{mm/h}$. This is converted to groundwater-model units:
+### 4.2 Layerwise constitutive state
 
-$$
-i_{\mathrm{gw}} = \frac{i}{1000 \cdot 3600}
-$$
-
-where:
-
-- $i_{\mathrm{gw}}$ = infiltration input to the recharge model $[\mathrm{m}\,\mathrm{s}^{-1}]$
-
-### 4.2 Vadose storage state
-
-Let:
-
-- $S$ = current vadose-zone storage $[\mathrm{L}]$
-
-The code converts the bucket storage from $\mathrm{mm}$ to $\mathrm{m}$ and uses this as the state variable for recharge.
-
-### 4.3 Representative volumetric water content
-
-The representative water content in the unsaturated zone is approximated as
+For a generic vadose layer $\ell$ with active storage $S_{\ell}$ and thickness $z_{\ell}$, HydroPol2D evaluates
 
 $$
-\theta
+\theta_{\ell}
 =
-\theta_i + \frac{S}{z_{\mathrm{wt}}}
+\theta_{\mathrm{r},\ell}
++
+\frac{S_{\ell}}{z_{\ell}}
 $$
 
-bounded as
-
 $$
-\theta_i \le \theta \le \theta_{\mathrm{sat}}
-$$
-
-The effective saturation is then computed as
-
-$$
-S_e
+S_{e,\ell}
 =
 \frac{
-\theta - \theta_r
+\theta_{\ell} - \theta_{\mathrm{r},\ell}
 }{
-\theta_{\mathrm{sat}} - \theta_r
+\theta_{\mathrm{sat},\ell} - \theta_{\mathrm{r},\ell}
 }
 $$
 
-where:
-
-- $\theta$ = representative volumetric water content $[-]$
-- $\theta_r$ = residual water content $[-]$
-- $S_e$ = effective saturation $[-]$
-
----
-
-## 5. van Genuchten–Mualem Recharge Closure
-
-The recharge model uses the same constitutive functions employed in the infiltration module.
-
-### 5.1 Pressure head relation
-
-The matric pressure head is computed as
-
 $$
-m = 1 - \frac{1}{n}
-$$
-
-$$
-h(\theta)
+K_{\ell}
 =
--\frac{1}{\alpha_{\mathrm{vg}}}
-\left(
-S_e^{-1/m} - 1
-\right)^{1/n}
-$$
-
-where:
-
-- $h(\theta)$ = representative matric pressure head $[\mathrm{L}]$
-- $\alpha_{\mathrm{vg}}$ = van Genuchten inverse air-entry parameter $[\mathrm{L}^{-1}]$
-- $n$ = van Genuchten shape parameter $[-]$
-
-At near saturation, HydroPol2D sets
-
-$$
-h(\theta) = 0
-$$
-
-to avoid numerical singularities.
-
-### 5.2 Unsaturated hydraulic conductivity
-
-The relative conductivity is
-
-$$
-K_r
-=
-S_e^{\ell}
+K_{\mathrm{sat},\ell}
+S_{e,\ell}^{\ell_v}
 \left[
-1 - \left(1 - S_e^{1/m}\right)^m
+1 - \left(1 - S_{e,\ell}^{1/m_{\ell}}\right)^{m_{\ell}}
 \right]^2
 $$
 
-and the unsaturated conductivity becomes
+with
 
 $$
-K(\theta) = K_{\mathrm{sat}} K_r
+m_{\ell} = 1 - \frac{1}{n_{\ell}}
 $$
 
 where:
 
-- $K(\theta)$ = unsaturated hydraulic conductivity $[\mathrm{L}\,\mathrm{T}^{-1}]$
-- $K_{\mathrm{sat}}$ = saturated hydraulic conductivity $[\mathrm{L}\,\mathrm{T}^{-1}]$
-- $\ell$ = pore-connectivity parameter $[-]$
+- $\theta_{\ell}$ = layer water content $[-]$
+- $S_{e,\ell}$ = layer effective saturation $[-]$
+- $K_{\ell}$ = layer unsaturated conductivity $[\mathrm{L}\,\mathrm{T}^{-1}]$
+- $\ell_v$ = Mualem pore-connectivity parameter $[-]$
 
-If $\ell$ is not explicitly provided, HydroPol2D uses $\ell = 0.5$.
+This is the same van Genuchten-Mualem constitutive family used by the infiltration module.
 
-### 5.3 Recharge law
+### 4.3 Downward drainage cascade
 
-Recharge is then computed with a Darcy-like closure:
+The layered recharge pathway is computed as a downward cascade:
+
+1. near-surface drainage goes to the root zone when root storage exists,
+2. root-zone drainage goes to the transmission zone when transmission storage exists,
+3. transmission-zone drainage becomes groundwater recharge.
+
+Conceptually, the drainage depth from a layer over a time step can be summarized as
 
 $$
-R
+\Delta D_{\ell} \approx K_{\ell}\,\Delta t
+$$
+
+subject to:
+
+- water available in the donor layer,
+- remaining capacity in the receiving layer,
+- and the current layer thickness and soil parameters.
+
+The net downward recharge reaching groundwater is then
+
+$$
+R_{\mathrm{down}}
 =
-K(\theta)
-\left(
-1 + \frac{h(\theta)}{L_{\mathrm{gw}}}
+\frac{\Delta S_{\rightarrow \mathrm{gw}}}{\Delta t}
+$$
+
+where $\Delta S_{\rightarrow \mathrm{gw}}$ is the total transmission of water into groundwater during the current surface step. Direct drainage from the near-surface or root zone to groundwater occurs only when the lower vadose layers are absent.
+
+### 4.4 Legacy fallback formulation
+
+HydroPol2D still contains the older representative-bucket recharge closure for cases where the explicit layered storage data are unavailable. In that fallback mode, a single vadose storage state is converted to a representative water content and drained with a Darcy-like closure. That formulation should be treated as **legacy/fallback**, not the primary theory path for the current model.
+
+---
+
+## 5. Optional Capillary Rise
+
+When `flag_capillary_rise = 1`, HydroPol2D allows shallow groundwater to move upward into available vadose storage. The current implementation is a simple layered capillary-rise rule, not a full Richards-equation solution.
+
+The upward exchange increases with:
+
+- shallower water-table depth,
+- larger storage deficit in the receiving layer,
+- and larger saturated conductivity in that layer.
+
+Conceptually, the upward capillary transfer into layer $\ell$ is limited by
+
+$$
+C_{\ell}
+\le
+\min\!\left(
+S_{\ell,\mathrm{def}},\,
+K_{\mathrm{sat},\ell} f_{\mathrm{prox}}(z_{\mathrm{wt}}) f_{\mathrm{dry}}(S_{\ell})
 \right)
 $$
 
-where the effective drainage length is defined as
+where:
+
+- $S_{\ell,\mathrm{def}}$ is the remaining layer storage deficit
+- $f_{\mathrm{prox}}$ is a monotonic water-table proximity factor
+- $f_{\mathrm{dry}}$ is a monotonic dryness factor
+
+In the current code, capillary rise is evaluated first into the transmission zone, then the root zone, and only into the near-surface layer when no lower vadose storage exists.
+
+The net vadose-groundwater exchange accumulated by the scheduler is therefore
 
 $$
-L_{\mathrm{gw}} = 0.5\,z_{\mathrm{wt}}
+R_{\mathrm{net}} = R_{\mathrm{down}} - C_{\mathrm{up}}
 $$
 
-and:
-
-- $R$ = recharge rate $[\mathrm{L}\,\mathrm{T}^{-1}]$
-- $L_{\mathrm{gw}}$ = effective drainage length from the representative bucket state to the water table $[\mathrm{L}]$
-
-The hydraulic gradient term is bounded in the code to avoid unrealistically large drainage or upward capillary-rise fluxes.
-
-### 5.4 Vadose storage update
-
-The vadose storage is updated as
-
-$$
-S^{t+\Delta t}
-=
-S^t + \Delta t \left(i_{\mathrm{gw}} - R\right)
-$$
-
-subject to the constraints
-
-$$
-S_{\min} \le S^{t+\Delta t} \le S_{\mathrm{UZ,max}}
-$$
-
-Recharge is then recomputed from exact mass conservation:
-
-$$
-R
-=
-i_{\mathrm{gw}} - \frac{S^{t+\Delta t} - S^t}{\Delta t}
-$$
-
-This guarantees that recharge is always fully consistent with the actual change in vadose storage.
+where $C_{\mathrm{up}}$ is the total upward capillary-rise flux.
 
 ---
 
@@ -464,39 +438,72 @@ This predictor–corrector procedure improves stability and reduces numerical di
 
 ---
 
-## 7. Adaptive Time Stepping
+## 7. Groundwater Update Timing and Adaptive Time Stepping
 
-The groundwater solver uses adaptive time stepping based on a Courant-type stability condition.
+HydroPol2D uses a **two-level groundwater time-step logic**.
 
-First, Darcy velocities are computed as
+### 7.1 Outer asynchronous scheduler
+
+Vadose exchange is accumulated every surface-water step, but saturated groundwater heads are updated only when the groundwater scheduler is due. The groundwater update interval is the minimum of:
+
+- the user target interval,
+- the explicit groundwater stability cap,
+- the interval implied by the maximum allowed accumulated head change,
+- and the final partial interval at the end of the run.
+
+If `flag_groundwater_async = 0`, the saturated groundwater update is forced every surface step.
+
+### 7.2 Explicit groundwater stability cap
+
+The outer scheduler cap is based on an explicit diffusivity estimate for the unconfined Boussinesq equation:
 
 $$
-u_x = -K_x \frac{\partial h}{\partial x}
-\qquad
-u_y = -K_y \frac{\partial h}{\partial y}
+D = \frac{K H}{S_y}
+$$
+
+$$
+\Delta t_{\mathrm{gw,stable}}
+=
+\frac{
+C_{\mathrm{gw}} \, L_{\mathrm{grid}}^2
+}{
+4 D_{\max}
+}
 $$
 
 where:
 
-- $u_x, u_y$ = groundwater velocities $[\mathrm{L}\,\mathrm{T}^{-1}]$
+- $D$ = groundwater diffusivity $[\mathrm{L}^2\,\mathrm{T}^{-1}]$
+- $C_{\mathrm{gw}}$ = groundwater Courant/safety factor $[-]$
+- $L_{\mathrm{grid}} = \min(\Delta x,\Delta y)$
+- $D_{\max}$ = maximum domain diffusivity over the active groundwater cells
 
-The stable time step is then estimated as
+This is the cap used by the current `estimate_groundwater_stable_timestep` logic.
+
+### 7.3 Inner Boussinesq substepping
+
+When a groundwater update is triggered, the scheduler converts the accumulated net exchange depth into an average recharge rate over the elapsed groundwater interval and passes it to the saturated solver. The Boussinesq solver then advances over that interval using internal predictor-corrector substeps.
+
+Those internal substeps are additionally limited by a velocity-based condition of the form
 
 $$
-\Delta t_{\max}
-=
-\min\left(
-\frac{\mathrm{Courant}\,\Delta x}{|u_x|},
-\frac{\mathrm{Courant}\,\Delta y}{|u_y|}
+\Delta t_{\mathrm{inner}}
+\le
+\min\!\left(
+\frac{C_v \Delta x}{|u_x|},\,
+\frac{C_v \Delta y}{|u_y|}
 \right)
 $$
 
 where:
 
-- $\mathrm{Courant}$ = stability factor $[-]$
-- $\Delta x, \Delta y$ = grid spacing $[\mathrm{L}]$
+- $u_x, u_y$ are Darcy groundwater velocities
+- $C_v$ is the internal velocity-based safety factor
 
-HydroPol2D then uses the minimum between the requested time step and the newly computed stable step. This ensures that the explicit Boussinesq solver remains stable even under rapidly changing groundwater gradients.
+The result is a two-level strategy:
+
+1. an outer scheduler cap based on explicit groundwater stability and allowed head change,
+2. an inner predictor-corrector substepping loop inside the Boussinesq solver.
 
 ---
 
@@ -578,13 +585,13 @@ The current solver interface includes:
 - river stage,
 - river bed elevation,
 
-which are designed to support river–aquifer exchange. In the current explicit implementation, the placeholder variable
+which are designed to support river–aquifer exchange. In the current implementation, the placeholder variable
 
 $$
 q_{\mathrm{river}}
 $$
 
-is initialized and carried through the coupling interface as the river-exchange term. This provides the structural basis for river–groundwater interaction within the HydroPol2D framework, even when the present version primarily emphasizes recharge, lateral groundwater flow, and exfiltration.
+is initialized and carried through the coupling interface as the river-exchange term. This means that the interface is present, but river-aquifer exchange should currently be described as a **placeholder/structural hook**, not a mature standalone theory claim on the same footing as recharge, lateral groundwater flow, capillary rise, or exfiltration.
 
 ---
 
@@ -597,7 +604,7 @@ S_{\mathrm{UZ,max}}^{\,\mathrm{new}}
 =
 z_{\mathrm{wt}}^{\,\mathrm{new}}
 \left(
-\theta_{\mathrm{sat}} - \theta_i
+\theta_{\mathrm{sat}} - \theta_r
 \right)
 $$
 
@@ -628,7 +635,7 @@ h_{\mathrm{surf}}^{\,\mathrm{old}}
 S_{\mathrm{excess}}
 $$
 
-This is a very important part of HydroPol2D because it guarantees **mass consistency** between the vadose and saturated zones when the water table rises during a time step.
+In the layered default implementation, the same correction is applied after recomputing the admissible summed vadose-layer capacity. This is a very important part of HydroPol2D because it guarantees **mass consistency** between the vadose and saturated zones when the water table rises during a time step.
 
 ---
 
@@ -701,13 +708,17 @@ where:
 
 This quantity is stored as a groundwater diagnostic error in HydroPol2D.
 
+When asynchronous groundwater is active, pending accumulated recharge and capillary exchange are not treated as model loss. They are stored as groundwater exchange-in-transit until the next saturated update consumes the scheduler volume. This distinction is important for interpreting whole-model water-balance diagnostics.
+
 ---
 
 ## 14. Summary
 
 The HydroPol2D groundwater model combines:
 
-- a **vadose-zone recharge module** based on a Darcy–van Genuchten–Mualem closure,
+- a **layered vadose-zone recharge module** based on a Darcy–van Genuchten–Mualem closure,
+- **simple capillary rise** from shallow groundwater into available vadose storage,
+- an **asynchronous groundwater scheduler** for slower saturated-head updates,
 - a **2D Boussinesq groundwater flow model** for lateral saturated flow,
 - **adaptive explicit time stepping**,
 - **surface exfiltration** when groundwater rises above the ground surface,

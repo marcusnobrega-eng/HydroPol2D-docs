@@ -27,6 +27,11 @@ where:
 
 The model is fully **mass conservative** and dynamically coupled to flow routing.
 
+The current Phase 1 validation focuses on the mass-based wash-off mode
+(`flag_wq_model = 0`). The validation uses SWMM-style buildup parameter scales
+for total suspended solids, but the truth source is an analytical mass-balance
+solution rather than a SWMM numerical run or a calibrated field pollutograph.
+
 ---
 
 ## 2. Pollutant storage
@@ -326,4 +331,4 @@ The HydroPol2D water quality model:
 - ensures strict mass conservation,
 - uses adaptive time stepping to maintain stability.
 
-It provides a robust and flexible framework for simulating pollutant transport coupled with hydrologic and hydrodynamic processes.
+It provides a robust and flexible framework for simulating pollutant transport coupled with hydrologic and hydrodynamic processes. Current validation evidence supports controlled buildup/washoff mass-balance behavior; site-specific pollutant prediction still requires local pollutant parameters, observations, and calibration.

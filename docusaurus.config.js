@@ -10,10 +10,6 @@ const config = {
   tagline: 'A distributed hydrologic–hydrodynamic modeling framework',
   favicon: 'img/favicon.ico',
 
-  future: {
-    v4: true,
-  },
-
   url: 'https://marcusnobrega-eng.github.io',
   baseUrl: '/HydroPol2D-docs/',
 
@@ -21,11 +17,32 @@ const config = {
   projectName: 'HydroPol2D-docs',
 
   onBrokenLinks: 'warn',
-  onBrokenMarkdownLinks: 'warn',
+  markdown: {
+    hooks: {
+      onBrokenMarkdownLinks: 'warn',
+    },
+  },
 
   i18n: {
     defaultLocale: 'en',
-    locales: ['en'],
+    locales: ['en', 'pt', 'es'],
+    localeConfigs: {
+      en: {
+        label: '🇺🇸 English',
+        htmlLang: 'en-US',
+        path: 'en',
+      },
+      pt: {
+        label: '🇧🇷 Português',
+        htmlLang: 'pt-BR',
+        path: 'pt',
+      },
+      es: {
+        label: '🇪🇸 Español',
+        htmlLang: 'es-ES',
+        path: 'es',
+      },
+    },
   },
 
   stylesheets: [
@@ -78,6 +95,11 @@ const config = {
             sidebarId: 'tutorialSidebar',
             position: 'left',
             label: 'Documentation',
+          },
+          {
+            type: 'localeDropdown',
+            position: 'right',
+            dropdownActiveClassDisabled: true,
           },
           {
             href: 'https://github.com/marcusnobrega-eng/HydroPol2D',

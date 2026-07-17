@@ -4,159 +4,68 @@ title: Mathematical Overview
 
 # Mathematical Overview
 
-HydroPol2D is a distributed, grid-based model designed to simulate the coupled dynamics of surface water flow and hydrological processes over complex terrain.
+The theory section is the main reference for HydroPol2D equations and module structure. Its purpose is to describe the implemented process formulations without mixing them with configuration details or case-study narrative.
 
-The model integrates:
+HydroPol2D couples:
 
-- surface flow routing  
-- infiltration and soil storage  
-- evapotranspiration  
-- groundwater interaction (optional)  
-- water quality transport (optional)  
+- interception, evapotranspiration, infiltration, snow, and vadose storage;
+- layered groundwater recharge, capillary rise, and lateral Boussinesq flow;
+- multiple surface-routing families;
+- water-quality transport;
+- optional human-instability diagnostics.
 
-within a unified computational framework.
+## Capability and maturity
 
----
+| Capability | Canonical theory path | Current status |
+|---|---|---|
+| Hydrologic core: interception, ET, infiltration, snow, layered vadose storage | [Hydrologic Model](./hydrologic-model) | Default + validated |
+| Groundwater recharge, async scheduler, capillary rise, Boussinesq lateral flow | [Groundwater Model](./groundwater-model) | Default + validated |
+| Local inertial routing | [Hydrodynamic Model](./hydrodynamic-model) | Default + validated |
+| Full-momentum routing | [Hydrodynamic Model](./hydrodynamic-model) | Optional + validated in controlled benchmarks |
+| Diffusive and kinematic D4 routing | [Hydrodynamic Model](./hydrodynamic-model) | Optional + validated in controlled benchmarks |
+| Cellular automata routing | [Hydrodynamic Model](./hydrodynamic-model) | Optional + validated for conservation and routing bookkeeping |
+| Human instability modes `1` and `3` | [Human Instability](./human-instability) | Optional + validated in controlled benchmarks |
+| River-aquifer exchange interface | [Groundwater Model](./groundwater-model) | Interface present, not yet a mature standalone theory claim |
 
-## Modeling Philosophy
+## Theory map
 
-HydroPol2D follows a physically-based but computationally efficient approach.
+### 1. Hydrologic processes
 
-The model:
+The hydrologic theory pages document how HydroPol2D partitions atmospheric input into canopy storage, throughfall, infiltration, evapotranspiration, snow accumulation and melt, vadose storage, recharge, and groundwater feedback.
 
-- solves depth-averaged flow equations on a structured grid  
-- represents subgrid processes through parameterization  
-- uses categorical maps linked to parameter tables  
-- allows modular activation of processes through flags  
+### 2. Groundwater coupling
 
-This design enables flexibility across a wide range of applications, from small catchments to large-scale flood simulations.
+Groundwater theory documents the current layered recharge pathway, optional capillary rise, asynchronous groundwater scheduler, exfiltration, and 2D Boussinesq lateral flow when baseflow is active.
 
----
+### 3. Surface routing
 
-## General Water Balance
+HydroPol2D currently documents five main routing families:
 
-At each grid cell, the model enforces conservation of mass through a balance between:
+- local inertial;
+- full momentum;
+- diffusive D4;
+- kinematic D4;
+- cellular automata.
 
-- incoming water (rainfall, inflow)  
-- outgoing water (flow, infiltration, evapotranspiration)  
-- storage within the cell  
+Only one major routing formulation should be active at a time. D8 remains secondary in scope.
 
-This balance governs the evolution of water depth over time.
+### 4. Human instability
 
----
+Human instability is a coupled hazard diagnostic driven by HydroPol2D depth and velocity outputs. The current implemented public theory includes mode `1` force-balance risk and mode `3` geometry-based classification.
 
-## Model Components
+### 5. Water quality
 
-The model can be conceptually divided into four interacting components:
+Water-quality theory documents constituent buildup, washoff, transport, and export within the same distributed routing framework used for water movement.
 
----
+## Numerical coupling
 
-### 1. Hydrological Processes
+At a high level, HydroPol2D advances the coupled system by:
 
-Includes:
+1. applying rainfall, inflow, and meteorological forcing;
+2. updating interception, snow, evapotranspiration, infiltration, and vadose storage;
+3. accumulating recharge and capillary exchange for groundwater;
+4. updating the active routing family;
+5. updating groundwater heads when the asynchronous scheduler is due;
+6. feeding exfiltration, saturation excess, and optional diagnostics back into the coupled state.
 
-- rainfall input  
-- infiltration into the soil  
-- soil moisture storage  
-- evapotranspiration  
-
-These processes determine how much water remains available for surface flow.
-
----
-
-### 2. Surface Flow Routing
-
-Water that is not infiltrated or lost is routed across the domain.
-
-HydroPol2D supports multiple routing approaches:
-
-- Local Inertial (default)  
-- Diffusive wave  
-- Kinematic wave  
-- Cellular Automata  
-
-The selected approach determines how flow velocities and fluxes are computed.
-
----
-
-### 3. Hydraulic Controls
-
-Localized features modify flow behavior within the domain:
-
-- internal boundary conditions (rating curves)  
-- reservoirs and storage elements  
-- inflow and stage boundaries  
-
-These introduce controlled flow and storage dynamics.
-
----
-
-### 4. Numerical Solution
-
-The model is solved using:
-
-- explicit time stepping  
-- optional adaptive time stepping  
-- stability constraints based on flow conditions  
-
-This ensures computational efficiency while maintaining numerical stability.
-
----
-
-## Coupling Between Components
-
-All processes are evaluated sequentially within each time step:
-
-1. Apply external forcing (rainfall, inflow, meteorology)  
-2. Compute infiltration and losses  
-3. Update water depth  
-4. Route flow across the domain  
-5. Apply hydraulic controls  
-6. Store outputs  
-
-This coupling ensures consistency between hydrological and hydraulic processes.
-
----
-
-## Spatial Representation
-
-The model operates on a raster grid where each cell contains:
-
-- topographic information (DEM)  
-- land surface properties (LULC)  
-- soil properties  
-- optional additional layers (LAI, albedo, DTB)  
-
-All spatial variability is handled through these inputs and associated parameter tables.
-
----
-
-## Model Flexibility
-
-HydroPol2D is controlled through:
-
-- configuration parameters  
-- flags  
-- parameter tables  
-
-This allows users to:
-
-- activate or deactivate processes  
-- switch between numerical schemes  
-- adapt the model to different environments  
-
-without modifying the core code.
-
----
-
-## Summary
-
-HydroPol2D combines hydrological and hydrodynamic processes within a flexible, grid-based framework.
-
-The model balances:
-
-- physical realism  
-- computational efficiency  
-- modular configurability  
-
-making it suitable for both research and applied engineering problems.
+This sequential structure is what connects the individual theory pages into one model.

@@ -4,121 +4,62 @@ title: Overview
 
 # Model Inputs
 
-HydroPol2D requires a combination of spatial datasets and tabular parameter files to define the simulation domain, physical properties, and boundary conditions.
+HydroPol2D uses a combination of raster inputs, spreadsheet tables, and forcing files. This page is the entry point for the file-based inputs that the current model can read.
 
-The model is designed to work with raster-based inputs and structured configuration files, enabling flexible setup across a wide range of hydrological applications.
+## Core spatial inputs
 
----
+Most runs start from three required rasters:
 
-## Required Inputs
+1. [DEM](./dem)
+2. [LULC](./lulc)
+3. [Soil](./soil)
 
-The following inputs are typically required to run a simulation:
+These define the model grid, the land-surface classes, and the base soil hydraulic properties.
 
-### 1. Digital Elevation Model (DEM)
+## Supplemental spatial inputs
 
-The DEM defines the topography of the domain and controls:
+Additional rasters are used when the selected workflow needs them:
 
-- Flow directions  
-- Surface gradients  
-- Watershed boundaries  
+- [DTB](./dtb) for soil depth or depth to bedrock;
+- [LAI](./lai) for spatial vegetation structure;
+- [Albedo](./albedo) for spatial surface-energy properties;
+- [Additional Spatial Inputs](./additional-spatial-inputs) for initial groundwater, impervious fraction, warmup states, and water-quality rasters.
 
-High-resolution DEMs are recommended to accurately represent terrain-driven flow processes.
+These inputs are optional by workflow, not experimental by default. They should be documented whenever they are active in a case study.
 
----
+## Tabular and control inputs
 
-### 2. Land Use / Land Cover (LULC)
+HydroPol2D also reads spreadsheet-based inputs:
 
-The LULC map is used to assign spatially distributed parameters such as:
+- [Parameter Tables](./parameter-tables) for LULC and soil classes;
+- `General_Data.xlsx` for flags, timing, file paths, and runtime controls;
+- forcing or boundary-condition spreadsheets for rainfall, evapotranspiration, inflow, stage, or control structures when those options are active.
 
-- Manning’s roughness coefficient  
-- Interception capacity  
-- Impervious fraction  
+## Forcing inputs
 
-Each land use class must be linked to parameter values in the input tables.
+Forcing can be prescribed through spreadsheets, raster schedules, or synthetic storm settings. The [Optional Forcing](./optional-forcing) page documents the supported pathways, including rainfall time series, rainfall rasters, evapotranspiration forcing, inflow hydrographs, stage boundaries, and synthetic design storms.
 
----
+## Practical rules
 
-### 3. Soil Properties
+Raster inputs should:
 
-Soil maps define hydraulic properties including:
+- use a projected coordinate reference system;
+- align with the DEM, or be resample-ready to that grid;
+- use consistent units;
+- cover the model domain cleanly.
 
-- Saturated hydraulic conductivity  
-- Soil water retention characteristics  
-- Infiltration capacity  
+HydroPol2D can resample and mask many optional rasters internally, but reproducible workflows still depend on clean, domain-consistent source files.
 
-These parameters control infiltration and subsurface flow dynamics.
+## Quick input map
 
----
+| Input group | Typical files |
+|---|---|
+| Core terrain and classes | `DEM_path`, `LULC_path`, `SOIL_path` |
+| Vadose / groundwater support | `DTB_path`, `GW_table_path` |
+| Surface-property refinements | `LAI_path`, `Albedo_path`, `ImperviousFraction_path` |
+| Initial states | `Warmup_Depth_path`, `Initial_Soil_Moisture_path`, `Initial_Buildup_path` |
+| Channel geometry | `RiverWidths_path`, `RiverDepths_path` |
+| Water-quality rasters | `B1_path`, `B2_path`, `W1_path`, `W2_path` |
+| Forcing and boundary files | rainfall, ETP, inflow, stage, control-structure spreadsheets or raster schedules |
 
-### 4. Parameter Tables (Excel Files)
-
-HydroPol2D uses structured Excel files to define:
-
-- Land use parameters  
-- Soil hydraulic parameters  
-- Model configuration flags  
-- Boundary conditions  
-
-These tables provide flexibility and allow users to modify model behavior without changing the source code.
-
----
-
-## Optional Inputs
-
-Depending on the simulation setup, additional inputs may be required:
-
-### Rainfall Data
-
-- Lumped rainfall time series  
-- Spatially distributed rainfall maps  
-- Satellite-based rainfall products  
-
----
-
-### Evapotranspiration (ETP)
-
-- Time series inputs  
-- Spatial raster maps  
-
----
-
-### Inflow Hydrographs
-
-Used to define boundary inflows at specific locations.
-
----
-
-### Reservoir and Dam Data
-
-Required for:
-
-- Reservoir operations  
-- Dam-break simulations  
-
----
-
-### Water Quality Inputs
-
-For pollutant transport simulations:
-
-- Initial concentrations  
-- Build-up and wash-off parameters  
-
----
-
-## Data Preparation Guidelines
-
-To ensure consistent model performance:
-
-- All rasters must share the same spatial resolution and coordinate system  
-- Missing values should be handled prior to simulation  
-- Units must be consistent across all inputs  
-- Domain boundaries should be clearly defined  
-
----
-
-## Summary
-
-HydroPol2D relies on a structured combination of spatial and tabular inputs to represent hydrological processes in a physically consistent manner.
-
-Proper preparation and validation of these inputs are critical for obtaining reliable simulation results.
+The detailed behavior of the supplemental raster and initial-state inputs is documented on [Additional Spatial Inputs](./additional-spatial-inputs).

@@ -217,32 +217,15 @@ $$
 P_{\mathrm{eff}} = P_{\mathrm{gross}}
 $$
 
-### 2.6 Subgrid rainfall correction for interception
+### 2.6 Rainfall application
 
-When subgrid and overbank options are active, the precipitation entering the interception module is scaled by the effective wet area:
-
-$$
-P_{\mathrm{int}}
-=
-\Delta P_{\mathrm{agg}}
-\,
-\frac{\Delta x^2}{C_a}
-$$
-
-where:
-
-- $P_{\mathrm{int}}$ is precipitation used by the interception module $[\mathrm{L}]$
-- $\Delta P_{\mathrm{agg}}$ is aggregated rainfall depth $[\mathrm{L}]$
-- $\Delta x$ is grid resolution $[\mathrm{L}]$
-- $C_a$ is effective wetted cell area $[\mathrm{L}^2]$
-
-Otherwise,
+For validated applications, precipitation entering the interception module is applied over the active model cell as:
 
 $$
 P_{\mathrm{int}} = \Delta P_{\mathrm{agg}}
 $$
 
-This correction ensures that interception remains consistent with the hydrologically active portion of the cell area under subgrid inundation or partial wetting conditions.
+where $\Delta P_{\mathrm{agg}}$ is the aggregated rainfall depth over the model time step.
 
 ---
 
@@ -494,6 +477,30 @@ At each time step, infiltration is controlled by three simultaneous constraints:
 
 The final infiltration rate is determined as the minimum among these competing limits.
 
+### Current layered vadose structure
+
+The current implementation represents the soil and shallow groundwater column with four conceptual zones:
+
+- a near-surface layer, with a default target thickness of $0.10\,\mathrm{m}$;
+- a root-zone layer, whose depth is assigned from land use / land cover;
+- a transmission-zone layer, which occupies any remaining vadose thickness below the root zone;
+- a groundwater zone, whose top is the current water-table depth.
+
+The layer geometry is recomputed from soil depth, land-surface elevation, and groundwater head. The fallback rules are intentionally conservative:
+
+- if the LULC root depth is shallower than the near-surface target, the explicit root-zone layer collapses and roots are represented within the near-surface layer;
+- if bedrock is shallower than the requested root depth, root depth is truncated to available soil depth;
+- if the water table is shallower than the requested root depth, vadose root storage is truncated at the water table;
+- if the water table reaches the surface, all vadose layers have zero thickness and groundwater feedback occurs through saturation/exfiltration logic.
+
+The same base soil hydraulic parameters are assigned to the near-surface, root-zone, and transmission-zone layers, while saturated hydraulic conductivity can be adjusted by layer multipliers:
+
+- `Ks_multiplier_near_surface`,
+- `Ks_multiplier_root_zone`,
+- `Ks_multiplier_transmission`.
+
+This keeps the parameterization practical: the soil table defines the base physical soil behavior, LULC defines root-zone depth, and multipliers allow vertical contrasts when data or calibration support them.
+
 ---
 
 ### 4.1 Water-table-controlled unsaturated storage
@@ -525,14 +532,14 @@ where:
 - $D_{\mathrm{soil}}$ is soil depth $[\mathrm{L}]$
 - $z_{\mathrm{wt}}$ is water-table depth below the surface $[\mathrm{L}]$
 
-The maximum storage available in the vadose zone is then defined as
+Under the current implementation, vadose storage is tracked as **active water above residual content**. The conceptual maximum storage available in the unsaturated zone is therefore
 
 $$
 S_{\mathrm{uz,max}}
 =
 z_{\mathrm{wt}}
 \left(
-\theta_{\mathrm{sat}} - \theta_{\mathrm{i}}
+\theta_{\mathrm{sat}} - \theta_{\mathrm{r}}
 \right)
 $$
 
@@ -550,10 +557,10 @@ where:
 
 - $S_{\mathrm{uz,max}}$ is maximum vadose storage $[\mathrm{L}]$
 - $S_{\mathrm{uz}}$ is current vadose storage $[\mathrm{L}]$
-- $\theta_{\mathrm{i}}$ is initial/reference water content $[-]$
+- $\theta_{\mathrm{r}}$ is residual water content $[-]$
 - $\theta_{\mathrm{sat}}$ is saturated water content $[-]$
 
-This formulation ensures that the available storage dynamically responds to groundwater fluctuations. As the water table rises, $z_{\mathrm{wt}}$ decreases and the vadose storage capacity shrinks accordingly.
+This formulation ensures that the available storage dynamically responds to groundwater fluctuations. As the water table rises, $z_{\mathrm{wt}}$ decreases and the vadose storage capacity shrinks accordingly. In the default layered implementation, this same logic is applied through the summed capacities of the near-surface, root-zone, and transmission-zone stores after truncation by the current water-table position.
 
 ---
 
@@ -591,7 +598,7 @@ where:
 - $\theta_{\mathrm{r}}$ is residual water content $[-]$
 - $S_{\mathrm{e}}$ is effective saturation $[-]$
 
-This effective saturation is used to evaluate both matric suction and hydraulic conductivity.
+This effective saturation is used to evaluate both matric suction and hydraulic conductivity. In the default layered implementation, the same constitutive form is evaluated separately for each vadose layer; the single-state expression above is the conceptual equivalent for the legacy fallback formulation.
 
 ---
 
@@ -661,12 +668,55 @@ If $\ell$ is not provided, a default value of $\ell = 0.5$ is used.
 
 ### 4.5 Darcy-based infiltration capacity
 
-The infiltration capacity represents the maximum flux that can be transmitted into the soil given the current hydraulic state. It is computed as
+The infiltration capacity represents the maximum flux that can be transmitted into the soil given the current hydraulic state. In the current code, this is not based on a single $K(\theta)$ value alone. Instead, HydroPol2D uses:
+
+- a representative bucket suction based on the current vadose storage,
+- a within-step near-surface wetting predictor,
+- and a weighted near-surface conductivity that blends saturated entry conductivity with the conductivity of the wetted top layer.
+
+The temporary wetting predictor is
+
+$$
+w_{\mathrm{wet}}
+=
+\min\!\left(
+d_{\mathrm{eff}},\,
+S_{\mathrm{uz,rem}},\,
+S_{\mathrm{top,def}}
+\right)
+$$
+
+$$
+\theta_{\mathrm{top}}
+=
+\min\!\left(
+\theta_{\mathrm{sat}},\,
+\theta + \frac{w_{\mathrm{wet}}}{L_{\mathrm{top}}}
+\right)
+$$
+
+where:
+
+- $w_{\mathrm{wet}}$ is the within-step candidate wetting depth $[\mathrm{L}]$
+- $S_{\mathrm{top,def}}$ is the remaining storage deficit of the near-surface layer $[\mathrm{L}]$
+- $\theta_{\mathrm{top}}$ is the predicted water content at the bottom of the near-surface layer $[-]$
+
+The effective entry conductivity is then evaluated as
+
+$$
+K_{\mathrm{soil}}
+=
+w_K K_{\mathrm{sat}}
++
+\left(1-w_K\right) K(\theta_{\mathrm{top}})
+$$
+
+where $w_K$ is the near-surface conductivity weight. The infiltration capacity is then computed as
 
 $$
 I_{\mathrm{cap}}
 =
-K(\theta)
+K_{\mathrm{soil}}
 \left[
 \frac{
 \min\!\left(
@@ -688,7 +738,7 @@ where:
 - $L_{\mathrm{top}}$ is near-surface resistance length (default $\approx 0.05\,\mathrm{m}$)
 - $\Delta h_{\mathrm{max}}$ is maximum driving head difference (typically $1\,\mathrm{m}$)
 
-This formulation accounts for both gravity-driven and capillary-driven infiltration.
+This formulation accounts for both gravity-driven and capillary-driven infiltration while also approximating rapid wetting at the surface boundary. The wetting predictor does **not** add water to the soil state by itself; only the accepted infiltration flux updates vadose storage.
 
 ---
 
@@ -728,7 +778,7 @@ Additional constraints are applied:
 - $i = 0$ over impervious cells  
 - $i = 0$ when $z_{\mathrm{wt}} \le 0$
 
-Thus, infiltration is simultaneously **supply-limited**, **capacity-limited**, and **storage-limited**.
+Thus, infiltration is simultaneously **supply-limited**, **capacity-limited**, and **storage-limited**. In layered mode, acceptance is additionally constrained by the explicit near-surface storage deficit before water can continue to drain downward through the deeper vadose layers.
 
 ---
 
@@ -751,8 +801,14 @@ subject to
 $$
 0 \le S_{\mathrm{uz}}^{\,\mathrm{new}} \le S_{\mathrm{uz,max}}
 $$
-where:
-- $S_{\mathrm{uz,max}}^{\,\mathrm{new}}$ is the updated maximum vadose-zone storage capacity $[\mathrm{L}]$, recomputed at the current time step based on the updated water-table position.
+
+In the default layered implementation, the accepted infiltration first fills the near-surface store and the total vadose storage is then synchronized across:
+
+- near-surface storage,
+- root-zone storage,
+- transmission-zone storage.
+
+The scalar expression above is therefore the conceptual summary of a layered update rather than the only internal representation.
 ---
 
 ## 5. Snow Accumulation, Melt, and Sublimation
@@ -763,7 +819,19 @@ When snow modeling is active, precipitation is partitioned into rainfall and sno
 
 ### 5.1 Rain–snow partitioning
 
-Precipitation is partitioned based on air temperature:
+The current implementation partitions precipitation using a linear temperature ramp between fixed thresholds of $4\,^{\circ}\mathrm{C}$ and $7\,^{\circ}\mathrm{C}$:
+
+$$
+f_{\mathrm{snow}}
+=
+\begin{cases}
+1, & T_{\mathrm{air}} \le 4 \\
+\dfrac{7 - T_{\mathrm{air}}}{7 - 4}, & 4 < T_{\mathrm{air}} < 7 \\
+0, & T_{\mathrm{air}} \ge 7
+\end{cases}
+$$
+
+The snowfall and rainfall partitions are then
 
 $$
 P_{\mathrm{snow}} = P_{\mathrm{gross}} f_{\mathrm{snow}}
@@ -773,7 +841,7 @@ $$
 P_{\mathrm{rain}} = P_{\mathrm{gross}} - P_{\mathrm{snow}}
 $$
 
-where $f_{\mathrm{snow}}$ is a temperature-dependent snow fraction $[-]$.
+where $f_{\mathrm{snow}}$ is the temperature-dependent snow fraction $[-]$.
 
 ---
 
@@ -802,11 +870,13 @@ where:
 
 ### 5.3 Snowmelt
 
-Snowmelt is computed as
+Snowmelt is computed as a degree-day plus radiative-energy term:
 
 $$
 M_{\mathrm{snow}}
 =
+\min\!\left(
+\mathrm{SWE}_t,\,
 \max
 \left(
 \mathrm{DDF}\,T_{\mathrm{air}}
@@ -814,19 +884,14 @@ M_{\mathrm{snow}}
 \frac{(1-\alpha_{\mathrm{snow}})\,Q_{\mathrm{net}}}{334},
 0
 \right)
-$$
-
-subject to
-
-$$
-M_{\mathrm{snow}} \le \mathrm{SWE}_t
+\right)
 $$
 
 where:
 
 - $\mathrm{DDF}$ is degree-day factor $[\mathrm{L}\,\Theta^{-1}\,\mathrm{T}^{-1}]$
 - $\alpha_{\mathrm{snow}}$ is snow albedo $[-]$ that can be either assumed as constant or entered as spatial input in the `General_Data.xlsx`.
-- $Q_{\mathrm{net}}$ is net energy flux available for snowmelt $[\mathrm{E}\,\mathrm{L}^{-2}\,\mathrm{T}^{-1}]$, representing the combined radiative and turbulent energy exchanges at the snow surface.
+- $Q_{\mathrm{net}}$ is the net shortwave-radiation term used by the current routine $[\mathrm{E}\,\mathrm{L}^{-2}\,\mathrm{T}^{-1}]$
 
 The current snow parameters must be edited in the function `HydroPol2D_Preprocessing.m`.
 
@@ -865,7 +930,15 @@ $$
 ### 5.5 Sublimation
 
 $$
-E_{\mathrm{s}} = C_e\,u\,(q_s - q_a)\,\mathrm{SWE}
+E_{\mathrm{s}}
+=
+\min\!\left(
+\mathrm{SWE}_t,\,
+\max\!\left(
+C_e\,u\,(q_s - q_a)\,\mathrm{SWE}_t,\,
+0
+\right)
+\right)
 $$
 
 where:
@@ -874,6 +947,8 @@ where:
 - $u$ is wind speed $[\mathrm{L}\,\mathrm{T}^{-1}]$, taken as the wind speed at $2\,\mathrm{m}$ height.
 - $q_s$ is saturation specific humidity at the snow surface $[-]$
 - $q_a$ is ambient air specific humidity $[-]$
+
+In the current implementation, $q_a$ is estimated internally from the available temperature fields rather than read as a fully independent humidity forcing, and the sublimation flux is clipped to remain nonnegative and not exceed the available snow water equivalent.
 ---
 
 ### 5.6 Surface-water update under snow conditions
@@ -895,90 +970,108 @@ where:
 
 ## 6. Vadose Storage, Recharge, and Groundwater Feedback
 
-### 6.1 Recharge
+### 6.1 Default layered vadose structure
 
-Recharge is computed dynamically using Darcy's law assuming a representative flow width to reach the aquifer free surface
+The current default formulation is a **layered vadose system**, not a single recharge bucket. Water is tracked in:
+
+- a near-surface layer,
+- a root-zone layer,
+- a transmission layer,
+- and a groundwater-coupling interface below the transmission layer.
+
+For a generic vadose layer $\ell$ with active storage $S_{\ell}$ and thickness $z_{\ell}$,
 
 $$
-R_{\mathrm{gw}}
+\theta_{\ell}
 =
-K(\theta)
-\left(
-1 + \frac{\psi_{\mathrm{m}}}{L_{\mathrm{gw}}}
-\right)
-$$
-
-with
-
-$$
-L_{\mathrm{gw}} = 0.5\,z_{\mathrm{wt}}
-$$
-
-Therefore, the current version considers half of the depth to the aquifer distance as the representative distance to compute the recharge.
-
----
-
-### 6.2 Storage evolution
-By simply computing a reservoir mass balance with a forward explicit Euler numerical scheme, one can obtain:
-$$
-S_{\mathrm{uz},t+1}
-=
-S_{\mathrm{uz},t}
+\theta_{\mathrm{r},\ell}
 +
-\Delta t
-\left(
-i - R_{\mathrm{gw}}
-\right)
+\frac{S_{\ell}}{z_{\ell}}
 $$
 
-where $\Delta t$ is in seconds.
+$$
+S_{e,\ell}
+=
+\frac{
+\theta_{\ell} - \theta_{\mathrm{r},\ell}
+}{
+\theta_{\mathrm{sat},\ell} - \theta_{\mathrm{r},\ell}
+}
+$$
 
----
+$$
+K_{\ell}
+=
+K_{\mathrm{sat},\ell} K_r(S_{e,\ell})
+$$
 
-### 6.3 Mass-consistent recharge
+The resulting unsaturated conductivity governs downward drainage from one layer to the next over the current time step, subject to the available storage capacity in the receiving layer.
+
+### 6.2 Downward drainage and recharge
+
+In the default pathway:
+
+1. near-surface drainage moves first to the root zone when root storage exists,
+2. root-zone drainage moves to the transmission zone when transmission storage exists,
+3. transmission-zone drainage becomes recharge to groundwater.
+
+Conceptually, the groundwater recharge over a time step can be summarized as
 
 $$
 R_{\mathrm{gw}}
 =
-i
--
-\frac{
-S_{\mathrm{uz},t+1} - S_{\mathrm{uz},t}
-}{\Delta t}
+\frac{\Delta S_{\mathrm{trans}\rightarrow\mathrm{gw}}}{\Delta t}
 $$
 
----
+with optional direct drainage from higher layers only where the lower vadose layers are absent. This layered cascade is the canonical HydroPol2D recharge story. The older single-bucket Darcy closure remains available only as a fallback formulation and should not be treated as the default theory path.
 
-### 6.4 Saturation excess
+### 6.3 Optional capillary rise and asynchronous groundwater coupling
+
+When `flag_capillary_rise = 1`, shallow groundwater can return water upward into available vadose storage. The implemented capillary-rise logic increases with:
+
+- shallower water-table depth,
+- larger storage deficit in the receiving layer,
+- and larger layer conductivity.
+
+The net vadose-groundwater exchange accumulated by the groundwater scheduler is therefore
+
+$$
+R_{\mathrm{net}} = R_{\mathrm{down}} - C_{\mathrm{up}}
+$$
+
+where:
+
+- $R_{\mathrm{down}}$ is total downward recharge from layered drainage
+- $C_{\mathrm{up}}$ is upward capillary-rise exchange
+
+This net exchange is accumulated every surface-water step, while the saturated groundwater heads can be updated on a slower asynchronous schedule.
+
+### 6.4 Saturation excess and groundwater exfiltration
+
+After the groundwater update, HydroPol2D recomputes the vadose capacity using the updated water-table position. Any water that no longer fits in the unsaturated zone is returned to the surface as saturation excess:
 
 $$
 S_{\mathrm{excess}}
 =
-\max
-\left(
+\max\!\left(
 S_{\mathrm{uz}} - S_{\mathrm{uz,max}}^{\,\mathrm{new}},
 0
 \right)
 $$
 
----
-
-### 6.5 Groundwater exfiltration
+Groundwater head that rises above the local surface also generates exfiltration:
 
 $$
 q_{\mathrm{exf}}
 =
-\max
-\left(
+\max\!\left(
 0,\,
 h_{\mathrm{gw}} - z_{\mathrm{surf}}
 \right)
 \frac{S_y}{\Delta t}
 $$
 
-where:
-
-- $S_y$ is specific yield $[-]$
+where $S_y$ is specific yield. The full canonical groundwater formulation, including the asynchronous scheduler and Boussinesq lateral flow solver, is documented on the [Groundwater Model](./groundwater-model) page.
 
 ---
 
@@ -988,9 +1081,9 @@ The hydrologic model in HydroPol2D integrates:
 
 - canopy interception,
 - Penman–Monteith evapotranspiration,
-- Darcy-based infiltration,
+- Darcy-based infiltration with weighted near-surface conductivity,
 - snow accumulation and melt,
-- vadose storage and groundwater coupling,
+- layered vadose storage and groundwater coupling,
 
 into a unified, mass-consistent framework that resolves vertical water fluxes at the grid-cell scale and provides the hydrologic forcing for the hydrodynamic model.
 

@@ -153,29 +153,6 @@ However, users should still ensure that:
 
 ---
 
-## Subgrid Modeling (Advanced)
-
-HydroPol2D supports a **subgrid parameterization approach**.
-
-In this case, users can provide:
-
-- A **high-resolution DEM** (fine grid)  
-- A **coarser computational grid** (model resolution)  
-
-The model then:
-
-- Derives hydraulic properties at the coarse scale  
-- Estimates subgrid variability (e.g., storage, wetted area, conveyance)  
-- Improves representation of small-scale terrain features  
-
-This approach is particularly useful when:
-
-- High-resolution topography is available  
-- Computational efficiency is required  
-- Fine-scale hydraulics influence large-scale behavior  
-
----
-
 ## Preprocessing Recommendations
 
 Before using a DEM, users should:
