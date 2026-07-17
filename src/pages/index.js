@@ -67,12 +67,12 @@ export default function Home() {
   const currentLocale = i18n.currentLocale;
   const siteBaseUrl = siteConfig.baseUrl;
   const logoUrl = useBaseUrl('/img/logo.svg');
-  const docsUrl = useBaseUrl('/docs/getting-started/overview');
-  const validationUrl = useBaseUrl('/docs/validation/overview');
+  const docsUrl = useBaseUrl('/manual/getting-started/overview');
+  const validationUrl = useBaseUrl('/manual/validation/overview');
   const languageOptions = [
-    {code: 'en', label: 'English', flag: '🇺🇸', to: `${siteBaseUrl}docs/getting-started/overview`},
-    {code: 'pt', label: 'Português', flag: '🇧🇷', to: `${siteBaseUrl}pt/docs/getting-started/overview`},
-    {code: 'es', label: 'Español', flag: '🇪🇸', to: `${siteBaseUrl}es/docs/getting-started/overview`},
+    {code: 'en', label: 'English', flag: '🇺🇸', to: `${siteBaseUrl}manual/getting-started/overview`},
+    {code: 'pt', label: 'Português', flag: '🇧🇷', to: `${siteBaseUrl}pt/manual/getting-started/overview`},
+    {code: 'es', label: 'Español', flag: '🇪🇸', to: `${siteBaseUrl}es/manual/getting-started/overview`},
   ];
   const content = {
     en: {

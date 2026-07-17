@@ -61,6 +61,7 @@ const config = {
       'classic',
       ({
         docs: {
+          routeBasePath: 'manual',
           sidebarPath: './sidebars.js',
           remarkPlugins: [remarkMath],
           rehypePlugins: [rehypeKatex],
