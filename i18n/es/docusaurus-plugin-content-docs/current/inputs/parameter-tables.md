@@ -7,6 +7,7 @@ title: Tablas de parámetros
 HydroPol2D utiliza tablas de parámetros para asignar propiedades físicas a entradas ráster categóricas.
 Los mapas categóricos como LULC y Soil no se utilizan directamente en las ecuaciones rectoras. En cambio, cada clase actúa como un índice en una tabla de parámetros, donde se definen los parámetros físicos correspondientes.
 Esta estructura separa la información espacial de la definición de parámetros y hace que el modelo sea más fácil de calibrar, adaptar e interpretar.
+
 ---
 
 ## Estructura General
@@ -21,6 +22,7 @@ En tiempo de ejecución, HydroPol2D:
 3. asigna los parámetros correspondientes de la tabla.
 
 Para las clases asignadas, los valores ráster y los índices de tabla deben coincidir. Cuando un código válido de LULC, suelo o nieve no aparece en la tabla, HydroPol2D aplica el promedio ponderado por área de las propiedades de las clases asignadas y registra la decisión en `Input_Class_Code_Audit.csv`. Los índices duplicados, no numéricos o una tabla sin clases asignadas siguen siendo errores de entrada.
+
 ---
 
 ## Tabla de parámetros LULC
@@ -54,6 +56,7 @@ La tabla LULC define las propiedades relacionadas con la superficie que controla
 
 Los valores mostrados arriba corresponden a la tabla de parámetros HydroPol2D actual y deben revisarse según sea necesario para el esquema de clasificación adoptado y el área de estudio.
 En la implementación actual, `root_depth_m` es la forma admitida de proporcionar información de profundidad de raíz al modelo. No existe una ruta ráster de profundidad de raíz separada; La profundidad de la raíz se asigna por clase LULC y luego se asigna a la cuadrícula a través del ráster categórico LULC.
+
 ---
 
 ## Tabla de parámetros del suelo
@@ -61,7 +64,7 @@ En la implementación actual, `root_depth_m` es la forma admitida de proporciona
 La tabla de suelos define las propiedades hidráulicas básicas utilizadas para estimar la infiltración, el almacenamiento vadoso en capas, la recarga y el comportamiento del agua subterránea.
 ### Estructura de ejemplo
 
-| Tipo de suelo | Índice | $K_{\mathrm{sat}}$<br />$(\mathrm{mm\,h^{-1}})$ | $n$ | $\alpha$<br />$(\mathrm{m^{-1}})$ | $\theta_{\mathrm{sat}}$ | $\theta_{\mathrm{r}}$ | $\theta_{\mathrm{i}}$ | $S_{\mathrm{y}}$ | $K_{\mathrm{g,sat}}$<br />$(\mathrm{mm\,h^{-1}})$ | $\mathrm{PHTOKEN0XYZ}$<br />$(\mathrm{m})$ | $K_s$ cerca | $K_s$ raíz | $K_s$ transmisión |
+| Tipo de suelo | Índice | $K_{\mathrm{sat}}$<br />$(\mathrm{mm\,h^{-1}})$ | $n$ | $\alpha$<br />$(\mathrm{m^{-1}})$ | $\theta_{\mathrm{sat}}$ | $\theta_{\mathrm{r}}$ | $\theta_{\mathrm{i}}$ | $S_{\mathrm{y}}$ | $K_{\mathrm{g,sat}}$<br />$(\mathrm{mm\,h^{-1}})$ | $\mathrm{DTB}$<br />$(\mathrm{m})$ | $K_s$ cerca | $K_s$ raíz | $K_s$ transmisión |
 |:---------:|:-----:|:-----------------------------------------------:|:---:|:----------------------------------:|:----------------------:|:--------------------:|:--------------------:|:---------------:|:---------------------------------------------------:|:--------------------------------:|:------------:|:----------:|:--------------------:|
 | Arcilla | 1 | 0.3 | 1.09 | 0,8 | 0.385 | 0.068 | 0.0997 | 0,03 | 6 | 1 | 1 | 1 | 1 |
 | Arcilla limosa | 2 | 0,5 | 1.23 | 1.0 | 0.423 | 0,089 | 0,1224 | 0,04 | 10 | 1 | 1 | 1 | 1 |
@@ -88,7 +91,7 @@ La tabla de suelos define las propiedades hidráulicas básicas utilizadas para 
 - $\theta_{\mathrm{i}}$: humedad inicial del suelo
 - $S_{\mathrm{y}}$: rendimiento específico
 - $K_{\mathrm{g,sat}}$: conductividad saturada asociada con la parametrización del subsuelo o agua subterránea
-- $\mathrm{PHTOKEN0XYZ}$: profundidad al lecho de roca o profundidad de almacenamiento efectiva
+- $\mathrm{DTB}$: profundidad al lecho de roca o profundidad de almacenamiento efectiva
 - `Ks_multiplier_near_surface`: multiplicador aplicado a la base $K_{\mathrm{sat}}$ en la capa cercana a la superficie
 - `Ks_multiplier_root_zone`: multiplicador aplicado a la base $K_{\mathrm{sat}}$ en la capa de la zona raíz
 - `Ks_multiplier_transmission`: multiplicador aplicado a la base $K_{\mathrm{sat}}$ en la capa de transmisión
@@ -96,6 +99,7 @@ La tabla de suelos define las propiedades hidráulicas básicas utilizadas para 
 La clase categórica de suelo define las propiedades hidráulicas básicas de la columna. La implementación en capas asigna esas propiedades a las capas cercanas a la superficie, zona de raíz y zona de transmisión, luego aplica multiplicadores de conductividad opcionales donde se proporcionan.
 LULC controla la profundidad de la zona de la raíz. La profundidad del lecho rocoso y la posición actual del nivel freático limitan los espesores de las capas finales, por lo que las geometrías de las capas físicamente imposibles colapsan o truncan en lugar de producir un almacenamiento negativo.
 Los valores mostrados arriba corresponden a la tabla actual de parámetros del suelo HydroPol2D y deben revisarse según sea necesario para el escenario de simulación y clasificación del suelo adoptado.
+
 ---
 
 ## DTB Asignación a través de la Tabla de Suelos
@@ -120,6 +124,7 @@ Deben cumplirse las siguientes condiciones:
 - Las unidades deben ser consistentes con la formulación del modelo.
 
 Cualquier inconsistencia entre las clases de ráster y las tablas de parámetros dará lugar a una asignación incorrecta de propiedades físicas.
+
 ---
 
 ## Uso práctico
@@ -131,6 +136,7 @@ Las tablas de parámetros son el principal mecanismo utilizado para:
 - probar supuestos físicos alternativos sin modificar el código.
 
 En HydroPol2D, la mayoría de las modificaciones prácticas al comportamiento del modelo se realizan editando estas tablas.
+
 ---
 
 ## Condiciones de límites internos (estructuras de control)
@@ -151,6 +157,7 @@ Esto permite que el modelo represente controles hidráulicos localizados como:
 Cada condición de límite interno está vinculada a una celda de control definida por sus coordenadas espaciales. La descarga a través de ese control se calcula a partir de la profundidad del agua local utilizando una formulación de curva de clasificación.
 En la implementación actual de HydroPol2D, la hoja de cálculo de la estructura de control define dos ramas de la curva de calificación, cada una con su propio coeficiente y parámetros de umbral. Esto permite representar el comportamiento hidráulico por partes bajo diferentes profundidades de flujo o condiciones de funcionamiento.
 La descarga resultante se impone en la ubicación de control correspondiente y, por lo tanto, modifica la dinámica del flujo local dentro del solucionador numérico.
+
 ---
 
 ### Función en el modelo
@@ -176,6 +183,7 @@ En celdas donde se define una condición de contorno interna:
 - el flujo resultante se impone en la actualización hidráulica
 
 Esto significa que el solucionador inercial local es modificado localmente por el comportamiento de la estructura de control. La descarga se prescribe a partir de la relación de calificación en lugar de obtenerse exclusivamente del cálculo de flujo estándar basado en caras.
+
 ---
 
 ### Estructura de la tabla de entrada
@@ -200,6 +208,7 @@ Las condiciones de contorno internas se definen mediante una hoja de cálculo de
 | $y_{\mathrm{d},2}$ | $\mathrm{m}$ | Coordenada norte del segundo punto de control de descarga |
 
 *Tabla 3. Tabla de parámetros de condiciones de contorno interno HydroPol2D. Estos parámetros definen el comportamiento de la curva de clasificación utilizado para convertir la profundidad en descarga.*
+
 ---
 
 ### Valores de ejemplo
@@ -210,6 +219,7 @@ Las condiciones de contorno internas se definen mediante una hoja de cálculo de
 | 2 | -5166922.84 | -2704154.64 | 16.0 | 0.0 | 1.5 | -5166922.84 | -2704174.64 | 0.538951413 | 0.1 | 0,5 | -5166922.84 | -2704174.64 |
 
 *Tabla 4. Ejemplo de parámetros de condición de contorno internos utilizados actualmente en HydroPol2D.*
+
 ---
 
 ### Interpretación
@@ -226,6 +236,7 @@ dónde:
 
 Las coordenadas $\left(x_{\mathrm{d},1}, y_{\mathrm{d},1}\right)$ y $\left(x_{\mathrm{d},2}, y_{\mathrm{d},2}\right)$ definen las ubicaciones en las que se aplica o evalúa el control de descarga.
 Esta estructura permite representar una relación de descarga simple por partes utilizando dos ramas parametrizadas.
+
 ---
 
 ### Significado práctico de los parámetros
@@ -236,6 +247,7 @@ Esta estructura permite representar una relación de descarga simple por partes 
 - $x_{\mathrm{d},1}, y_{\mathrm{d},1}, x_{\mathrm{d},2}, y_{\mathrm{d},2}$ definen dónde se vincula espacialmente la descarga controlada
 
 Juntos, estos parámetros definen cómo la estructura interna convierte la profundidad del agua en flujo.
+
 ---
 
 ### Consideraciones prácticas
@@ -257,6 +269,7 @@ Están acostumbrados a:
 - Modificar la dinámica inercial local en células específicas.
 
 Su parametrización correcta es esencial para una simulación estable y físicamente significativa de sistemas hidráulicos diseñados.
+
 ---
 
 ## Tabla de parámetros de nieve
@@ -289,6 +302,7 @@ HydroPol2D separa:
 - **tablas de parámetros**, que definen cómo se comporta cada clase.
 
 Esto hace que el modelo sea más fácil de mantener, calibrar y aplicar en diferentes dominios.
+
 ---
 
 ## Resumen

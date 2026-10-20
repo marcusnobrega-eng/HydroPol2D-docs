@@ -12,6 +12,7 @@ HydroPol2D inclui um módulo de instabilidade humana implementado que usa profun
 | `3` | Implementado | Classificador de instabilidade baseado em geometria com limites de deslizamento, tombamento e afogamento/desenho. |
 
 O status de validação atual para esses modos é rastreado no [estado da validação](../validation/validation-status).
+
 ---
 
 ## 1. Entradas e Acoplamento
@@ -23,6 +24,7 @@ O módulo de instabilidade humana lê o estado hidrodinâmico de HydroPol2D:
 - e parâmetros de geometria e resistência humanos fornecidos pelo usuário.
 
 Isso significa que as estimativas de instabilidade são produtos de diagnóstico da simulação hidrológica-hidrodinâmica acoplada, em vez de um solucionador hidráulico independente.
+
 ---
 
 ## 2. Modo 1: Razão de Risco de Equilíbrio de Forças
@@ -56,7 +58,7 @@ F_{\mathrm{fric}}
 \mu \max\!\left(
 F_{\mathrm{person}} - F_{\mathrm{buoy}},
 0
-\certo)
+\right)
 $$
 onde $\mu$ é o coeficiente de atrito efetivo de contato com o solo.
 ### 2.3 Força hidrodinâmica
@@ -65,10 +67,10 @@ A carga hidrodinâmica é representada como
 $$
 F_{\mathrm{hyd}}
 =
-\max\!\esquerda(
+\max\!\left(
 \frac{1}{2} C_d \rho_{\mathrm{w}} w_1 h v^2,
 0
-\certo)
+\right)
 $$
 onde:
 - $C_d$ é coeficiente de arrasto
@@ -88,6 +90,7 @@ para estados suportados onde $F_{\mathrm{fric}} > 0$. Na implementação atual:
 - e um mapa de risco máximo em execução pode ser acumulado durante a simulação.
 
 O modo `1`, portanto, retorna um indicador de perigo contínuo em vez de um modo de falha categórico.
+
 ---
 
 ## 3. Modo 3: Classificador de Instabilidade Baseado em Geometria
@@ -122,7 +125,7 @@ onde:
 
 A resistência ao atrito disponível é aproximada como
 $$
-T = \mu \esquerda(W_n - B_n - L\direita)
+T = \mu \left(W_n - B_n - L\right)
 $$
 onde $L$ é a contribuição hidrodinâmica semelhante à sustentação. O deslizamento é classificado quando a força motriz excede o atrito disponível:
 $$
@@ -150,6 +153,7 @@ $$
 \text{risk class} = \max(\text{slide},\text{topple},\text{drowning/drawing})
 $$
 Isso produz um raster de instabilidade categórica em vez da proporção contínua retornada pelo modo `1`.
+
 ---
 
 ## 4. Escopo e Notas de Documentação

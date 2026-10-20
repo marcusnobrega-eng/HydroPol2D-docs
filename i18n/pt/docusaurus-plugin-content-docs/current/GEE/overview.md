@@ -6,6 +6,7 @@ title: Mapas de entrada HydroPol2D
 
 HydroPol2D inclui um script Google Earth Engine (GEE) para gerar os conjuntos de dados espaciais necessários para definir um domínio de modelagem hidrológica.
 O fluxo de trabalho extrai, processa e exporta diversas variáveis ​​ambientais de conjuntos de dados geoespaciais hospedados na nuvem, produzindo um conjunto consistente de entradas raster e tabelas de resumo para uma captação ou grupo de captação selecionado.
+
 ---
 
 ## Acessando Google Earth Engine
@@ -17,6 +18,7 @@ Vá para:
 https://earthengine.google.com/
 Clique em **"Cadastre-se"** e cadastre-se usando uma conta Google.
 A aprovação normalmente é automática para uso acadêmico ou de pesquisa, mas pode levar algum tempo dependendo da solicitação.
+
 ---
 
 ### 2. Abra o Editor de Código
@@ -24,12 +26,14 @@ A aprovação normalmente é automática para uso acadêmico ou de pesquisa, mas
 Assim que o acesso for concedido, abra o Editor de Código GEE:
 https://code.earthengine.google.com/
 Este é o ambiente onde o script é executado.
+
 ---
 
 ### 3. Adicione o script HydroPol2D
 
 Copie o código JavaScript fornecido no Editor de Código e execute-o diretamente no navegador.
 O script usa a API Earth Engine para acessar conjuntos de dados, realizar operações espaciais e exportar resultados para o Google Drive.
+
 ---
 
 ## O que o fluxo de trabalho faz
@@ -62,6 +66,7 @@ O script também gera:
 - Uma tabela de resumo por bacia hidrográfica (CSV)
 
 Estes resultados fornecem metadados e estatísticas agregadas para a área de estudo.
+
 ---
 
 ## Estrutura geral do fluxo de trabalho
@@ -79,12 +84,14 @@ O usuário especifica:
 - Ano para dados populacionais
 
 Esses parâmetros controlam a definição do domínio e o processamento do conjunto de dados.
+
 ---
 
 ### 2. Seleção e fusão de bacias hidrográficas
 
 O script carrega polígonos HydroBASINS e os filtra usando os valores `HYBAS_ID` selecionados.
 As bacias hidrográficas selecionadas são mescladas em uma única geometria, que define o domínio de modelagem.
+
 ---
 
 ### 3. Construção de domínio
@@ -108,6 +115,7 @@ O script acessa vários conjuntos de dados disponíveis em Google Earth Engine, 
 - Camada Global de Assentamento Humano para superfícies construídas
 
 Para conjuntos de dados dependentes do tempo (por exemplo, albedo e LAI), o script calcula valores medianos no intervalo de tempo selecionado.
+
 ---
 
 ### 5. Exportação de camadas raster
@@ -131,6 +139,7 @@ O script calcula métricas em nível de domínio, como:
 - Fração média de superfície construída
 
 Uma segunda tabela é gerada com as mesmas métricas calculadas individualmente para cada bacia hidrográfica.
+
 ---
 
 ## Estrutura de saída
@@ -142,6 +151,7 @@ Todas as saídas são salvas na pasta especificada do Google Drive e incluem:
 - Tabela de resumo por bacia hidrográfica (CSV)
 
 Esses arquivos podem ser usados ​​diretamente como entradas para HydroPol2D ou posteriormente processados ​​em GIS ou ambientes de modelagem.
+
 ---
 
 ## Parâmetros principais explicados
@@ -155,6 +165,7 @@ HydroBASINS fornece limites de bacias hidrográficas em diferentes níveis hier�
 - **Nível 10-12**: Pequenas bacias hidrográficas de cabeceira
 
 **Como escolher**: Níveis mais altos = bacias hidrográficas menores e mais detalhadas. Para a maioria das aplicações, os níveis 6 a 8 proporcionam um bom equilíbrio.
+
 ---
 
 ### Encontrando Valores HYBAS_ID
@@ -177,6 +188,7 @@ Para identificar os valores `HYBAS_ID` para sua área de estudo:
 - Use o [visualizador HydroSHEDS](https://www.hydrosheds.org/hydroatlas)
 
 **Exemplo**: Para um estudo no norte da Califórnia, você pode selecionar diversas bacias hidrográficas de nível 7 que drenam para o rio Sacramento.
+
 ---
 
 ### Escolhendo Sistemas de Referência de Coordenadas (CRS)
@@ -191,6 +203,7 @@ Selecione um CRS apropriado para sua região de estudo:
 | Europa | ETRS89 LAEA | `EPSG:3035` | Área igual |
 
 **Por que é importante**: Usar uma projeção local minimiza distorções de área/distância e garante cálculos hidrológicos precisos.
+
 ---
 
 ### Configurando a escala de exportação
@@ -202,6 +215,7 @@ O parâmetro `scale_of_image` controla a resolução de saída:
 - **1000m**: Resolução grosseira para análise em escala continental
 
 **Recomendação**: corresponda ou exceda ligeiramente a resolução da grade computacional do seu modelo.
+
 ---
 
 ### Intervalos de datas para dados que variam no tempo
@@ -281,12 +295,12 @@ Todos os arquivos GeoTIFF compartilham:- **Valor sem dados**: `-9999`
 - **Resolução**: conforme especificado por `scale_of_image`
 - **Extensão**: Recortado ao limite da união de captação
 
-**Nomeação de arquivo**:- `PHTOKEN0XYZ.tif` – Elevação em metros
-- `PHTOKEN0XYZ.tif` – Códigos de classe de uso do solo (10-100)
+**Nomeação de arquivo**:- `DEM.tif` – Elevação em metros
+- `LULC.tif` – Códigos de classe de uso do solo (10-100)
 - `SOIL.tif` – Códigos de classe de textura do solo (1-12)
-- `PHTOKEN0XYZ.tif` – Profundidade até o leito rochoso em metros
+- `DTB.tif` – Profundidade até o leito rochoso em metros
 - `Albedo.tif` – Albedo de superfície (0-1, sem unidade)
-- `PHTOKEN0XYZ.tif` – Índice de área foliar (m²/m²)
+- `LAI.tif` – Índice de área foliar (m²/m²)
 - `WorldPop.tif` – Densidade populacional (pessoas/pixel)
 
 ---
@@ -316,12 +330,12 @@ Resumo de linha única de todo o domínio de modelagem:
 | `catchment_area_km2` | Área total do domínio | km² |
 | `population_in_domain` | População total | pessoas |
 | `mean_built_surface_percent` | Superfície construída média | % |
-| `dominant_PHTOKEN0XYZ` | Classe de uso da terra mais comum | código |
+| `dominant_LULC` | Classe de uso da terra mais comum | código |
 | `dominant_SOIL` | Classe de solo mais comum | código |
 | `avg_albedo` | Albedo médio da superfície | 0-1 |
 | `mean_elevation_m` | Elevação média | eu |
-| `mean_PHTOKEN0XYZ_m` | Profundidade média até o leito rochoso | eu |
-| `mean_PHTOKEN0XYZ` | Índice médio de área foliar | m²/m² |
+| `mean_DTB_m` | Profundidade média até o leito rochoso | eu |
+| `mean_LAI` | Índice médio de área foliar | m²/m² |
 | `worldpop_year` | Ano de dados do WorldPop | ano |
 | `export_scale_m` | Resolução de exportação | eu |
 | `crs` | Sistema de coordenadas | Código EPSG |
@@ -342,14 +356,15 @@ Estatísticas por bacia hidrográfica com uma linha por sub-bacia hidrográfica:
 | `catchment_area_km2` | Área calculada | km² |
 | `population` | População total | pessoas |
 | `mean_built_surface_percent` | Superfície construída | % |
-| `dominant_PHTOKEN0XYZ` | Uso dominante da terra | código |
+| `dominant_LULC` | Uso dominante da terra | código |
 | `dominant_SOIL` | Classe de solo dominante | código |
 | `avg_albedo` | Albedo médio | 0-1 |
 | `mean_elevation_m` | Elevação média | eu |
-| `mean_PHTOKEN0XYZ_m` | Profundidade média até o leito rochoso | eu |
-| `mean_PHTOKEN0XYZ` | Média LAI | m²/m² |
+| `mean_DTB_m` | Profundidade média até o leito rochoso | eu |
+| `mean_LAI` | Média LAI | m²/m² |
 
 **Caso de uso**: Compare características da sub-bacia, identifique padrões espaciais, valide dados do modelo.
+
 ---
 
 ## Solução de problemas

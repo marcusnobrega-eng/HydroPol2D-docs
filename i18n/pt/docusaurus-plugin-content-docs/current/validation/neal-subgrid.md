@@ -18,7 +18,7 @@ A simulação em grade fina é uma referência numérica. Ela permite avaliar se
 
 ## Canal simples com escoamento dentro das margens
 
-O primeiro caso isola o escoamento em um canal mais estreito que as células grosseiras. O trecho tem canal com `10 m` de largura e `1 m` de profundidade, declividade de fundo de `0,001` e coeficiente de Manning $n=0,035$. A referência explícita usa células de `10 m`. As simulações comum e Neal (2012) usam células de `30 m`.
+O primeiro caso isola o escoamento em um canal mais estreito que as células grosseiras. O trecho tem canal com `10 m` de largura e `1 m` de profundidade, declividade de fundo de `0,001` e coeficiente de Manning $n=0.035$. A referência explícita usa células de `10 m`. As simulações comum e Neal (2012) usam células de `30 m`.
 
 Uma vazão constante de $5\ \mathrm{m^3\,s^{-1}}$ é aplicada a um trecho inicialmente seco com 30 células. Como a vazão permanece abaixo da capacidade do canal, o teste avalia o armazenamento no canal, a propagação da onda e o nível da água sem escoamento na planície.
 
@@ -35,7 +35,7 @@ A grade grosseira comum considera que toda a largura de `30 m` contém água em 
 
 ## Canal composto
 
-O segundo caso usa um trecho de `990 m` com canal de `10 m` de largura e `1 m` de profundidade e planícies laterais de `90 m` em cada lado. A declividade longitudinal é `0,005`, e o coeficiente de Manning é $n=0,035$ em toda a seção. A referência explícita usa células de `10 m`; as duas simulações grosseiras usam células de `30 m`.
+O segundo caso usa um trecho de `990 m` com canal de `10 m` de largura e `1 m` de profundidade e planícies laterais de `90 m` em cada lado. A declividade longitudinal é `0,005`, e o coeficiente de Manning é $n=0.035$ em toda a seção. A referência explícita usa células de `10 m`; as duas simulações grosseiras usam células de `30 m`.
 
 O teste permanente aplica $100\ \mathrm{m^3\,s^{-1}}$. O teste transiente aplica um hidrograma de Nash com pico de $100\ \mathrm{m^3\,s^{-1}}$ em `30 min`.
 
@@ -56,11 +56,11 @@ A simulação de Neal (2012) reduz os erros de vazão e armazenamento para as du
 
 O terceiro caso avalia a transição entre o canal e a planície de inundação. O trecho de `1 km` tem `300 m` de largura e declividade longitudinal de `0,005`. A seção transversal contém:
 
-- um canal de `50 m` com coeficiente de Manning $n=0,035$;
+- um canal de `50 m` com coeficiente de Manning $n=0.035$;
 - duas bancadas de `25 m`, situadas `0,5 m` acima do leito do canal;
-- uma planície externa situada `1,0 m` acima do leito, com coeficiente de Manning $n=0,10$.
+- uma planície externa situada `1,0 m` acima do leito, com coeficiente de Manning $n=0.10$.
 
-A referência explícita usa células de `5 m`. As simulações comum e Neal (2012) usam células de `100 m`. Um hidrograma de Nash atinge $200\ \mathrm{m^3\,s^{-1}}$ em `45 min`, acima das vazões analíticas de ativação de $31,4\ \mathrm{m^3\,s^{-1}}$ para as bancadas e $110,8\ \mathrm{m^3\,s^{-1}}$ para a planície externa.
+A referência explícita usa células de `5 m`. As simulações comum e Neal (2012) usam células de `100 m`. Um hidrograma de Nash atinge $200\ \mathrm{m^3\,s^{-1}}$ em `45 min`, acima das vazões analíticas de ativação de $31.4\ \mathrm{m^3\,s^{-1}}$ para as bancadas e $110.8\ \mathrm{m^3\,s^{-1}}$ para a planície externa.
 
 <img src={useBaseUrl('/validation/results/subgrid-neal/staged-geometry-rating.png')} alt="Geometria escalonada do canal e curva analítica de vazão uniforme" />
 

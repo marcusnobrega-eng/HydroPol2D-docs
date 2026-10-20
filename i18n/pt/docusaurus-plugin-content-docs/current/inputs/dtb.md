@@ -6,6 +6,7 @@ title: DTB
 
 A Profundidade até a Rocha (DTB) define a extensão vertical da coluna de solo disponível para armazenamento de água em HydroPol2D.
 Representa a distância entre a superfície terrestre e uma camada limitante que restringe o movimento vertical da água. Esta camada pode corresponder ao leito rochoso real ou a um limite efetivo, como o topo de um aquífero raso.
+
 ---
 
 ## Função em HydroPol2D
@@ -20,6 +21,7 @@ No esquema padrão, DTB é usado para definir:
 
 Dentro do modelo, DTB atua como uma **restrição geométrica** no armazenamento, em vez de um perfil vertical totalmente resolvido.
 DTB não deve ser confundido com o raster inicial opcional do lençol freático. No modelo atual, `DTB_path` define a espessura da coluna do solo, enquanto `GW_table_path` define a carga/elevação saturada inicial quando a inicialização da água subterrânea é fornecida explicitamente.
+
 ---
 
 ## Representação
@@ -66,6 +68,7 @@ A entrada DTB deve:
 - Alinhe espacialmente com DEM e outras entradas
 
 Os valores devem permanecer dentro de faixas fisicamente realistas para a área de estudo.
+
 ---
 
 ## Fontes de dados
@@ -127,6 +130,7 @@ DTB complementa a parametrização do solo:
 - DTB limita o volume total disponível para armazenamento
 
 Esta combinação determina a resposta efetiva do sistema sem exigir discretização vertical explícita.
+
 ---
 
 ## Considerações Práticas
@@ -138,6 +142,7 @@ Ao definir DTB:
 - Use suposições simplificadas quando necessário, mas documente-as
 
 DTB costuma ser incerto e deve ser avaliado como parte da análise de sensibilidade, quando possível.
+
 ---
 
 ## Resumo

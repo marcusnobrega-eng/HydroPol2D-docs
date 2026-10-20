@@ -130,10 +130,12 @@ Bloque D42:F44. Solo se lee con el subsuelo en capas. El rendimiento específico
 ---
 
 ## Parámetros de geometría del río
-Si se activa `flag_reduce_dem`, la elevación de las celdas del río se reduce para tener en cuenta la batimetría del río. Luego se requiere un conjunto de 4 parámetros para describir el ancho y la profundidad del flujo. Estos parámetros son válidos para convertir el área de acumulación de flujo [$\mathrm{km^2}$] en profundidad de flujo [$\mathrm{m}$] y ancho [$\mathrm{m}$].| Variable | Unidades | Descripción |
+Si se activa `flag_reduce_dem`, la elevación de las celdas del río se reduce para tener en cuenta la batimetría del río. Luego se requiere un conjunto de 4 parámetros para describir el ancho y la profundidad del flujo. Estos parámetros son válidos para convertir el área de acumulación de flujo [$\mathrm{km^2}$] en profundidad de flujo [$\mathrm{m}$] y ancho [$\mathrm{m}$].
+
+| Variable | Unidades | Descripción |
 |----------|------|-------------|
 | $\alpha_1$ | — | Coeficiente empírico que controla el escalado de la geometría del canal. |
-| $\alfa_2$ | — | Coeficiente secundario para relaciones de geometría hidráulica. |
+| $\alpha_2$ | — | Coeficiente secundario para relaciones de geometría hidráulica. |
 | $\beta_1$ | — | Ancho de control de exponente o comportamiento de escalado hidráulico |
 | $\beta_2$ | — | Exponente secundario para relaciones de escala hidráulica. |
 | $n$ | $\mathrm{s\,m^{-1/3}}$ | Coeficiente de rugosidad de Manning para canal y flujo superficial. |

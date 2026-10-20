@@ -6,6 +6,7 @@ title: Albedo
 
 El albedo representa la fracción de la radiación de onda corta entrante que se refleja en la superficie.
 En HydroPol2D, el albedo se utiliza para caracterizar las propiedades radiativas de la superficie y su influencia en los procesos relacionados con la energía, en particular la evapotranspiración y la dinámica de la nieve.
+
 ---
 
 ## Papel en HydroPol2D
@@ -17,6 +18,7 @@ Albedo se utiliza para representar:
 - Comportamiento del deshielo (cuando se activan los procesos de nieve)
 
 Las superficies con albedo más bajo absorben más energía, mientras que las superficies con albedo más alto reflejan una fracción mayor de la radiación entrante.
+
 ---
 
 ## Representación
@@ -29,6 +31,7 @@ Los valores típicos incluyen:
 - 0,60 – 0,90 → superficies nevadas
 
 Los valores deben ser físicamente consistentes con la cobertura del suelo y las condiciones ambientales.
+
 ---
 
 ## Representación Temporal
@@ -39,6 +42,7 @@ Los usuarios deben seleccionar valores representativos de las condiciones de sim
 - Simulaciones estacionales → utilizar valores consistentes con la condición de superficie dominante
 
 Las variaciones dinámicas del albedo (por ejemplo, debido a la capa de nieve o cambios en la vegetación) no se resuelven explícitamente a menos que se proporcionen externamente.
+
 ---
 
 ## Fuentes de datos
@@ -64,6 +68,7 @@ Varios conjuntos de datos proporcionan estimaciones del albedo global:
 ### Google Earth Engine
 
 Los conjuntos de datos de albedo de MODIS y Copernicus están disponibles en Google Earth Engine y pueden procesarse para extraer valores representativos para el dominio de simulación.
+
 ---
 
 ## Coherencia con otras entradas
@@ -74,6 +79,7 @@ Albedo debe ser consistente con:
 - **Condiciones de nieve** → influyen fuertemente en la reflectividad
 
 Los valores de albedo inconsistentes pueden llevar a una partición de energía poco realista.
+
 ---
 
 ## Consideraciones prácticas
@@ -85,6 +91,7 @@ Al preparar entradas de albedo:
 - Verificar la coherencia con la cobertura del suelo y las condiciones climáticas.
 
 Si no hay ningún conjunto de datos de albedo disponible, se pueden asignar valores basados ​​en clases LULC, con la justificación adecuada.
+
 ---
 
 ## Resumen

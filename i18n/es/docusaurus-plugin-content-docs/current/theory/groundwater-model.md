@@ -87,6 +87,7 @@ El programador asincrónico está activo de forma predeterminada cuando el model
 | `flag_capillary_rise` | 1 | Permite un ascenso capilar en capas simple cuando hay almacenamiento de suelo en capas. |
 
 La recarga pendiente, el ascenso capilar y el intercambio neto se almacenan como variables de estado del programador. Cuando se ejecuta una actualización de agua subterránea, la profundidad neta acumulada de intercambio se divide por el intervalo de agua subterránea transcurrido para formar el término de recarga pasado al solucionador saturado.
+
 ---
 
 ## 3. Posición del nivel freático y capacidad de la zona no saturada
@@ -125,9 +126,9 @@ $$
 S_{\mathrm{UZ,max}}
 =
 z_{\mathrm{wt}}
-\izquierda(
+\left(
 \theta_{\mathrm{sat}} - \theta_r
-\derecha)
+\right)
 $$
 dónde:
 - $S_{\mathrm{UZ,max}}$ = almacenamiento máximo no saturado $[\mathrm{L}]$
@@ -135,6 +136,7 @@ dónde:
 - $\theta_r$ = contenido volumétrico de agua residual $[-]$
 
 Por lo tanto, a medida que aumenta el nivel freático, la zona vadosa se reduce y la capacidad de almacenamiento disponible para la infiltración disminuye. Cuando el almacenamiento de suelo en capas está activo, el código evalúa este límite a través de las capacidades explícitas de los almacenes cerca de la superficie, la zona de las raíces y la zona de transmisión después del truncamiento por la posición actual del nivel freático.
+
 ---
 
 ## 4. Intercambio predeterminado de vadosa a agua subterránea en capas
@@ -162,7 +164,7 @@ S_{e,\ell}
 =
 \frac{
 \theta_{\ell} - \theta_{\mathrm{r},\ell}
-{}
+}{
 \theta_{\mathrm{sat},\ell} - \theta_{\mathrm{r},\ell}
 }
 $$
@@ -171,9 +173,9 @@ K_{\ell}
 =
 K_{\mathrm{sat},\ell}
 S_{e,\ell}^{\ell_v}
-\izquierda[
+\left[
 1 - \left(1 - S_{e,\ell}^{1/m_{\ell}}\right)^{m_{\ell}}
-\derecha]^2
+\right]^2
 $$
 con
 $$
@@ -195,7 +197,7 @@ La ruta de recarga en capas se calcula como una cascada descendente:
 
 Conceptualmente, la profundidad de drenaje de una capa a lo largo de un paso de tiempo se puede resumir como
 $$
-\Delta D_{\ell} \aprox K_{\ell}\,\Delta t
+\Delta D_{\ell} \approx K_{\ell}\,\Delta t
 $$
 sujeto a:
 - agua disponible en la capa donante,
@@ -212,6 +214,7 @@ donde $\Delta S_{\rightarrow \mathrm{gw}}$ es la transmisión total de agua al a
 ### 4.4 Formulación alternativa heredada
 
 HydroPol2D todavía contiene el cierre de recarga del depósito representativo anterior para los casos en los que los datos de almacenamiento en capas explícitos no están disponibles. En ese modo de reserva, un único estado de almacenamiento vadoso se convierte en un contenido de agua representativo y se drena con un cierre tipo Darcy. Esa formulación debe tratarse como un **legado/refuerzo**, no como el camino teórico principal para el modelo actual.
+
 ---
 
 ## 5. Aumento capilar opcional
@@ -226,10 +229,10 @@ Conceptualmente, la transferencia capilar ascendente hacia la capa $\ell$ está 
 $$
 C_{\ell}
 \le
-\min\!\izquierda(
+\min\!\left(
 S_{\ell,\mathrm{def}},\,
 K_{\mathrm{sat},\ell} f_{\mathrm{prox}}(z_{\mathrm{wt}}) f_{\mathrm{dry}}(S_{\ell})
-\derecha)
+\right)
 $$
 dónde:
 - $S_{\ell,\mathrm{def}}$ es el déficit de almacenamiento de capa restante
@@ -242,11 +245,12 @@ $$
 R_{\mathrm{net}} = R_{\mathrm{down}} - C_{\mathrm{up}}
 $$
 donde $C_{\mathrm{up}}$ es el flujo total de ascenso capilar ascendente.
+
 ---
 
 ## 6. Modelo bidimensional de flujo de agua subterránea Boussinesq
 
-Una vez calculada la recarga, HydroPol2D encamina el agua subterránea lateralmente utilizando la función `PHTOKEN1XYZ_2D_explicit`.
+Una vez calculada la recarga, HydroPol2D encamina el agua subterránea lateralmente utilizando la función `Boussinesq_2D_explicit`.
 Este solucionador representa el sistema de agua subterránea saturada a través de una aproximación de flujo no confinado integrado en profundidad.
 ### 6.1 Ecuación rectora
 
@@ -314,7 +318,8 @@ F_{x,\max}
 $$
 y el flujo de interfaz final está limitado como
 $$
-F_x \flecha izquierda \nombreoperador{sign}(F_x)\,\min\izquierda(|F_x|,\,F_{x,\max}\derecha)
+F_x \leftarrow \operatorname{sign}(F_x)\,
+\min\left(|F_x|,\,F_{x,\max}\right)
 $$
 
 Se utiliza una expresión similar en la dirección $y$.
@@ -346,11 +351,12 @@ Los flujos se vuelven a calcular a partir del estado del predictor, se promedian
 $$
 h^{t+\Delta t}
 =
-h^t+
+h^t
++
 \frac{\Delta t}{S_y}
-\izquierda(
+\left(
 -\nabla \cdot \mathbf{F}^{\mathrm{avg}} + R
-\derecha)
+\right)
 $$
 dónde:
 - $h^{\ast}$ = predictor de altura hidráulica $[\mathrm{L}]$
@@ -358,6 +364,7 @@ dónde:
 - $\mathbf{F}^{\mathrm{avg}}$ = promedio de flujos de interfaz predictor y corrector
 
 Este procedimiento predictor-corrector mejora la estabilidad y reduce la difusión numérica en relación con una simple actualización explícita de Euler.
+
 ---
 
 ## 7. Cronograma de actualización del agua subterránea y paso del tiempo de adaptación
@@ -383,8 +390,8 @@ $$
 =
 \frac{
 C_{\mathrm{gw}} \, L_{\mathrm{grid}}^2
-{}
-4D_{\max}
+}{
+4 D_{\max}
 }
 $$
 dónde:
@@ -401,9 +408,10 @@ Esos subpasos internos están además limitados por una condición basada en la 
 $$
 \Delta t_{\mathrm{inner}}
 \le
-\min\!\izquierda(\frac{C_v \Delta x}{|u_x|},\,
+\min\!\left(
+\frac{C_v \Delta x}{|u_x|},\,
 \frac{C_v \Delta y}{|u_y|}
-\derecha)
+\right)
 $$
 dónde:
 - $u_x, u_y$ son velocidades del agua subterránea de Darcy
@@ -437,6 +445,7 @@ Los límites sin flujo se imponen mediante condiciones de gradiente cero en el p
 ### 8.3 Máscara de captación
 
 Todos los cálculos de aguas subterráneas están restringidos al dominio computacional válido. Las celdas fuera de la máscara de captación están configuradas en `NaN`.
+
 ---
 
 ## 9. Exfiltración de aguas subterráneas a la superficie
@@ -465,6 +474,7 @@ $$
 h \le h_{\mathrm{surf}}
 $$
 lo que evita que el agua subterránea permanezca sobre la superficie del terreno una vez contabilizada la exfiltración.
+
 ---
 
 ## 10. Intercambio río-acuífero
@@ -480,6 +490,7 @@ $$
 q_{\mathrm{river}}
 $$
 se inicializa y se transporta a través de la interfaz de acoplamiento como el término de intercambio de río. Esto significa que la interfaz está presente, pero el intercambio río-acuífero debería describirse actualmente como un **marcador de posición/gancho estructural**, no como una afirmación teórica madura e independiente en el mismo plano que la recarga, el flujo lateral de agua subterránea, el ascenso capilar o la exfiltración.
+
 ---
 
 ## 11. Corrección del exceso de saturación después del aumento del nivel freático {#11-saturation-excess-correction-after-water-table-rise}
@@ -489,18 +500,18 @@ $$
 S_{\mathrm{UZ,max}}^{\,\mathrm{new}}
 =
 z_{\mathrm{wt}}^{\,\mathrm{new}}
-\izquierda(
+\left(
 \theta_{\mathrm{sat}} - \theta_r
-\derecha)
+\right)
 $$
 Si el almacenamiento vadose actualizado excede esta nueva capacidad, el exceso se devuelve a la superficie como agua de saturación-exceso:
 $$
 S_{\mathrm{excess}}
 =
-\max\izquierda(
+\max\left(
 S - S_{\mathrm{UZ,max}}^{\,\mathrm{new}},
 0
-\derecha)
+\right)
 $$
 La corrección es entonces:
 $$
@@ -514,6 +525,7 @@ h_{\mathrm{surf}}^{\,\mathrm{old}}+
 S_{\mathrm{excess}}
 $$
 En la implementación predeterminada en capas, se aplica la misma corrección después de volver a calcular la capacidad sumada admisible de la capa vadosa. Esta es una parte muy importante de HydroPol2D porque garantiza **consistencia de masa** entre las zonas vadosa y saturada cuando el nivel freático aumenta durante un intervalo de tiempo.
+
 ---
 
 ## 12. Acoplamiento de nuevo al agua superficial
@@ -530,6 +542,7 @@ d_t + \Delta t\,q_{\mathrm{exf}}
 $$
 con la conversión de unidad apropiada en el código de $\mathrm{m}$ a $\mathrm{mm}$.
 Esto significa que HydroPol2D permite que el agua subterránea influya activamente en la generación de inundaciones y la humedad cerca de la superficie, en lugar de tratarlo como un proceso desconectado de límite inferior.
+
 ---
 
 ## 13. Acuífero profundo {#13-deep-aquifer}
@@ -651,6 +664,7 @@ dónde:
 
 Esta cantidad se almacena como un error de diagnóstico de agua subterránea en HydroPol2D.
 Cuando el agua subterránea asíncrona está activa, la recarga acumulada pendiente y el intercambio capilar no se tratan como pérdida del modelo. Se almacenan como intercambio de agua subterránea en tránsito hasta que la próxima actualización saturada consuma el volumen del programador. Esta distinción es importante para interpretar los diagnósticos del balance hídrico de todo el modelo.
+
 ---
 
 ## 15. Resumen {#15-summary}

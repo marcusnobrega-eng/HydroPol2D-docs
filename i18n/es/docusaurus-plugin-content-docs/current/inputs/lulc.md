@@ -6,6 +6,7 @@ title: LULC
 
 El mapa de uso del suelo/cobertura del suelo (LULC) define la distribución espacial de las características de la superficie en todo el dominio de simulación.
 En HydroPol2D, la entrada LULC se utiliza para representar cómo diferentes partes del dominio responden a la lluvia y al flujo superficial mediante la asignación de parámetros.
+
 ---
 
 ## Papel en HydroPol2D
@@ -17,6 +18,7 @@ El mapa LULC se utiliza para definir la variabilidad espacial en:
 - Comportamiento de la evapotranspiración relacionado con la superficie
 
 Estas propiedades influyen directamente en la generación de escorrentía, la velocidad del flujo y la retención de agua en la superficie.
+
 ---
 
 ## Representación LULC
@@ -30,6 +32,7 @@ Para cada clase LULC, se define externamente un conjunto de parámetros en las t
 - Parámetros adicionales específicos del proceso
 
 Este enfoque separa la información espacial de la definición de parámetros y permite una flexibilidad total en la configuración del comportamiento del modelo.
+
 ---
 
 ## Conjuntos de datos LULC disponibles
@@ -86,6 +89,7 @@ Cada clase debe estar asociada con un conjunto consistente de valores físicos. 
 - Comportamiento de generación de escorrentía
 
 La asignación de parámetros incorrecta o inconsistente afectará directamente los resultados de la simulación.
+
 ---
 
 ## Superficies impermeables
@@ -106,6 +110,7 @@ Detalles de implementación actual:
 - Las clases LULC construidas/explícitamente impermeables todavía se ven obligadas a permanecer completamente impermeables.
 
 Por lo tanto, la tabla LULC aún define el comportamiento impermeable de la base, mientras que el ráster de fracción impermeable proporciona un refinamiento espacial sobre esa base.
+
 ---
 
 ## Resolución y alineación
@@ -116,6 +121,7 @@ El ráster LULC debe:
 - Alinear espacialmente con todas las demás entradas ráster
 
 Una desalineación conduce a una parametrización incorrecta y a una representación del flujo inconsistente.
+
 ---
 
 ## Reclasificación
@@ -127,6 +133,7 @@ Para aplicaciones HydroPol2D, suele ser preferible:
 - Simplifique el esquema de parametrización
 
 Esto mejora la solidez del modelo y reduce la complejidad innecesaria.
+
 ---
 
 ## Interacción con otras entradas
@@ -138,6 +145,7 @@ El mapa LULC define el comportamiento de la superficie y debe ser consistente co
 - **Albedo** → afecta el equilibrio energético de la superficie
 
 Cada una de estas entradas aporta un aspecto diferente de la variabilidad espacial en el modelo.
+
 ---
 
 ## Resumen

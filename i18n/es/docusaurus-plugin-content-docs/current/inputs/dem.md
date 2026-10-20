@@ -6,6 +6,7 @@ title: DEM
 
 El Modelo de Elevación Digital (DEM) define la estructura topográfica del dominio de simulación y es el control principal de la dinámica del flujo superficial en HydroPol2D.
 Es una de las entradas más críticas del modelo, ya que gobierna los gradientes del terreno, las direcciones del flujo y la organización espacial de los procesos hidrológicos.
+
 ---
 
 ## Papel en HydroPol2D
@@ -17,6 +18,7 @@ El DEM se utiliza para calcular:
 - Límites de cuencas y patrones de drenaje
 
 Debido a que HydroPol2D opera en una cuadrícula ráster, DEM también define la malla computacional en la que se simulan todos los procesos de superficie.
+
 ---
 
 ## Conjuntos de datos DEM disponibles
@@ -54,7 +56,7 @@ Varios conjuntos de datos DEM globales de alta calidad están disponibles gratui
 - DEM global con reducción de errores
 - Corregido por múltiples sesgos (rayas, ruido, efectos de vegetación)
 - Adecuado para simulaciones a gran escala
-- Descargar: http://hydro.iis.u-tokyo.ac.jp/~yamadai/MERIT_PHTOKEN0XYZ/
+- Descargar: http://hydro.iis.u-tokyo.ac.jp/~yamadai/MERIT_DEM/
 
 ---
 
@@ -86,6 +88,7 @@ Se puede acceder a los datos LiDAR para EE. UU. a través de:
 - Costa digital NOAA: https://coast.noaa.gov/dataviewer/#/lidar/search/
 
 Estas plataformas brindan acceso a conjuntos de datos de elevación de alta resolución derivados de estudios aéreos LiDAR.
+
 ---
 
 ## Requisitos del sistema de coordenadas
@@ -144,6 +147,7 @@ Antes de utilizar un DEM, los usuarios deben:
 - Evaluar si es necesario suavizar o filtrar
 
 En algunos casos, se puede aplicar relleno o acondicionamiento de depresión dependiendo de los objetivos del modelado.
+
 ---
 
 ## Uso de DEM frente a DSM en diferentes aplicaciones

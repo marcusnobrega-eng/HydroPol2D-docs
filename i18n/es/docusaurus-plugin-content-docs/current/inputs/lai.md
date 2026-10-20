@@ -6,6 +6,7 @@ title: LAI
 
 El índice de área foliar (LAI) representa el área foliar total por unidad de superficie de suelo y se utiliza en HydroPol2D para caracterizar la densidad de la vegetación y su interacción con la lluvia y los procesos atmosféricos.
 En la implementación actual del modelo, LAI se utiliza para representar los efectos del dosel sobre la interceptación y la evapotranspiración.
+
 ---
 
 ## Papel en HydroPol2D
@@ -16,6 +17,7 @@ LAI se utiliza para representar:
 - Influencia de la vegetación en la evapotranspiración.
 
 Los valores más altos de LAI corresponden a una vegetación más densa y una mayor capacidad de almacenamiento del dosel.
+
 ---
 
 ## Representación
@@ -27,6 +29,7 @@ Los valores típicos oscilan entre:
 - 4–7+ → vegetación densa (p. ej., bosques)
 
 Los valores deben ser consistentes con las condiciones de cobertura del suelo en el dominio.
+
 ---
 
 ## Representación Temporal
@@ -39,6 +42,7 @@ Los enfoques recomendados son:
 - **Época seca LAI** → para simulaciones enfocadas en condiciones de vegetación reducida
 
 La elección debe ser coherente con el objetivo de la simulación y el período de tiempo.
+
 ---
 
 ## Fuentes de datos
@@ -72,6 +76,7 @@ Varios conjuntos de datos proporcionan estimaciones globales de LAI:
 ### Google Earth Engine
 
 Los conjuntos de datos LAI de MODIS, Copernicus y VIIRS están disponibles en Google Earth Engine y se pueden procesar para extraer valores medianos o estacionales.
+
 ---
 
 ## Coherencia con LULC
@@ -83,6 +88,7 @@ La correspondencia típica incluye:
 - Urbano → bajo o cercano a cero LAI
 
 Las inconsistencias entre LULC y LAI darán como resultado un comportamiento poco realista del dosel.
+
 ---
 
 ## Consideraciones prácticas
@@ -94,6 +100,7 @@ Al preparar las entradas LAI:
 - Garantice la coherencia espacial con otras entradas ráster
 
 Si no hay ningún conjunto de datos LAI disponible, se pueden asignar valores en función de las clases LULC, aunque esto introduce suposiciones adicionales.
+
 ---
 
 ## Resumen

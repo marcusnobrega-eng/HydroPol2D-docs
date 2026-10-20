@@ -5,6 +5,7 @@ title: Entradas espaciales adicionales
 # Entradas espaciales adicionales
 
 Más allá de los rásteres principales DEM, LULC y de suelo, HydroPol2D puede incorporar un conjunto más amplio de rásteres opcionales y entradas de estado inicial. Esta página documenta las entradas basadas en archivos admitidas que históricamente no se describieron en los documentos.
+
 ---
 
 ## Entradas ráster suplementarias
@@ -42,6 +43,7 @@ Si se proporciona `GW_table_path`, HydroPol2D utiliza ese ráster como elevació
 - y se rellena localmente solo cuando al ráster le faltan valores.
 
 Si no se proporciona un ráster del nivel freático, el modelo vuelve a un cabezal inicial predeterminado simple ligeramente por encima del lecho de roca. Esto significa que `GW_table_path` es una verdadera entrada opcional de condición inicial, no un ráster de agua subterránea requerido.
+
 ---
 
 ## Entrada de impermeabilidad fraccionaria
@@ -57,6 +59,7 @@ Comportamiento actual importante:
 - las células ya clasificadas como impermeables/acumuladas por la tabla LULC se ven obligadas a permanecer completamente impermeables.
 
 Por lo tanto, el ráster impermeable debe documentarse como una **anulación/refinamiento de impermeabilidad fraccional**, no como un mapa independiente de cobertura del suelo.
+
 ---
 
 ## Alineación y remuestreo
@@ -83,6 +86,7 @@ El modo de canal submalla de Neal (2012) usa el DEM grueso como elevación de la
 El ancho del canal debe ser menor que la resolución de la celda. Un canal con un ancho igual o mayor que la celda debe resolverse mediante la malla ordinaria. Las rugosidades del canal y de la llanura se asignan por separado mediante los parámetros del río y del uso y cobertura del suelo.
 
 Consulte [Banderas del modelo](../configuration/flags) para la combinación de enrutamiento requerida.
+
 ---
 
 ## Interpretación pública recomendada
@@ -94,6 +98,7 @@ La forma más sencilla de pensar en la superficie de entrada es:
 4. Los rásteres WQ admiten módulos especializados opcionales.
 
 Esa es la historia de entrada implementada actualmente que los documentos deben seguir.
+
 ---
 
 ## Profundidad de la raíz

@@ -5,6 +5,7 @@ title: Bandeiras modelo
 # Bandeiras modelo
 
 HydroPol2D é controlado por meio de sinalizadores binários e categóricos definidos em `General_Data.xlsx`. Esta página documenta o comportamento público exposto por esses sinalizadores e destaca onde um sinalizador ativa um caminho padrão validado versus um caminho de diagnóstico ou experimental.
+
 ---
 
 ## Limite e sinalizadores de forçamento

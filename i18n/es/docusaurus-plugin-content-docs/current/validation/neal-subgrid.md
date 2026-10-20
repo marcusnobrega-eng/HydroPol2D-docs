@@ -18,7 +18,7 @@ La simulación de malla fina es una referencia numérica. Permite evaluar si la 
 
 ## Canal simple con flujo dentro de las márgenes
 
-El primer caso aísla el flujo en un canal más estrecho que las celdas gruesas. El tramo tiene un canal de `10 m` de ancho y `1 m` de profundidad, una pendiente de fondo de `0,001` y un coeficiente de Manning $n=0,035$. La referencia explícita usa celdas de `10 m`. Las simulaciones ordinaria y Neal (2012) usan celdas de `30 m`.
+El primer caso aísla el flujo en un canal más estrecho que las celdas gruesas. El tramo tiene un canal de `10 m` de ancho y `1 m` de profundidad, una pendiente de fondo de `0,001` y un coeficiente de Manning $n=0.035$. La referencia explícita usa celdas de `10 m`. Las simulaciones ordinaria y Neal (2012) usan celdas de `30 m`.
 
 Se aplica un caudal constante de $5\ \mathrm{m^3\,s^{-1}}$ a un tramo inicialmente seco de 30 celdas. Como el caudal permanece por debajo de la capacidad del canal, la prueba evalúa el almacenamiento, la propagación de la onda y el nivel del agua sin flujo sobre la llanura.
 
@@ -35,7 +35,7 @@ La malla gruesa ordinaria considera que todo el ancho de `30 m` contiene agua en
 
 ## Canal compuesto
 
-El segundo caso usa un tramo de `990 m` con un canal de `10 m` de ancho y `1 m` de profundidad y llanuras laterales de `90 m` a cada lado. La pendiente longitudinal es `0,005`, y se usa el coeficiente de Manning $n=0,035$ en toda la sección. La referencia explícita usa celdas de `10 m`; las dos simulaciones gruesas usan celdas de `30 m`.
+El segundo caso usa un tramo de `990 m` con un canal de `10 m` de ancho y `1 m` de profundidad y llanuras laterales de `90 m` a cada lado. La pendiente longitudinal es `0,005`, y se usa el coeficiente de Manning $n=0.035$ en toda la sección. La referencia explícita usa celdas de `10 m`; las dos simulaciones gruesas usan celdas de `30 m`.
 
 La prueba permanente aplica $100\ \mathrm{m^3\,s^{-1}}$. La prueba transitoria aplica un hidrograma de Nash con un pico de $100\ \mathrm{m^3\,s^{-1}}$ a los `30 min`.
 
@@ -56,11 +56,11 @@ La simulación de Neal (2012) reduce los errores de caudal y almacenamiento con 
 
 El tercer caso evalúa la transición entre el canal y la llanura de inundación. El tramo de `1 km` tiene `300 m` de ancho y una pendiente longitudinal de `0,005`. La sección transversal contiene:
 
-- un canal de `50 m` con coeficiente de Manning $n=0,035$;
+- un canal de `50 m` con coeficiente de Manning $n=0.035$;
 - dos banquetas de `25 m`, situadas `0,5 m` sobre el lecho del canal;
-- una llanura externa situada `1,0 m` sobre el lecho, con coeficiente de Manning $n=0,10$.
+- una llanura externa situada `1,0 m` sobre el lecho, con coeficiente de Manning $n=0.10$.
 
-La referencia explícita usa celdas de `5 m`. Las simulaciones ordinaria y Neal (2012) usan celdas de `100 m`. Un hidrograma de Nash alcanza $200\ \mathrm{m^3\,s^{-1}}$ a los `45 min`, por encima de los caudales analíticos de activación de $31,4\ \mathrm{m^3\,s^{-1}}$ para las banquetas y $110,8\ \mathrm{m^3\,s^{-1}}$ para la llanura externa.
+La referencia explícita usa celdas de `5 m`. Las simulaciones ordinaria y Neal (2012) usan celdas de `100 m`. Un hidrograma de Nash alcanza $200\ \mathrm{m^3\,s^{-1}}$ a los `45 min`, por encima de los caudales analíticos de activación de $31.4\ \mathrm{m^3\,s^{-1}}$ para las banquetas y $110.8\ \mathrm{m^3\,s^{-1}}$ para la llanura externa.
 
 <img src={useBaseUrl('/validation/results/subgrid-neal/staged-geometry-rating.png')} alt="Geometría escalonada del canal y curva analítica de caudal uniforme" />
 

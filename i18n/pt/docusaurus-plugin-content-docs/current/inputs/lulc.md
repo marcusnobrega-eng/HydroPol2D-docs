@@ -6,6 +6,7 @@ title: LULC
 
 O mapa Uso/Cobertura do Solo (LULC) define a distribuição espacial das características da superfície em todo o domínio de simulação.
 Em HydroPol2D, a entrada LULC é usada para representar como diferentes porções do domínio respondem à precipitação e ao fluxo superficial por meio da atribuição de parâmetros.
+
 ---
 
 ## Função em HydroPol2D
@@ -17,6 +18,7 @@ O mapa LULC é usado para definir a variabilidade espacial em:
 - Comportamento de evapotranspiração relacionado à superfície
 
 Essas propriedades influenciam diretamente a geração de escoamento superficial, a velocidade do fluxo e a retenção de água na superfície.
+
 ---
 
 ## Representação LULC
@@ -30,6 +32,7 @@ Para cada classe LULC, um conjunto de parâmetros é definido externamente nas t
 - Parâmetros adicionais específicos do processo
 
 Esta abordagem separa as informações espaciais da definição de parâmetros e permite total flexibilidade na configuração do comportamento do modelo.
+
 ---
 
 ## Conjuntos de dados LULC disponíveis
@@ -86,6 +89,7 @@ Cada classe deve estar associada a um conjunto consistente de valores físicos. 
 - Comportamento de geração de escoamento
 
 A atribuição de parâmetros incorreta ou inconsistente afetará diretamente os resultados da simulação.
+
 ---
 
 ## Superfícies Impermeáveis
@@ -106,6 +110,7 @@ Detalhes de implementação atuais:
 - classes LULC construídas/explicitamente impermeáveis ​​ainda são forçadas a permanecer totalmente impermeáveis.
 
 Portanto, a tabela LULC ainda define o comportamento impermeável da base, enquanto o raster de fração impermeável fornece um refinamento espacial sobre essa base.
+
 ---
 
 ## Resolução e Alinhamento
@@ -116,6 +121,7 @@ O raster LULC deve:
 - Alinhe espacialmente com todas as outras entradas raster
 
 O desalinhamento leva à atribuição incorreta de parâmetros e à representação inconsistente do fluxo.
+
 ---
 
 ## Reclassificação
@@ -127,6 +133,7 @@ Para aplicações HydroPol2D, geralmente é preferível:
 - Simplifique o esquema de parametrização
 
 Isso melhora a robustez do modelo e reduz a complexidade desnecessária.
+
 ---
 
 ## Interação com outras entradas
@@ -138,6 +145,7 @@ O mapa LULC define o comportamento da superfície e deve ser consistente com:
 - **Albedo** → afeta o equilíbrio energético da superfície
 
 Cada uma dessas entradas contribui com um aspecto diferente da variabilidade espacial no modelo.
+
 ---
 
 ## Resumo

@@ -5,6 +5,7 @@ title: Banderas modelo
 # Banderas modelo
 
 HydroPol2D se controla mediante indicadores binarios y categóricos definidos en `General_Data.xlsx`. Esta página documenta el comportamiento público expuesto por esas banderas y destaca dónde una bandera activa una ruta predeterminada validada frente a una ruta de diagnóstico o experimental.
+
 ---
 
 ## Banderas de límites y forzados

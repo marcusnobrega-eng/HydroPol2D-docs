@@ -130,10 +130,12 @@ Bloco D42:F44. Lido apenas com a subsuperfície em camadas. O rendimento especí
 ---
 
 ## Parâmetros de geometria do rio
-Se `flag_reduce_dem` estiver ativado, a elevação das células do rio será reduzida para compensar a batimetria do rio. Um conjunto de 4 parâmetros é então necessário para descrever a largura e a profundidade do fluxo. Estes parâmetros são válidos para converter a área de acumulação de fluxo [$\mathrm{km^2}$] em profundidade de fluxo [$\mathrm{m}$] e largura [$\mathrm{m}$].| Variável | Unidades | Descrição |
+Se `flag_reduce_dem` estiver ativado, a elevação das células do rio será reduzida para compensar a batimetria do rio. Um conjunto de 4 parâmetros é então necessário para descrever a largura e a profundidade do fluxo. Estes parâmetros são válidos para converter a área de acumulação de fluxo [$\mathrm{km^2}$] em profundidade de fluxo [$\mathrm{m}$] e largura [$\mathrm{m}$].
+
+| Variável | Unidades | Descrição |
 |----------|------|-------------|
-| $\alfa_1$ | - | Coeficiente empírico que controla a escala da geometria do canal |
-| $\alfa_2$ | - | Coeficiente secundário para relações de geometria hidráulica |
+| $\alpha_1$ | - | Coeficiente empírico que controla a escala da geometria do canal |
+| $\alpha_2$ | - | Coeficiente secundário para relações de geometria hidráulica |
 | $\beta_1$ | - | Expoente controlando largura ou comportamento de escala hidráulica |
 | $\beta_2$ | - | Expoente secundário para relações de escala hidráulica |
 | $n$ | $\mathrm{s\,m^{-1/3}}$ | Coeficiente de rugosidade de Manning para canal e fluxo superficial |

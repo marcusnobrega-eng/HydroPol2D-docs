@@ -6,6 +6,7 @@ title: Suelo
 
 Los datos del suelo definen la respuesta hidráulica de la superficie terrestre y controlan la velocidad a la que el agua se infiltra en el subsuelo en HydroPol2D.
 Dentro de la formulación actual del modelo, las propiedades del suelo se utilizan para estimar **la capacidad de infiltración, el almacenamiento en capas de la zona vadosa, el drenaje/recarga, el ascenso capilar y el comportamiento del almacenamiento de agua subterránea**.
+
 ---
 
 ## Papel en HydroPol2D
@@ -18,6 +19,7 @@ La entrada de suelo se utiliza para representar:
 - Rendimiento específico del agua subterránea y conductividad hidráulica saturada.
 
 Estas propiedades influyen directamente en la generación de escorrentía y el momento de la respuesta hidrológica.
+
 ---
 
 ## Representación del suelo
@@ -146,6 +148,7 @@ Estas clases se pueden derivar de:
 - Estudios regionales de suelos
 
 Este enfoque proporciona un marco consistente para asignar parámetros hidráulicos como conductividad y características de retención.
+
 ---
 
 ### SSURGO (Base de datos geográfica de estudios de suelos)
@@ -183,6 +186,7 @@ La trama del suelo debe:
 - Alinear espacialmente con todas las demás entradas ráster
 
 Cualquier discrepancia en la resolución o alineación dará como resultado una asignación espacial incorrecta de las propiedades del suelo.
+
 ---
 
 ## Consideraciones prácticas
@@ -194,6 +198,7 @@ Al preparar los insumos del suelo:
 - Verificar la coherencia entre las clases ráster y las tablas de parámetros
 
 En muchos casos, simplificar el número de clases de suelo mejora la estabilidad y la interpretabilidad del modelo.
+
 ---
 
 ## Resumen

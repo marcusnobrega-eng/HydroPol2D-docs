@@ -1,39 +1,39 @@
 ---
-title: Visao geral da validacao
+title: Visão geral da validação
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-# Visao geral da validacao
+# Visão geral da validação
 
-O HydroPol2D e avaliado por uma suite de validacao que testa cada modulo computacional em relacao a uma referencia conhecida. A suite combina solucoes analiticas, calculos independentes, balancos exatos de agua e massa, hidrogramas de referencia e simulacoes numericas refinadas. Cada caso define dados de entrada, resposta esperada, metricas, criterios de aceitacao e resultados.
+O HydroPol2D é avaliado por uma suíte de validação que testa cada módulo computacional em relação a uma referência conhecida. A suíte combina soluções analíticas, cálculos independentes, balanços exatos de água e massa, hidrogramas de referência e simulações numéricas refinadas. Cada caso define dados de entrada, resposta esperada, métricas, critérios de aceitação e resultados.
 
 <div style={{margin: '1rem 0 1.5rem 0'}}>
   <a className="button button--primary button--lg" href={useBaseUrl('/reports/validation_report.pdf')}>
-    Baixar o relatorio de validacao
+    Baixar o relatório de validação
   </a>
 </div>
 
-## Evidencias
+## Evidências
 
-| Tipo de evidencia | Uso na validacao do HydroPol2D |
+| Tipo de evidência | Uso na validação do HydroPol2D |
 |---|---|
-| Solucao analitica | Testa as equacoes em relacao a uma solucao fechada ou exata. |
-| Referencia independente | Compara o modelo com um calculo separado do mesmo processo. |
-| Balanco exato | Testa a conservacao sob forcantes ou condicoes de contorno prescritas. |
-| Hidrograma de referencia | Compara a resposta roteada com um benchmark publicado ou digitalizado. |
-| Referencia numerica | Compara uma representacao mais grosseira ou reduzida com uma simulacao refinada documentada. |
+| Solução analítica | Testa as equações em relação a uma solução fechada ou exata. |
+| Referência independente | Compara o modelo com um cálculo separado do mesmo processo. |
+| Balanço exato | Testa a conservação sob forçantes ou condições de contorno prescritas. |
+| Hidrograma de referência | Compara a resposta roteada com um benchmark publicado ou digitalizado. |
+| Referência numérica | Compara uma representação mais grosseira ou reduzida com uma simulação refinada documentada. |
 
-Casos uteis para diagnostico, mas sem uma referencia apropriada, permanecem visiveis como diagnosticos e nao constituem evidencia de aceitacao.
+Casos úteis para diagnóstico, mas sem uma referência apropriada, permanecem visíveis como diagnósticos e não constituem evidência de aceitação.
 
-## Bacia sintetica em V
+## Bacia sintética em V
 
-Muitos casos hidrologicos e de aguas subterraneas usam a bacia sintetica em V. Ela fornece um DEM, solo, cobertura do solo, IAF, aguas subterraneas e condicoes de contorno comuns, enquanto cada processo e avaliado em relacao a sua propria referencia. Os benchmarks hidrodinamicos dedicados, incluindo a ruptura de barragem de Ritter e a onda nao quebrante, usam geometrias especificas.
+Muitos casos hidrológicos e de águas subterrâneas usam a bacia sintética em V. Ela fornece um DEM, solo, cobertura do solo, IAF, águas subterrâneas e condições de contorno comuns, enquanto cada processo é avaliado em relação a sua própria referência. Os benchmarks hidrodinâmicos dedicados, incluindo a ruptura de barragem de Ritter e a onda não quebrante, usam geometrias específicas.
 
-## Casos de validacao
+## Casos de validação
 
-- [Modulos hidrologicos](./hydrologic-modules)
-- [Aguas subterraneas e recarga](./groundwater-recharge)
-- [Hidrodinamica e roteamento](./hydrodynamics-routing)
-- [Reservatorios, contornos, qualidade da agua e risco](./ancillary-modules)
+- [Módulos hidrológicos](./hydrologic-modules)
+- [Águas subterrâneas e recarga](./groundwater-recharge)
+- [Hidrodinâmica e roteamento](./hydrodynamics-routing)
+- [Reservatórios, contornos, qualidade da água e risco](./ancillary-modules)
 
-A pagina [Estado da validacao](./validation-status) resume as evidencias disponiveis para cada modulo.
+A página [Estado da validação](./validation-status) resume as evidências disponíveis para cada módulo.

@@ -6,6 +6,7 @@ title: Visão geral
 
 HydroPol2D inclui um script Google Earth Engine (GEE) para gerar os conjuntos de dados espaciais necessários para definir um domínio de modelagem hidrológica.
 O fluxo de trabalho extrai, processa e exporta diversas variáveis ​​ambientais de conjuntos de dados geoespaciais hospedados na nuvem, produzindo um conjunto consistente de entradas raster e tabelas de resumo para uma captação ou grupo de captação selecionado.
+
 ---
 
 ## Acessando Google Earth Engine
@@ -17,6 +18,7 @@ Vá para:
 https://earthengine.google.com/
 Clique em **“Cadastre-se”** e cadastre-se usando uma conta Google.
 A aprovação normalmente é automática para uso acadêmico ou de pesquisa, mas pode levar algum tempo dependendo da solicitação.
+
 ---
 
 ### 2. Abra o Editor de Código
@@ -24,12 +26,14 @@ A aprovação normalmente é automática para uso acadêmico ou de pesquisa, mas
 Assim que o acesso for concedido, abra o Editor de Código GEE:
 https://code.earthengine.google.com/
 Este é o ambiente onde o script é executado.
+
 ---
 
 ### 3. Adicione o script HydroPol2D
 
 Copie o código JavaScript fornecido no Editor de Código e execute-o diretamente no navegador.
 O script usa a API Earth Engine para acessar conjuntos de dados, realizar operações espaciais e exportar resultados para o Google Drive.
+
 ---
 
 ## O que o fluxo de trabalho faz
@@ -62,6 +66,7 @@ O script também gera:
 - Uma tabela de resumo por bacia hidrográfica (CSV)
 
 Estes resultados fornecem metadados e estatísticas agregadas para a área de estudo.
+
 ---
 
 ## Estrutura geral do fluxo de trabalho
@@ -79,12 +84,14 @@ O usuário especifica:
 - Ano para dados populacionais
 
 Esses parâmetros controlam a definição do domínio e o processamento do conjunto de dados.
+
 ---
 
 ### 2. Seleção e fusão de bacias hidrográficas
 
 O script carrega polígonos HydroBASINS e os filtra usando os valores `HYBAS_ID` selecionados.
 As bacias hidrográficas selecionadas são mescladas em uma única geometria, que define o domínio de modelagem.
+
 ---
 
 ### 3. Construção de domínio
@@ -107,6 +114,7 @@ O script acessa vários conjuntos de dados disponíveis em Google Earth Engine, 
 - WorldPop para densidade populacional
 
 Para conjuntos de dados dependentes do tempo (por exemplo, albedo e LAI), o script calcula valores medianos no intervalo de tempo selecionado.
+
 ---
 
 ### 5. Exportação de camadas raster
@@ -130,6 +138,7 @@ O script calcula métricas em nível de domínio, como:
 - Fração impermeável média
 
 Uma segunda tabela é gerada com as mesmas métricas calculadas individualmente para cada bacia hidrográfica.
+
 ---
 
 ## Estrutura de saída
@@ -141,6 +150,7 @@ Todas as saídas são salvas na pasta especificada do Google Drive e incluem:
 - Tabela de resumo por bacia hidrográfica (CSV)
 
 Esses arquivos podem ser usados ​​diretamente como entradas para HydroPol2D ou posteriormente processados ​​em GIS ou ambientes de modelagem.
+
 ---
 
 ## Próximas etapas

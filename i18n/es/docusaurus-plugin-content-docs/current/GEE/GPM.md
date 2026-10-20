@@ -6,6 +6,7 @@ title: GPM IMERG Extracción de datos de lluvia
 
 Este script independiente Google Earth Engine (GEE) automatiza la extracción de datos de lluvia satelitales de alta resolución del conjunto de datos IMERG GPM (Medición de precipitación global) de NASA para cualquier cuenca en todo el mundo.
 El flujo de trabajo genera rásteres GeoTIFF individuales para cada paso de tiempo, listos para el modelado hidrológico con HydroPol2D u otros modelos distribuidos.
+
 ---
 
 ## Qué hace el flujo de trabajo
@@ -39,21 +40,21 @@ El script descarga datos de precipitación de **GPM IMERG V07** (Recuperaciones 
 ### Convención de nombre de archivo
 
 El script genera nombres de archivos descriptivos que codifican información temporal:
-**Datos de 30 minutos**:- PHTOKEN0XYZ_30min_2023_01_14_00_00.tif
-- PHTOKEN0XYZ_30min_2023_01_14_00_30.tif
-- PHTOKEN0XYZ_30min_2023_01_14_01_00.tif
+**Datos de 30 minutos**:- GPM_30min_2023_01_14_00_00.tif
+- GPM_30min_2023_01_14_00_30.tif
+- GPM_30min_2023_01_14_01_00.tif
 
-**Agregación horaria**:- PHTOKEN0XYZ_60min_2023_01_14_00_00.tif
-- PHTOKEN0XYZ_60min_2023_01_14_01_00.tif
-- PHTOKEN0XYZ_60min_2023_01_14_02_00.tif
+**Agregación horaria**:- GPM_60min_2023_01_14_00_00.tif
+- GPM_60min_2023_01_14_01_00.tif
+- GPM_60min_2023_01_14_02_00.tif
 
-**Agregación cada 3 horas** (misma resolución temporal que MSWEP):- PHTOKEN0XYZ_180min_2023_01_14_00_00.tif
-- PHTOKEN0XYZ_180min_2023_01_14_03_00.tif
-- PHTOKEN0XYZ_180min_2023_01_14_06_00.tif
+**Agregación cada 3 horas** (misma resolución temporal que MSWEP):- GPM_180min_2023_01_14_00_00.tif
+- GPM_180min_2023_01_14_03_00.tif
+- GPM_180min_2023_01_14_06_00.tif
 
-**Agregación diaria**:- PHTOKEN0XYZ_1440min_2023_01_14_00_00.tif
-- PHTOKEN0XYZ_1440min_2023_01_15_00_00.tif
-- PHTOKEN0XYZ_1440min_2023_01_16_00_00.tif
+**Agregación diaria**:- GPM_1440min_2023_01_14_00_00.tif
+- GPM_1440min_2023_01_15_00_00.tif
+- GPM_1440min_2023_01_16_00_00.tif
 
 ---
 
@@ -116,6 +117,7 @@ Seleccione el paso de tiempo (en minutos) para sus resultados de lluvia.
 - 1 año al día: 365 archivos (aproximadamente 750 MB)
 
 **Método de agregación**: para resoluciones temporales superiores a 30 minutos, el script calcula la **tasa de precipitación media** durante el período de agregación, preservando las unidades mm/h.
+
 ---
 
 ### Paso 4: configurar los ajustes de salida
@@ -158,6 +160,7 @@ El script exporta datos de lluvia para el **cuadro delimitador rectangular** alr
 - HydroPol2D y la mayoría de los modelos hidrológicos pueden ajustarse a límites exactos durante el procesamiento
 
 **Si necesita un recorte exacto de la cuenca de captación**: el archivo de forma de la cuenca de captación exportado se puede utilizar para recortar rásteres en el software SIG o durante el preprocesamiento del modelo.
+
 ---
 
 ### Archivos incluidos en la exportación

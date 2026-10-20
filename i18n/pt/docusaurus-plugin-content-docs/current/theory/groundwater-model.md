@@ -87,6 +87,7 @@ O agendador assíncrono fica ativo por padrão quando a modelagem de águas subt
 | `flag_capillary_rise` | 1 | Permite a ascensão capilar em camadas simples quando o armazenamento em camadas do solo está presente. |
 
 A recarga pendente, a ascensão capilar e a troca líquida são armazenadas como variáveis ​​de estado do escalonador. Quando uma atualização das águas subterrâneas é executada, a profundidade líquida de troca acumulada é dividida pelo intervalo decorrido das águas subterrâneas para formar o termo de recarga passado para o solucionador saturado.
+
 ---
 
 ## 3. Posição do lençol freático e capacidade da zona não saturada
@@ -135,6 +136,7 @@ onde:
 - $\theta_r$ = teor volumétrico de água residual $[-]$
 
 Assim, à medida que o lençol freático sobe, a zona vadosa diminui e a capacidade de armazenamento disponível para infiltração diminui. Quando o armazenamento em camadas do solo está ativo, o código avalia este limite através das capacidades explícitas dos armazenamentos próximos à superfície, zona radicular e zona de transmissão após truncamento pela posição atual do lençol freático.
+
 ---
 
 ## 4. Troca de Vadose em Camadas Padrão para Água Subterrânea
@@ -195,7 +197,7 @@ O caminho de recarga em camadas é calculado como uma cascata descendente:
 
 Conceitualmente, a profundidade de drenagem de uma camada ao longo de um intervalo de tempo pode ser resumida como
 $$
-\Delta D_{\ell} \aprox K_{\ell}\,\Delta t
+\Delta D_{\ell} \approx K_{\ell}\,\Delta t
 $$
 sujeito a:
 - água disponível na camada doadora,
@@ -212,6 +214,7 @@ onde $\Delta S_{\rightarrow \mathrm{gw}}$ é a transmissão total de água para 
 ### 4.4 Formulação substituta legada
 
 HydroPol2D ainda contém o antigo fechamento de recarga de balde representativo para casos em que os dados explícitos de armazenamento em camadas não estão disponíveis. Nesse modo de fallback, um único estado de armazenamento vadoso é convertido em um conteúdo representativo de água e drenado com um fechamento semelhante ao Darcy. Essa formulação deve ser tratada como **legado/substituto**, e não como o caminho teórico principal para o modelo atual.
+
 ---
 
 ## 5. Ascensão Capilar Opcional
@@ -242,11 +245,12 @@ $$
 R_{\mathrm{net}} = R_{\mathrm{down}} - C_{\mathrm{up}}
 $$
 onde $C_{\mathrm{up}}$ é o fluxo de ascensão capilar ascendente total.
+
 ---
 
 ## 6. Modelo bidimensional de fluxo de águas subterrâneas Boussinesq
 
-Uma vez calculada a recarga, HydroPol2D direciona as águas subterrâneas lateralmente usando a função `PHTOKEN1XYZ_2D_explicit`.
+Uma vez calculada a recarga, HydroPol2D direciona as águas subterrâneas lateralmente usando a função `Boussinesq_2D_explicit`.
 Este solucionador representa o sistema de águas subterrâneas saturadas através de uma aproximação de fluxo não confinado integrada em profundidade.
 ### 6.1 Equação governante
 
@@ -358,6 +362,7 @@ onde:
 - $\mathbf{F}^{\mathrm{avg}}$ = média dos fluxos da interface do preditor e do corretor
 
 Este procedimento preditor-corretor melhora a estabilidade e reduz a difusão numérica em relação a uma simples atualização explícita de Euler.
+
 ---
 
 ## 7. Tempo de atualização das águas subterrâneas e etapa adaptativa do tempo
@@ -437,6 +442,7 @@ Os limites sem fluxo são impostos por condições de gradiente zero no perímet
 ### 8.3 Máscara de captação
 
 Todos os cálculos de águas subterrâneas estão restritos ao domínio computacional válido. As células fora da máscara de captação são definidas como `NaN`.
+
 ---
 
 ## 9. Exfiltração de águas subterrâneas para a superfície
@@ -465,6 +471,7 @@ $$
 h\le h_{\mathrm{surf}}
 $$
 o que evita que as águas subterrâneas permaneçam acima da superfície da terra após a exfiltração ter sido contabilizada.
+
 ---
 
 ## 10. Intercâmbio Rio-Aquífero
@@ -480,6 +487,7 @@ $$
 q_{\mathrm{river}}
 $$
 é inicializado e transportado pela interface de acoplamento como o termo de troca de rio. Isto significa que a interface está presente, mas a troca rio-aquífero deve atualmente ser descrita como um **espaço reservado/gancho estrutural**, e não uma reivindicação de teoria autônoma madura no mesmo nível que recarga, fluxo lateral de águas subterrâneas, ascensão capilar ou exfiltração.
+
 ---
 
 ## 11. Correção do excesso de saturação após elevação do lençol freático {#11-saturation-excess-correction-after-water-table-rise}
@@ -514,6 +522,7 @@ h_{\mathrm{surf}}^{\,\mathrm{old}}+
 S_{\mathrm{excess}}
 $$
 Na implementação padrão em camadas, a mesma correção é aplicada após recalcular a capacidade somada admissível da camada vadose. Esta é uma parte muito importante do HydroPol2D porque garante a **consistência de massa** entre as zonas vadosa e saturada quando o lençol freático sobe durante um intervalo de tempo.
+
 ---
 
 ## 12. Acoplamento de volta às águas superficiais
@@ -530,6 +539,7 @@ d_t + \Delta t\,q_{\mathrm{exf}}
 $$
 com a conversão de unidade apropriada no código de $\mathrm{m}$ para $\mathrm{mm}$.
 Isto significa que HydroPol2D permite que as águas subterrâneas influenciem ativamente a geração de inundações e a humidade próxima da superfície, em vez de tratá-las como um processo desconectado de limites inferiores.
+
 ---
 
 ## 13. Aquífero Profundo {#13-deep-aquifer}
@@ -623,20 +633,21 @@ O volume de entrada de recarga é
 $$
 V_{\mathrm{recharge}}
 =
-\soma R\,\Delta t\,A_{\mathrm{cell}}
+\sum R\,\Delta t\,A_{\mathrm{cell}}
 $$
 O volume de perda por exfiltração é
 $$
 V_{\mathrm{exf}}
 =
-\soma q_{\mathrm{exf}}\,\Delta t\,A_{\mathrm{cell}}
+\sum q_{\mathrm{exf}}\,\Delta t\,A_{\mathrm{cell}}
 $$
 A mudança no armazenamento de água subterrânea é
 $$
 \Delta V_{\mathrm{storage}}
 =
-\soma S_y\,\max(h^{t+\Delta t}-z_0,0)\,A_{\mathrm{cell}}-
-\soma S_y\,\max(h^t-z_0,0)\,A_{\mathrm{cell}}
+\sum S_y\,\max(h^{t+\Delta t}-z_0,0)\,A_{\mathrm{cell}}
+-
+\sum S_y\,\max(h^t-z_0,0)\,A_{\mathrm{cell}}
 $$
 O resíduo do balanço de massa é então
 $$
@@ -651,6 +662,7 @@ onde:
 
 Esta quantidade é armazenada como erro de diagnóstico de águas subterrâneas em HydroPol2D.
 Quando a água subterrânea assíncrona está ativa, a recarga acumulada e a troca capilar pendentes não são tratadas como perda de modelo. Eles são armazenados como troca de água subterrânea em trânsito até que a próxima atualização saturada consuma o volume do escalonador. Esta distinção é importante para interpretar o diagnóstico do balanço hídrico de todo o modelo.
+
 ---
 
 ## 15. Resumo {#15-summary}

@@ -31,19 +31,25 @@ Do ponto de vista da modelagem, a formulação inercial local é um bom compromi
 - e benchmarks de roteamento controlados em diversas aproximações numéricas,
 
 tudo dentro de uma estrutura hidrológico-hidrodinâmica modular. O modelo inercial local é, portanto, o núcleo hidrodinâmico que conecta os módulos de geração de chuva-escoamento à redistribuição espacial das águas superficiais.
+
 ---
 
 ### 1.2 Equações governantes
 
 O ponto de partida é a equação de conservação de massa integrada em profundidade:
 $$
-\frac{\partial h}{\partial t}+
-\frac{\partial q_x}{\partial x}+
+\frac{\partial h}{\partial t}
++
+\frac{\partial q_x}{\partial x}
++
 \frac{\partial q_y}{\partial y}
 =
-R-
-i-
-et+
+r
+-
+i
+-
+et
++
 s
 $$
 onde:
@@ -72,6 +78,7 @@ onde:
 - $n$ é o coeficiente de rugosidade de Manning $[\mathrm{T}\,\mathrm{L}^{-1/3}]$
 
 Esta formulação negligencia a aceleração convectiva, mas mantém o equilíbrio hidráulico dominante entre aceleração local, gradiente de pressão e resistência ao atrito do leito.
+
 ---
 
 ### 1.3 Elevação da superfície da água e declives da face
@@ -113,6 +120,7 @@ $$
 S_y = \frac{\eta_{\mathrm{S},y}^{\ast} - \eta_{\mathrm{N},y}^{\ast}}{\Delta x}
 $$
 Esta reconstrução hidrostática é essencial perto de frentes úmidas-secas porque evita profundidades negativas não físicas e garante que o gradiente de pressão seja avaliado apenas sobre a porção molhada hidraulicamente conectada da interface. Em termos práticos, é um dos principais ingredientes estabilizadores da implementação inercial local do HydroPol2D.
+
 ---
 
 ### 1.4 Profundidade facial efetiva
@@ -129,6 +137,7 @@ H_{\mathrm{f},x}
 $$
 e da mesma forma na direção $y$.
 Assim, a profundidade da face não é simplesmente a média aritmética das profundidades das células vizinhas. Em vez disso, é uma profundidade reconstruída hidrostaticamente, referenciada à elevação mais alta do leito na interface. Isto torna o modelo muito mais robusto quando células adjacentes têm diferentes elevações de leito ou quando um lado está quase seco. A mesma definição conceitual já está declarada em seu documento de referência.
+
 ---
 
 ### 1.5 Solucionador inercial local discreto
@@ -159,6 +168,7 @@ A estrutura desta equação é importante:
 - então o esquema se comporta como um preditor explícito com tratamento de atrito semi-implícito.
 
 É por isso que o método é estável e eficiente para simulações de inundações rasas.
+
 ---
 
 ### 1.6 Esquemas numéricos disponíveis em HydroPol2D
@@ -193,23 +203,29 @@ $$
 q^{t+\Delta t}
 =
 \frac{
-\thetaq^{t}+
-(1-\theta) q_{\mathrm{upwind}}-
+\theta q^{t}
++
+(1-\theta) q_{\mathrm{upwind}}
+-
 g\,H_{\mathrm{f}}\,\Delta t\,S
 }{
-1+
+1
++
 g\,\Delta t\,n^2
-\,\dfrac{|q^{t}|}{H_{\mathrm{f}}^{7/3}}
+\,
+\dfrac{|q^{t}|}{H_{\mathrm{f}}^{7/3}}
 }
 $$
 
 O fator de difusividade é calculado como
 $$
-\teta
+\theta
 =
-1-
+1
+-
 \frac{\Delta t}{\Delta x}
-\min\!\left(\frac{|q|}{H_{\mathrm{f}}},
+\min\!\left(
+\frac{|q|}{H_{\mathrm{f}}},
 \sqrt{g\,H_{\mathrm{f}}}
 \right)
 $$
@@ -231,17 +247,22 @@ $$
 q^{t+\Delta t}
 =
 \frac{
-\thetaq^{t}+
-(1-\theta) q_{\mathrm{avg}}-
+\theta q^{t}
++
+(1-\theta) q_{\mathrm{avg}}
+-
 g\,H_{\mathrm{f}}\,\Delta t\,S
 }{
-1+
+1
++
 g\,\Delta t\,n^2
-\,\dfrac{|q^{t}|}{H_{\mathrm{f}}^{7/3}}
+\,
+\dfrac{|q^{t}|}{H_{\mathrm{f}}^{7/3}}
 }
 $$
 
 Este esquema é mais simétrico que a versão upwind e menos difusivo, mas ainda usa o mesmo coeficiente $\theta$ para suprimir a instabilidade. Na prática, proporciona um compromisso entre a resposta mais nítida da forma Bates original e o amortecimento mais forte da forma contra o vento.
+
 ---
 
 ### 1.7 Tratamento úmido-seco e profundidade operatória mínima
@@ -259,6 +280,7 @@ Em termos de código, HydroPol2D zera:
 
 sempre que um rosto está seco ou inválido. Em seguida, aplica uma lógica adicional para águas rasas com base em uma profundidade operacional mínima $h_{\min}$. Se a profundidade atual da célula estiver abaixo de $h_{\min}$, os fluxos de faces vizinhas serão zerados para suprimir movimentos espúrios em células quase secas. No caso padrão, o código usa $h_{\min}=10^{-6}\,\mathrm{m}$, embora possa ser definido como zero quando hidrogramas de afluência estão sendo impostos.
 Esta lógica húmida-seca é uma das razões pelas quais o modelo permanece robusto nas fases de expansão e recessão das cheias.
+
 ---
 
 ### 1.9 Conversão de unidades e escrituração de quitação facial
@@ -287,6 +309,7 @@ onde:
 - $A_{\mathrm{cell}}$ é a área da célula $[\mathrm{L}^2]$
 
 Esta contabilidade é necessária porque HydroPol2D acopla os fluxos hidrodinâmicos a termos hidrológicos que são rastreados em unidades de profundidade como $\mathrm{mm}$ ou $\mathrm{mm/h}$.
+
 ---
 
 ### 1.10 Limites de fluxo físico
@@ -312,6 +335,7 @@ $$
 $$
 
 Esta é uma salvaguarda numérica pragmática contra picos isolados causados ​​por profundidade abrupta ou descontinuidades de taludes.
+
 ---
 
 ### 1.11 Atualização de continuidade e equilíbrio de volume de células
@@ -342,6 +366,7 @@ $$
 h^{t+\Delta t} \ge 0
 $$
 para que profundidades de água negativas nunca sejam permitidas.
+
 ---
 
 ### 1.12 Condições limite de saída
@@ -358,6 +383,7 @@ e a descarga de saída é calculada com a equação de Manning.
 
 Quando `outlet_type \ne 1`, HydroPol2D calcula um controle de saída tipo inclinação crítica a partir da profundidade e rugosidade local. Em ambos os casos, o fluxo de saída é convertido para uma taxa equivalente à profundidade e subtraído da profundidade final da água durante a atualização.
 Este tratamento de saída permite que o solucionador inercial local permaneça incorporado dentro de um domínio raster enquanto ainda aplica uma condição de contorno fisicamente interpretável no perímetro do domínio.
+
 ---
 
 ### 1.13 Interação reservatório e controle hidráulico
@@ -368,6 +394,7 @@ Q = k\,(h-h_0)^m
 $$
 sujeito a restrições de água disponível e conexões a jusante definidas pelo usuário. Na implementação atual, a lógica de controle de dois estágios é suportada. O volume descarregado resultante é transferido diretamente para células designadas a jusante.
 Isto significa que o solucionador inercial local não é um bloco de roteamento fechado; é um núcleo de roteamento que pode ser modificado localmente por estruturas de controle hidráulico.
+
 ---
 
 ### 1.14 Por que o modelo inercial local é o padrão em HydroPol2D
@@ -385,6 +412,7 @@ Terceiro, integra-se naturalmente com o acoplamento de processo validado do Hydr
 - e acoplamento hidrológico fonte-sumidouro.
 
 Por estas razões, fornece o melhor equilíbrio entre realismo físico e tratabilidade computacional para a maioria das aplicações HydroPol2D.
+
 ---
 
 ### 1.15 Modelo subgrade de Neal (2012)
@@ -505,6 +533,7 @@ O solucionador suporta:
 - limites de fluxo crítico e velocidade.
 
 Isso o torna o principal motor hidrodinâmico do HydroPol2D para roteamento de fluxo de superfície com base física.
+
 ---
 
 ## 2. Roteamento de fluxo de impulso total
@@ -514,6 +543,7 @@ Isso o torna o principal motor hidrodinâmico do HydroPol2D para roteamento de f
 HydroPol2D também inclui um **solucionador de momento total para águas rasas** para casos em que a aproximação inercial local não é suficiente. Esta opção destina-se a benchmarks hidráulicos controlados e aplicações onde a aceleração convectiva, a propagação de ondas ou efeitos dinâmicos mais fortes precisam ser representados de forma mais explícita.
 O modelo de momento total resolve as equações bidimensionais conservadoras de águas rasas na grade raster. No HydroPol2D, isso é implementado como um núcleo de roteamento de volume finito com armazenamento explícito e estados de momento.
 O solucionador é ativado por meio do sinalizador de roteamento full-momentum na configuração do modelo. Deve ser usado como uma alternativa, não simultaneamente, ao roteamento local inercial, cinemático, difusivo, D8 ou CA.
+
 ---
 
 ### 2.2 Equações conservadoras para águas rasas
@@ -523,8 +553,8 @@ $$
 \mathbf{U}
 =
 \begin{bmatrix}
-h\\
-eh \\
+h \\
+hu \\
 hv
 \end{bmatrix}
 $$
@@ -548,7 +578,7 @@ $$
 \mathbf{F}(\mathbf{U})
 =
 \begin{bmatrix}
-eh \\
+hu \\
 \dfrac{(hu)^2}{h} + \dfrac{1}{2}gh^2 \\
 \dfrac{(hu)(hv)}{h}
 \end{bmatrix}
@@ -575,6 +605,7 @@ $$
 \end{bmatrix}
 $$
 e os termos da fonte de atrito representam a resistência Manning.
+
 ---
 
 ### 2.3 Fluxos numéricos e memória de momento
@@ -587,6 +618,7 @@ Ao contrário do solucionador inercial local, o modelo de momento total deve tra
 - termos do coletor de saída.
 
 Essa memória de momento é o que torna o modelo um verdadeiro solucionador de ondas dinâmicas, em vez de um recálculo de descarga baseado apenas na inclinação atual da superfície da água.
+
 ---
 
 ### 2.4 Inclinação do leito, fricção e tratamento de umedecimento e secagem
@@ -604,6 +636,7 @@ $$
 $$
 onde $n$ é o coeficiente de rugosidade de Manning. Isso evita um grande impulso irrealista em águas rasas, ao mesmo tempo que mantém a propagação dinâmica onde a profundidade da água é suficiente.
 A reconstrução hidrostática está disponível para terrenos complexos e tratamento de talude de leito bem balanceado, enquanto o caminho de referência controlado padrão usa o robusto tratamento de fluxo/fonte HLL implementado no solucionador atual.
+
 ---
 
 ### 2.5 Atualização de continuidade e acoplamento HydroPol2D
@@ -629,6 +662,7 @@ q_{\mathrm{mm/h}}
 3600
 $$
 Isso permite que o solucionador de momento total permaneça compatível com termos de fonte/sumidouro hidrológico, transporte de qualidade da água, controles de reservatório e diagnóstico de condições de contorno.
+
 ---
 
 ### 2.6 Condições limite e controles hidráulicos
@@ -642,6 +676,7 @@ O modelo full-momentum suporta a mesma arquitetura prática de condições de co
 
 Para fronteiras fechadas, o fluxo de massa normal é zero, mas os efeitos da pressão de parede são contabilizados na atualização do momento. Isto é importante para um comportamento estável próximo às bordas do domínio e células inativas.
 Os fluxos de saída são convertidos em um sumidouro de volume e removidos do armazenamento de água local, sujeitos às restrições de água disponível.
+
 ---
 
 ### 2.7 Evidências de validação atuais
@@ -655,11 +690,13 @@ O solucionador de impulso total faz parte da suíte de validação. As evidênci
 - hidrograma de afluência e contabilidade de reservatório/estrutura de controle onde a rota de momento total é usada.
 
 Esses testes validam a implementação de impulso total como uma opção de roteamento de ondas dinâmicas controladas. Eles não implicam calibração de campo para uma determinada bacia hidrográfica.
+
 ---
 
 ### 2.8 Uso prático do solver full momentum
 
 O solver full momentum é indicado para simulações em que os termos adicionais de advecção e aceleração local justificam o custo computacional maior. No HydroPol2D, ele deve ser tratado como uma escolha própria de família de roteamento, e não como um complemento aos modos mais leves.
+
 ---
 
 ## 3. Roteamento D4 difusivo e cinemático
@@ -697,8 +734,9 @@ A descarga da unidade frontal é então avaliada com uma lei de fluxo do tipo Ma
 $$
 q_f
 =
-\nomedooperador{sign}(S_f)
-\frac{H_f^{5/3}}{n}\sqrt{|S_f|}
+\operatorname{sign}(S_f)
+\frac{H_f^{5/3}}{n}
+\sqrt{|S_f|}
 $$
 
 Este modo pode representar uma redistribuição tipo remanso impulsionada por gradientes da superfície da água, embora permaneça muito mais barato do que resolver uma equação de momento.
@@ -710,14 +748,15 @@ S_b = \frac{z_L - z_R}{\Delta x}
 $$
 O código então aplica uma regra de profundidade do doador:
 - se $S_b > 0$, a célula esquerda é a doadora e sua profundidade impulsiona o fluxo,
-- se $S_b &lt; 0$, a célula direita é a doadora e sua profundidade impulsiona o fluxo.
+- se $S_b < 0$, a célula direita é a doadora e sua profundidade impulsiona o fluxo.
 
 Usando a profundidade do doador $H_{\mathrm{donor}}$, a descarga da unidade é
 $$
 q_f
 =
-\nomedooperador{sign}(S_b)
-\frac{H_{\mathrm{donor}}^{5/3}}{n_{\mathrm{donor}}}\sqrt{|S_b|}
+\operatorname{sign}(S_b)
+\frac{H_{\mathrm{donor}}^{5/3}}{n_{\mathrm{donor}}}
+\sqrt{|S_b|}
 $$
 
 Isso torna a rota cinemática estritamente direcionada à inclinação e evita que ela represente o mesmo comportamento de remanso capturado pelos solucionadores difusivos, inerciais ou de momento total.
@@ -780,6 +819,7 @@ $$
 \Delta\eta_{i,j} > 0
 $$
 Isso garante que a água flua apenas **descendo em termos de superfície livre**, evitando o refluxo não físico.
+
 ---
 
 ### 4.4 Volume transferível disponível
@@ -830,6 +870,7 @@ onde:
 - $S$ = inclinação $[-]$
 
 Esta velocidade é usada para controlar a **taxa de redistribuição da água**.
+
 ---
 
 ### 4.7 Cálculo de saída
@@ -851,9 +892,10 @@ Após a redistribuição, a profundidade da água é atualizada como:
 $$
 h^{t+\Delta t}
 =
-h^t+
+h^t
++
 \frac{
-\soma Q_{\mathrm{in}} - \soma Q_{\mathrm{out}}
+\sum Q_{\mathrm{in}} - \sum Q_{\mathrm{out}}
 }{
 A_{\mathrm{cell}}
 }
@@ -867,6 +909,7 @@ $$
 h^{t+\Delta t} \ge 0
 $$
 garantindo consistência física.
+
 ---
 
 ### 4.9 Estabilidade e robustez
@@ -905,6 +948,7 @@ O modelo Cellular Automata é recomendado quando:
 - o comportamento hidráulico detalhado não é crítico.
 
 Para a propagação de inundações com base física, o **Modelo Inercial Local continua sendo a opção preferida**.
+
 ---
 
 ## Resumo

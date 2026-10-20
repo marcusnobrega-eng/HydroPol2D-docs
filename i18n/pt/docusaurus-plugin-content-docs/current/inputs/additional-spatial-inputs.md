@@ -5,6 +5,7 @@ title: Entradas Espaciais Adicionais
 # Entradas Espaciais Adicionais
 
 Além dos principais DEM, LULC e rasters de solo, HydroPol2D pode ingerir um conjunto mais amplo de rasters opcionais e entradas de estado inicial. Esta página documenta as entradas baseadas em arquivo suportadas que foram historicamente subdescritas nos documentos.
+
 ---
 
 ## Entradas Raster Suplementares
@@ -42,6 +43,7 @@ Se `GW_table_path` for fornecido, HydroPol2D usará esse raster como a elevaçã
 - e preenchido localmente apenas onde o raster tiver valores ausentes.
 
 Se nenhum raster do lençol freático for fornecido, o modelo volta para uma altura inicial padrão simples, ligeiramente acima do leito rochoso. Isso significa que `GW_table_path` é uma verdadeira entrada opcional de condição inicial, não um raster de águas subterrâneas obrigatório.
+
 ---
 
 ## Entrada de Impermeabilidade Fracionada
@@ -57,6 +59,7 @@ Comportamento atual importante:
 - células já classificadas como impermeáveis/acumuladas pela tabela LULC são forçadas a permanecer totalmente impermeáveis.
 
 Portanto, o raster impermeável deve ser documentado como uma **substituição/refinamento de impermeabilidade fracionária**, não como um mapa de cobertura de solo independente e separado.
+
 ---
 
 ## Alinhamento e Reamostragem
@@ -83,6 +86,7 @@ O modo de canal subgrade de Neal (2012) usa o DEM grosseiro como elevação da p
 A largura do canal deve ser menor que a resolução da célula. Um canal com largura igual ou superior à célula deve ser resolvido pela grade comum. As rugosidades do canal e da planície são definidas separadamente pelas entradas de parâmetros do rio e do uso e cobertura da terra.
 
 Consulte [Bandeiras do modelo](../configuration/flags) para a combinação de roteamento necessária.
+
 ---
 
 ## Interpretação Pública Recomendada
@@ -94,6 +98,7 @@ A maneira mais fácil de pensar sobre a superfície de entrada é:
 4. Rasters WQ suportam módulos especializados opcionais.
 
 Essa é a história de entrada implementada atualmente que os documentos devem seguir.
+
 ---
 
 ## Profundidade da raiz

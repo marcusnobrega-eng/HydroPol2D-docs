@@ -6,6 +6,7 @@ title: HydroPol2D Datos de forzado diarios
 
 HydroPol2D requiere datos de forzamiento meteorológico distribuidos espacialmente para impulsar simulaciones hidrológicas. Este script Google Earth Engine (GEE) automatiza la extracción y el formato de entradas de lluvia y evapotranspiración (ETP) de múltiples conjuntos de datos globales.
 El flujo de trabajo genera archivos CSV en el formato exacto requerido por HydroPol2D, con datos extraídos en ubicaciones de medidores virtuales distribuidos en todo el dominio de modelado.
+
 ---
 
 ## Qué hace el flujo de trabajo
@@ -18,6 +19,7 @@ El script procesa y exporta tres conjuntos de datos meteorológicos globales:
 - **NLDAS** (Sistema de asimilación de datos terrestres de América del Norte)
 
 Cada conjunto de datos produce un archivo CSV independiente con la intensidad de la lluvia (mm/h) en todas las ubicaciones de los medidores.
+
 ---
 
 ### Entradas climáticas/ETP
@@ -65,6 +67,7 @@ Los gráficos de validación incorporados muestran:
 - Serie temporal en la ubicación del primer medidor
 
 Estos ayudan a identificar lagunas de datos, valores atípicos o inconsistencias en los conjuntos de datos.
+
 ---
 
 ## Estructura de salida

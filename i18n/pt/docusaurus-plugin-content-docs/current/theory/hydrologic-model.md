@@ -15,6 +15,7 @@ Na escala celular, o modelo hidrológico determina quanta água:
 - ou é removido por evaporação e transpiração.
 
 Esses processos são avaliados sequencialmente dentro de cada intervalo de tempo e fornecem o forçamento hidrológico para o modelo hidrodinâmico.
+
 ---
 
 ## 1. Balanço Hidrológico Conceitual
@@ -23,13 +24,20 @@ No nível conceitual, o equilíbrio hidrológico de uma célula da grade pode se
 $$
 \frac{\partial d}{\partial t}
 =
-P_{\mathrm{eff}}+
-M_{\mathrm{snow}}+
-q_{\mathrm{exf}}-
-eu-
-E_{\mathrm{surf}}-
-T_{\mathrm{r}}+
-q_{\mathrm{src}}-
+P_{\mathrm{eff}}
++
+M_{\mathrm{snow}}
++
+q_{\mathrm{exf}}
+-
+i
+-
+E_{\mathrm{surf}}
+-
+T_{\mathrm{r}}
++
+q_{\mathrm{src}}
+-
 q_{\mathrm{sink}}
 $$
 onde:
@@ -43,6 +51,7 @@ onde:
 - $q_{\mathrm{src}}$ e $q_{\mathrm{sink}}$ são termos adicionais de origem e destino impostos $[\mathrm{L}\,\mathrm{T}^{-1}]$
 
 Nem todos os termos estão ativos simultaneamente. Sua ativação depende da configuração de forçamento selecionada e dos sinalizadores do modelo. No entanto, este equilíbrio fornece o quadro conceptual utilizado para organizar todos os fluxos verticais que actuam numa célula da grelha.
+
 ---
 
 ## 2. Interceptação do dossel, passagem e fluxo do tronco
@@ -56,7 +65,7 @@ HydroPol2D representa a interceptação do dossel usando um modelo de intercepta
 A rotina de interceptação recebe:
 - precipitação bruta $P_{\mathrm{gross}}$,
 - evaporação potencial $E_{\mathrm{p}}$,
-- índice de área foliar $\mathrm{PHTOKEN0XYZ}$,
+- índice de área foliar $\mathrm{LAI}$,
 - armazenamento anterior do dossel $S_{\mathrm{can,prev}}$,
 - coeficiente de armazenamento do dossel $C_{\mathrm{can}}$,
 
@@ -66,12 +75,12 @@ Esta etapa de interceptação controla quanto da entrada de água atmosférica �
 
 O armazenamento máximo de interceptação é calculado como
 $$
-S_{\mathrm{can,max}} = C_{\mathrm{can}} \,\mathrm{PHTOKEN0XYZ}
+S_{\mathrm{can,max}} = C_{\mathrm{can}} \,\mathrm{LAI}
 $$
 onde:
 - $S_{\mathrm{can,max}}$ é o armazenamento máximo de água no dossel $[\mathrm{L}]$
 - $C_{\mathrm{can}}$ é o coeficiente de armazenamento do dossel $[\mathrm{L}]$
-- $\mathrm{PHTOKEN0XYZ}$ é o índice de área foliar $[-]$
+- $\mathrm{LAI}$ é o índice de área foliar $[-]$
 
 Esta relação implica que a vegetação com maior área foliar pode armazenar mais água interceptada.
 ### 2.2 Fluxo de tronco
@@ -176,6 +185,7 @@ $$
 P_{\mathrm{int}} = \Delta P_{\mathrm{agg}}
 $$
 Esta correção não é usada como evidência de validação até que o fluxo de trabalho hidráulico da sub-rede acoplada seja reparado e revalidado.
+
 ---
 
 ## 3. Evapotranspiração e Evaporação Potenciais
@@ -219,13 +229,14 @@ $$
 \mathrm{ETP}
 =
 \frac{
-0,408\,\Delta\,(R_n - G_{\mathrm{soil}})+
-\gama
+0.408\,\Delta\,(R_n - G_{\mathrm{soil}})
++
+\gamma
 \left(
 \frac{900\,U_2\,(e_s - e_a)}{T_{\mathrm{air}} + 273}
 \right)
 }{
-\Delta + \gamma\left(1 + 0,34\,U_2\right)
+\Delta + \gamma\left(1 + 0.34\,U_2\right)
 }
 $$
 e o termo semelhante à evaporação é
@@ -233,13 +244,14 @@ $$
 E_{\mathrm{p}}
 =
 \frac{
-0,408\,\Delta\,(R_n - G_{\mathrm{soil}})+
-\gama
+0.408\,\Delta\,(R_n - G_{\mathrm{soil}})
++
+\gamma
 \left(
 \frac{900\,U_2\,(e_s - e_a)}{T_{\mathrm{air}} + 273}
 \right)
 }{
-\Delta + \gama
+\Delta + \gamma
 }
 $$
 onde:
@@ -262,14 +274,14 @@ A declinação solar é calculada como
 $$
 \delta_{\mathrm{sol}}
 =
-0,409
-\pecado\!\left(
-\frac{2\pi}{365}J - 1,39
+0.409
+\sin\!\left(
+\frac{2\pi}{365}J - 1.39
 \right)
 $$
 A distância relativa Terra-Sol é
 $$
-d_r = 1 + 0,033\cos\!\left(\frac{2\pi}{365}J\right)
+d_r = 1 + 0.033\cos\!\left(\frac{2\pi}{365}J\right)
 $$
 A radiação extraterrestre é então calculada como
 $$
@@ -291,7 +303,7 @@ $$
 R_{\mathrm{so}}
 =
 \left(
-0,75 + 2\vezes10^{-5} z
+0.75 + 2\times10^{-5} z
 \right) R_a
 $$
 A radiação líquida de ondas curtas é
@@ -305,14 +317,14 @@ R_{\mathrm{nl}}
 \sigma
 \left(
 \frac{
-(T_{\mathrm{max}}+273,16)^4 + (T_{\mathrm{min}}+273,16)^4
+(T_{\mathrm{max}}+273.16)^4 + (T_{\mathrm{min}}+273.16)^4
 }{2}
 \right)
 \left(
-0,34 - 0,14\sqrt{e_a}
+0.34 - 0.14\sqrt{e_a}
 \right)
 \left(
-1,35\frac{R_s}{R_{\mathrm{so}}} - 0,35
+1.35\frac{R_s}{R_{\mathrm{so}}} - 0.35
 \right)
 $$
 A radiação líquida é então
@@ -326,26 +338,26 @@ $$
 \frac{
 4098
 \left[
-0,6108\exp\!\left(
-\frac{17,27\,T_{\mathrm{air}}}{T_{\mathrm{air}}+237,3}
+0.6108\exp\!\left(
+\frac{17.27\,T_{\mathrm{air}}}{T_{\mathrm{air}}+237.3}
 \right)
 \right]
 }{
-(T_{\mathrm{air}}+237,3)^2
+(T_{\mathrm{air}}+237.3)^2
 }
 $$
 A pressão atmosférica é estimada como
 $$
 P_{\mathrm{atm}}
 =
-101,3
+101.3
 \left(
 \frac{293 - 0.0065 z}{293}
 \right)^{5.26}
 $$
 e a constante psicrométrica é
 $$
-\gama = 0,665 \vezes 10^{-3} P_{\mathrm{atm}}
+\gamma = 0.665 \times 10^{-3} P_{\mathrm{atm}}
 $$
 onde:
 - $J$ é o dia do ano $[-]$
@@ -432,7 +444,7 @@ A taxa de infiltração final é determinada como a mínima entre esses limites 
 ### Estrutura vadosa em camadas atual
 
 A implementação atual representa o solo e a coluna de águas subterrâneas rasas com quatro zonas conceituais:
-- uma camada próxima à superfície, com uma espessura alvo padrão de $0,10\,\mathrm{m}$;
+- uma camada próxima à superfície, com uma espessura alvo padrão de $0.10\,\mathrm{m}$;
 - uma camada de zona radicular, cuja profundidade é atribuída a partir do uso/cobertura do solo;
 - uma camada de zona de transmissão, que ocupa qualquer espessura vadosa remanescente abaixo da zona radicular;
 - uma zona de águas subterrâneas, cujo topo é a profundidade atual do lençol freático.
@@ -449,6 +461,7 @@ Os mesmos parâmetros hidráulicos básicos do solo são atribuídos às camadas
 - `Ks_multiplier_transmission`.
 
 Isso mantém a parametrização prática: a tabela de solos define o comportamento físico básico do solo, LULC define a profundidade da zona radicular e os multiplicadores permitem contrastes verticais quando os dados ou a calibração os suportam.
+
 ---
 
 ### 4.1 Armazenamento insaturado controlado pelo lençol freático
@@ -498,13 +511,14 @@ onde:
 - $\theta_{\mathrm{sat}}$ é o conteúdo de água saturada $[-]$
 
 Esta formulação garante que o armazenamento disponível responda dinamicamente às flutuações das águas subterrâneas. À medida que o lençol freático aumenta, $z_{\mathrm{wt}}$ diminui e a capacidade de armazenamento vadose diminui de acordo. Na implementação em camadas padrão, essa mesma lógica é aplicada por meio das capacidades somadas dos armazenamentos próximos à superfície, zona raiz e zona de transmissão após truncamento pela posição atual do lençol freático.
+
 ---
 
 ### 4.2 Conteúdo representativo de água e saturação efetiva
 
 O conteúdo volumétrico representativo de água na zona vadosa é aproximado como
 $$
-\teta
+\theta
 =
 \theta_{\mathrm{r}} + \frac{S_{\mathrm{uz}}}{z_{\mathrm{wt}}}
 $$
@@ -528,6 +542,7 @@ onde:
 - $S_{\mathrm{e}}$ é a saturação efetiva $[-]$
 
 Esta saturação efetiva é usada para avaliar a sucção matricial e a condutividade hidráulica. Na implementação em camadas padrão, a mesma forma constitutiva é avaliada separadamente para cada camada vadosa; a expressão de estado único acima é o equivalente conceitual para a formulação de fallback herdada.
+
 ---
 
 ### 4.3 Cabeça de pressão matricial
@@ -555,6 +570,7 @@ $$
 \psi_{\mathrm{m}} = 0
 $$
 para evitar instabilidade numérica.
+
 ---
 
 ### 4.4 Condutividade hidráulica insaturada
@@ -577,7 +593,8 @@ onde:
 - $K_{\mathrm{sat}}$ é condutividade hidráulica saturada $[\mathrm{L}\,\mathrm{T}^{-1}]$
 - $\ell$ é o parâmetro de conectividade dos poros $[-]$
 
-Se $\ell$ não for fornecido, um valor padrão de $\ell = 0,5$ será usado.
+Se $\ell$ não for fornecido, um valor padrão de $\ell = 0.5$ será usado.
+
 ---
 
 ### 4.5 Capacidade de infiltração baseada em Darcy
@@ -619,7 +636,7 @@ w_K K_{\mathrm{sat}}+
 $$
 onde $w_K$ é o peso da condutividade próxima à superfície. A capacidade de infiltração é então calculada como
 $$
-Eu_{\mathrm{cap}}
+I_{\mathrm{cap}}
 =
 K_{\mathrm{soil}}
 \left[
@@ -629,18 +646,20 @@ h_{\mathrm{pond}} - \psi_{\mathrm{m}},\,
 \Delta h_{\mathrm{max}}
 \right)
 }{
-eu_{\mathrm{top}}
-}+
+L_{\mathrm{top}}
+}
++
 1
 \right]
 $$
 onde:
 - $I_{\mathrm{cap}}$ é a capacidade de infiltração $[\mathrm{L}\,\mathrm{T}^{-1}]$
 - $h_{\mathrm{pond}}$ é a cabeça da superfície $[\mathrm{L}]$
-- $L_{\mathrm{top}}$ é o comprimento da resistência próxima à superfície (padrão $\approx 0,05\,\mathrm{m}$)
+- $L_{\mathrm{top}}$ é o comprimento da resistência próxima à superfície (padrão $\approx 0.05\,\mathrm{m}$)
 - $\Delta h_{\mathrm{max}}$ é a diferença máxima da cabeça motriz (normalmente $1\,\mathrm{m}$)
 
 Esta formulação é responsável pela infiltração impulsionada pela gravidade e pela capilaridade, ao mesmo tempo que se aproxima da molhagem rápida no limite da superfície. O preditor de umedecimento **não** adiciona água ao estado do solo por si só; apenas o fluxo de infiltração aceito atualiza o armazenamento vadose.
+
 ---
 
 ### 4.6 Infiltração limitada por fornecimento e armazenamento limitado
@@ -670,6 +689,7 @@ Restrições adicionais são aplicadas:
 - $i = 0$ quando $z_{\mathrm{wt}} \le 0$
 
 Assim, a infiltração é simultaneamente **limitada pelo fornecimento**, **limitada pela capacidade** e **limitada pelo armazenamento**. No modo em camadas, a aceitação é adicionalmente limitada pelo explícito déficit de armazenamento próximo à superfície antes que a água possa continuar a escoar para baixo através das camadas vadosas mais profundas.
+
 ---
 
 ### 4.7 Atualização de armazenamento Vadose
@@ -821,4 +841,5 @@ O modelo hidrológico em HydroPol2D integra:
 - estresse de Feddes opcional na absorção de água pelas raízes,
 
 em uma estrutura unificada e consistente em massa que resolve os fluxos verticais de água na escala da célula da grade e fornece o forçamento hidrológico para o modelo hidrodinâmico.
+
 ---

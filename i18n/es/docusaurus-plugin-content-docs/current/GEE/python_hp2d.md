@@ -6,6 +6,7 @@ title: Mapas de entrada HP2D + Forzado con Python
 
 Este flujo de trabajo automatiza la generación de todas las entradas espaciales necesarias para el modelado hidrológico utilizando HydroPol2D.
 El script integra múltiples conjuntos de datos globales a través de Google Earth Engine (GEE), los procesa en capas ráster consistentes y exporta resultados tanto espaciales como estadísticos para un dominio de modelado seleccionado.
+
 ---
 
 ## Qué hace el flujo de trabajo
@@ -106,7 +107,8 @@ Salidas:- Geometría
 - Unidades: mm/h
 
 Ejemplo de nombre de archivo:
-PHTOKEN0XYZ_180min_2025_06_01_00_00.tif
+GPM_180min_2025_06_01_00_00.tif
+
 ---
 
 ## Configuración temporal
@@ -230,6 +232,7 @@ Este flujo de trabajo admite:
 ## Versión
 
 v1.0: flujo de trabajo de generación de dominios basado en Python para HydroPol2D
+
 ---
 
 ## Código fuente

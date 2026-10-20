@@ -25,6 +25,7 @@ A validação atual concentra-se no modo de lavagem baseado em massa
 (`flag_wq_model = 0`). A validação usa escalas de parâmetros de construção no estilo SWMM
 para sólidos suspensos totais, mas a fonte da verdade é um balanço de massa analítico
 solução em vez de uma execução numérica SWMM ou um polutógrafo de campo calibrado.
+
 ---
 
 ## 2. Armazenamento de poluentes
@@ -72,6 +73,7 @@ $$
 ## 4. Formulação lavável
 
 Duas formulações de lavagem são implementadas.
+
 ---
 
 ### 4.1 Modelo de lavagem da curva de classificação
@@ -169,7 +171,7 @@ $$
 $$
 o modelo divide o passo de tempo em subetapas:
 $$
-\Delta t = \soma \Delta t_i
+\Delta t = \sum \Delta t_i
 $$
 e atualiza a massa poluente iterativamente:
 $$
@@ -204,7 +206,7 @@ A concentração de poluentes é calculada como:
 $$
 C =
 \frac{W_{\mathrm{out,tot}}}{Q_{\mathrm{tot}} \cdot A_{\mathrm{cell}}}
-\cponto 10^6
+\cdot 10^6
 \quad [\mathrm{mg/L}]
 $$
 onde:
@@ -218,11 +220,11 @@ A concentração de saída é calculada como:
 $$
 C_{\mathrm{out}} =
 \frac{
-\soma W_{\mathrm{out, outlet}}
+\sum W_{\mathrm{out, outlet}}
 }{
-\soma Q_{\mathrm{outlet}} \cdot A_{\mathrm{cell}}
+\sum Q_{\mathrm{outlet}} \cdot A_{\mathrm{cell}}
 }
-\cponto 1000
+\cdot 1000
 \quad [\mathrm{mg/L}]
 $$
 ---
@@ -232,7 +234,7 @@ $$
 A massa cumulativa de poluentes lavados é:
 $$
 M_{\mathrm{washed}} =
-\soma W_{\mathrm{out,tot}} \cdot \Delta t
+\sum W_{\mathrm{out,tot}} \cdot \Delta t
 \quad [\mathrm{kg}]
 $$
 ---
@@ -251,6 +253,7 @@ $$
 q_{\mathrm{out}} \ge 10 \quad [\mathrm{mm/h}]
 $$
 para evitar instabilidade numérica.
+
 ---
 
 ## Resumo

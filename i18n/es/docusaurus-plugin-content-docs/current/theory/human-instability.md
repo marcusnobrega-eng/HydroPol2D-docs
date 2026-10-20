@@ -12,6 +12,7 @@ HydroPol2D incluye un módulo de inestabilidad humana implementado que utiliza l
 | `3` | Implementado | Clasificador de inestabilidad basado en geometría con umbrales de deslizamiento, caída y ahogamiento/dibujo. |
 
 El estado de validación actual para estos modos se rastrea en el [estado de validación](../validation/validation-status).
+
 ---
 
 ## 1. Entradas y Acoplamiento
@@ -23,6 +24,7 @@ El módulo de inestabilidad humana lee el estado hidrodinámico de HydroPol2D:
 - y parámetros de resistencia y geometría humana proporcionados por el usuario.
 
 Esto significa que las estimaciones de inestabilidad son productos de diagnóstico de la simulación hidrológica-hidrodinámica acoplada en lugar de un solucionador hidráulico independiente.
+
 ---
 
 ## 2. Modo 1: Relación de riesgo fuerza-equilibrio
@@ -51,24 +53,24 @@ dónde:
 
 La fricción disponible para resistir el movimiento es
 $$
-F_ {\mathrm{fric}}
+F_{\mathrm{fric}}
 =
-\mu \max\!\izquierda(
+\mu \max\!\left(
 F_{\mathrm{person}} - F_{\mathrm{buoy}},
 0
-\derecha)
+\right)
 $$
 donde $\mu$ es el coeficiente de fricción efectivo de contacto con el suelo.
 ### 2.3 fuerza hidrodinámica
 
 La carga hidrodinámica se representa como
 $$
-F_ {\mathrm{hyd}}
+F_{\mathrm{hyd}}
 =
-\max\!\izquierda(
+\max\!\left(
 \frac{1}{2} C_d \rho_{\mathrm{w}} w_1 h v^2,
 0
-\derecha)
+\right)
 $$
 dónde:
 - $C_d$ es el coeficiente de arrastre
@@ -88,6 +90,7 @@ para estados admitidos donde $F_{\mathrm{fric}} > 0$. En la implementación actu
 - y se puede acumular un mapa de riesgo máximo en ejecución durante la simulación.
 
 Por lo tanto, el modo `1` devuelve un indicador de peligro continuo en lugar de un modo de falla categórico.
+
 ---
 
 ## 3. Modo 3: Clasificador de inestabilidad basado en geometría
@@ -122,7 +125,7 @@ dónde:
 
 La fricción resistente disponible se aproxima como
 $$
-T = \mu \izquierda(W_n - B_n - L\derecha)
+T = \mu \left(W_n - B_n - L\right)
 $$
 donde $L$ es la contribución hidrodinámica del tipo de sustentación. El deslizamiento se clasifica cuando la fuerza motriz excede la fricción disponible:
 $$
@@ -150,6 +153,7 @@ $$
 \text{risk class} = \max(\text{slide},\text{topple},\text{drowning/drawing})
 $$
 Esto produce un ráster de inestabilidad categórica en lugar de la relación continua devuelta por el modo `1`.
+
 ---
 
 ## 4. Notas de alcance y documentación

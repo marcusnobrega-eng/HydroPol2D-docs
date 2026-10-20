@@ -15,7 +15,7 @@ El modelo rastrea:
 
 La variable gobernante es:
 $$
-b_t
+B_t
 $$
 dónde:
 - $B_t$ = masa de contaminante por celda $[\mathrm{M}]$
@@ -25,6 +25,7 @@ La validación actual se centra en el modo de lavado masivo
 (`flag_wq_model = 0`). La validación utiliza escalas de parámetros de acumulación de estilo SWMM.
 para sólidos suspendidos totales, pero la fuente verdadera es un balance de masa analítico
 solución en lugar de un análisis numérico SWMM o un polutógrafo de campo calibrado.
+
 ---
 
 ## 2. Almacenamiento de contaminantes
@@ -48,7 +49,7 @@ Se definen umbrales mínimos y máximos:
 Por debajo de un umbral:
 $$
 b < b_{\min}
-\Flecha derecha \text{no wash-off}
+\Rightarrow \text{no wash-off}
 $$
 ---
 
@@ -72,6 +73,7 @@ $$
 ## 4. Formulación lavable
 
 Se implementan dos formulaciones de lavado.
+
 ---
 
 ### 4.1 Modelo de lavado de curva de clasificación
@@ -156,8 +158,9 @@ Para garantizar la estabilidad y evitar la masa negativa, HydroPol2D calcula un 
 $$
 \Delta t_{\min}
 =
-\min\izquierda(\frac{B_t}{|dw|}
-\derecha)
+\min \left(
+\frac{B_t}{|dW|}
+\right)
 $$
 dónde:
 - sólo se consideran las células que pierden masa,
@@ -188,7 +191,7 @@ Después de la actualización:
 - Se eliminan los valores negativos:
 
 $$
-Bt = \max(Bt, 0)
+B_t = \max(B_t, 0)
 $$
 - Se aplica redondeo para evitar el ruido numérico.
 
@@ -219,7 +222,7 @@ $$
 C_{\mathrm{out}} =
 \frac{
 \sum W_{\mathrm{out, outlet}}
-{}
+}{
 \sum Q_{\mathrm{outlet}} \cdot A_{\mathrm{cell}}
 }
 \cdot 1000
@@ -251,6 +254,7 @@ $$
 q_{\mathrm{out}} \ge 10 \quad [\mathrm{mm/h}]
 $$
 para evitar la inestabilidad numérica.
+
 ---
 
 ## Resumen

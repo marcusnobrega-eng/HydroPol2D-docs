@@ -11,6 +11,7 @@ Todas as configurações de forçamento são definidas através do arquivo `Gene
 - e os conjuntos de dados de entrada associados.
 
 O modelo pode operar sob diferentes estratégias de forçamento dependendo da disponibilidade de dados e dos objetivos da simulação.
+
 ---
 
 ## Visão geral
@@ -24,6 +25,7 @@ HydroPol2D suporta as seguintes opções de forçamento:
 - Condições de limite do palco
 
 Cada tipo de forçamento é ativado e configurado através de `General_Data.xlsx`.
+
 ---
 
 ## Forçamento Meteorológico (Penman – Monteith)
@@ -42,6 +44,7 @@ As variáveis ​​meteorológicas são distribuídas espacialmente usando:
 - ponderação de distância inversa (IDW)
 
 Isto garante que o forçamento atmosférico seja consistente em todo o domínio com base nos pontos de medição disponíveis.
+
 ---
 
 ### Variáveis ​​obrigatórias
@@ -61,6 +64,7 @@ O forçamento meteorológico é usado para calcular a evapotranspiração, que r
 - umidade do solo
 
 Esta abordagem é recomendada quando o forçamento atmosférico total está disponível.
+
 ---
 
 ## Entradas diretas de evaporação e transpiração
@@ -83,11 +87,13 @@ Esses fluxos são aplicados diretamente a:
 - umidade do solo
 
 Esta abordagem ignora a necessidade de forçamento meteorológico.
+
 ---
 
 ## Forçamento de chuva
 
 HydroPol2D suporta múltiplas configurações de entrada de chuva.
+
 ---
 
 ### 1. Chuvas concentradas (uniformes)
@@ -120,6 +126,7 @@ Os campos de precipitação são calculados usando:
 - ponderação de distância inversa (IDW)
 
 As medições do medidor são interpoladas para todas as células da grade com base em sua localização espacial.
+
 ---
 
 #### Descrição
@@ -170,6 +177,7 @@ Definido por meio de `General_Data.xlsx`, incluindo:
 - distribuição temporal
 
 O modelo gera internamente o hietógrafo de chuvas.
+
 ---
 
 ## Hidrogramas de afluência externa
@@ -234,6 +242,7 @@ O arquivo `General_Data.xlsx` define:
 - consistência da unidade
 
 Ele atua como a interface central entre as entradas definidas pelo usuário e o modelo.
+
 ---
 
 ## Interação entre componentes de força
@@ -246,6 +255,7 @@ As entradas forçadas interagem da seguinte forma:
 - limites do estágio restringem a resposta hidráulica
 
 Essas interações definem a dinâmica do sistema.
+
 ---
 
 ## Considerações Práticas

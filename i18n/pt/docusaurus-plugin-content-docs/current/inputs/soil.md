@@ -6,6 +6,7 @@ title: Solo
 
 Os dados do solo definem a resposta hidráulica da superfície terrestre e controlam a taxa na qual a água se infiltra no subsolo em HydroPol2D.
 Dentro da formulação atual do modelo, as propriedades do solo são usadas para estimar **capacidade de infiltração, armazenamento em camadas da zona vadosa, drenagem/recarga, ascensão capilar e comportamento de armazenamento de água subterrânea**.
+
 ---
 
 ## Função em HydroPol2D
@@ -18,6 +19,7 @@ A entrada do solo é usada para representar:
 - Rendimento específico das águas subterrâneas e condutividade hidráulica saturada
 
 Estas propriedades influenciam diretamente a geração do escoamento e o momento da resposta hidrológica.
+
 ---
 
 ## Representação do Solo
@@ -30,7 +32,7 @@ Essa estrutura permite que o modelo:
 - Separar dados espaciais da definição de parâmetros
 
 O mapa de solos ainda fornece uma classe categórica de solo por célula do modelo. Essa classe define os parâmetros hidráulicos básicos da coluna. A implementação em camadas atual particiona a profundidade vadose disponível em:
-- uma camada próxima à superfície, com profundidade alvo padrão de $0,10\,\mathrm{m}$;
+- uma camada próxima à superfície, com profundidade alvo padrão de $0.10\,\mathrm{m}$;
 - uma camada de zona raiz, cuja profundidade é definida pela classe LULC;
 - uma camada de zona de transmissão abaixo da zona raiz;
 - uma zona de águas subterrâneas começando no lençol freático atual.
@@ -146,6 +148,7 @@ Essas classes podem ser derivadas de:
 - Levantamentos regionais de solo
 
 Esta abordagem fornece uma estrutura consistente para atribuir parâmetros hidráulicos, como condutividade e características de retenção.
+
 ---
 
 ### SSURGO (Banco de dados geográfico de levantamento de solos)
@@ -183,6 +186,7 @@ O raster de solo deve:
 - Alinhe espacialmente com todas as outras entradas raster
 
 Qualquer incompatibilidade na resolução ou alinhamento resultará na atribuição espacial incorreta das propriedades do solo.
+
 ---
 
 ## Considerações Práticas
@@ -194,6 +198,7 @@ Ao preparar os insumos do solo:
 - Verifique a consistência entre classes raster e tabelas de parâmetros
 
 Em muitos casos, simplificar o número de classes de solos melhora a estabilidade e a interpretabilidade do modelo.
+
 ---
 
 ## Resumo

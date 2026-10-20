@@ -6,6 +6,7 @@ title: GPM IMERG Extração de dados de precipitação
 
 Este script autônomo Google Earth Engine (GEE) automatiza a extração de dados de precipitação de satélite de alta resolução do conjunto de dados NASA GPM (Medição de Precipitação Global) IMERG para qualquer bacia hidrográfica em todo o mundo.
 O fluxo de trabalho gera rasters GeoTIFF individuais para cada intervalo de tempo, prontos para modelagem hidrológica com HydroPol2D ou outros modelos distribuídos.
+
 ---
 
 ## O que o fluxo de trabalho faz
@@ -39,21 +40,21 @@ O script baixa dados de precipitação de **GPM IMERG V07** (Integrated Multi-sa
 ### Convenção de nome de arquivo
 
 O script gera nomes de arquivos descritivos que codificam informações temporais:
-**Dados de 30 minutos**:- PHTOKEN0XYZ_30min_2023_01_14_00_00.tif
-- PHTOKEN0XYZ_30min_2023_01_14_00_30.tif
-- PHTOKEN0XYZ_30min_2023_01_14_01_00.tif
+**Dados de 30 minutos**:- GPM_30min_2023_01_14_00_00.tif
+- GPM_30min_2023_01_14_00_30.tif
+- GPM_30min_2023_01_14_01_00.tif
 
-**Agregação por hora**:- PHTOKEN0XYZ_60min_2023_01_14_00_00.tif
-- PHTOKEN0XYZ_60min_2023_01_14_01_00.tif
-- PHTOKEN0XYZ_60min_2023_01_14_02_00.tif
+**Agregação por hora**:- GPM_60min_2023_01_14_00_00.tif
+- GPM_60min_2023_01_14_01_00.tif
+- GPM_60min_2023_01_14_02_00.tif
 
-**Agregação de 3 horas** (mesma resolução temporal do MSWEP):- PHTOKEN0XYZ_180min_2023_01_14_00_00.tif
-- PHTOKEN0XYZ_180min_2023_01_14_03_00.tif
-- PHTOKEN0XYZ_180min_2023_01_14_06_00.tif
+**Agregação de 3 horas** (mesma resolução temporal do MSWEP):- GPM_180min_2023_01_14_00_00.tif
+- GPM_180min_2023_01_14_03_00.tif
+- GPM_180min_2023_01_14_06_00.tif
 
-**Agregação diária**:- PHTOKEN0XYZ_1440min_2023_01_14_00_00.tif
-- PHTOKEN0XYZ_1440min_2023_01_15_00_00.tif
-- PHTOKEN0XYZ_1440min_2023_01_16_00_00.tif
+**Agregação diária**:- GPM_1440min_2023_01_14_00_00.tif
+- GPM_1440min_2023_01_15_00_00.tif
+- GPM_1440min_2023_01_16_00_00.tif
 
 ---
 
@@ -116,6 +117,7 @@ Selecione o intervalo de tempo (em minutos) para seus resultados de precipitaç�
 - 1 ano diariamente: 365 arquivos (aproximadamente 750 MB)
 
 **Método de agregação**: para resoluções temporais superiores a 30 minutos, o script calcula a **taxa média de precipitação** durante o período de agregação, preservando as unidades mm/h.
+
 ---
 
 ### Etapa 4: definir as configurações de saída
@@ -158,6 +160,7 @@ O script exporta dados de precipitação para a **caixa delimitadora retangular*
 - HydroPol2D e a maioria dos modelos hidrológicos podem ser cortados em limites exatos durante o processamento
 
 **Se você precisar de um recorte exato da área de captação**: O shapefile da área de captação exportado pode ser usado para recortar rasters no software GIS ou durante o pré-processamento do modelo.
+
 ---
 
 ### Arquivos incluídos na exportação

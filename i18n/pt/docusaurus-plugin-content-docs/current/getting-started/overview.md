@@ -1,41 +1,41 @@
 ---
-title: Visao geral
+title: Visão geral
 ---
 
 # HydroPol2D
 
-HydroPol2D e um modelo hidrologico-hidrodinamico em grade raster para simular, de forma acoplada, agua superficial, armazenamento na zona vadosa, agua subterranea, qualidade da agua, neve e diagnosticos de risco.
+HydroPol2D é um modelo hidrológico-hidrodinâmico em grade raster para simular, de forma acoplada, água superficial, armazenamento na zona vadosa, água subterrânea, qualidade da água, neve e diagnósticos de risco.
 
-Esta documentacao descreve o modelo como ele esta implementado hoje. Ela tambem distingue entre caminhos validados, caminhos diagnosticos e funcionalidades que permanecem pausadas ou experimentais.
+Esta documentação descreve o modelo como ele está implementado hoje. Ela também distingue entre caminhos validados, caminhos diagnósticos e funcionalidades que permanecem pausadas ou experimentais.
 
 ## Escopo atual
 
-O codigo atual inclui:
+O código atual inclui:
 
-- interceptacao pelo dossel, evapotranspiracao, neve, infiltracao e armazenamento vadoso em camadas;
-- recarga subterranea, ascensao capilar, atualizacoes assincronas da agua subterranea saturada e fluxo bidimensional de Boussinesq quando o baseflow esta ativo;
-- roteamento superficial com as opcoes local inertial, full momentum, diffusive D4, kinematic D4 e cellular automata;
-- transporte de qualidade da agua e exportacao no exutorio;
-- diagnosticos opcionais de instabilidade humana.
+- interceptação pelo dossel, evapotranspiração, neve, infiltração e armazenamento vadoso em camadas;
+- recarga subterrânea, ascensão capilar, atualizações assíncronas da água subterrânea saturada e fluxo bidimensional de Boussinesq quando o baseflow está ativo;
+- roteamento superficial com as opções local inertial, full momentum, diffusive D4, kinematic D4 e cellular automata;
+- transporte de qualidade da água e exportação no exutório;
+- diagnósticos opcionais de instabilidade humana.
 
-## Como o HydroPol2D avanca uma simulacao
+## Como o HydroPol2D avança uma simulação
 
-Em alto nivel, o HydroPol2D avanca o sistema acoplado nesta ordem:
+Em alto nível, o HydroPol2D avança o sistema acoplado nesta ordem:
 
-1. aplica chuva, vazoes de entrada e forcantes meteorologicas;
-2. atualiza interceptacao, neve, evapotranspiracao, infiltracao e armazenamento vadoso;
-3. acumula recarga e troca capilar para a agua subterranea;
-4. roteia a agua superficial com a familia de roteamento selecionada;
-5. atualiza as cargas subterraneas quando o agendador de groundwater entra em acao;
-6. devolve exfiltracao, excesso de saturacao, qualidade da agua e diagnosticos opcionais ao estado evolutivo.
+1. aplica chuva, vazões de entrada e forçantes meteorológicas;
+2. atualiza interceptação, neve, evapotranspiração, infiltração e armazenamento vadoso;
+3. acumula recarga e troca capilar para a água subterrânea;
+4. roteia a água superficial com a família de roteamento selecionada;
+5. atualiza as cargas subterrâneas quando o agendador de groundwater entra em ação;
+6. devolve exfiltração, excesso de saturação, qualidade da água e diagnósticos opcionais ao estado evolutivo.
 
-Esse encadeamento e o que conecta os modulos hidrologicos, subterraneos, hidrodinamicos e diagnosticos em um unico modelo.
+Esse encadeamento é o que conecta os módulos hidrológicos, subterrâneos, hidrodinâmicos e diagnósticos em um único modelo.
 
-## Como ler a documentacao
+## Como ler a documentação
 
-Para a maioria dos usuarios, a ordem de leitura mais clara e:
+Para a maioria dos usuários, a ordem de leitura mais clara é:
 
-1. [Visao geral da configuracao](../configuration/overview) para os controles publicos e flags.
-2. [Visao matematica geral](../theory/overview) para as equacoes governantes e a estrutura conceitual.
-3. [Visao geral da validacao](../validation/overview) para as evidencias de validacao de cada modulo.
-4. [Exemplos](../Examples/RainfallRunoff) para fluxos de trabalho reprodutiveis.
+1. [Visão geral da configuração](../configuration/overview) para os controles públicos e flags.
+2. [Visão matemática geral](../theory/overview) para as equações governantes e a estrutura conceitual.
+3. [Visão geral da validação](../validation/overview) para as evidências de validação de cada módulo.
+4. [Exemplos](../Examples/RainfallRunoff) para fluxos de trabalho reprodutíveis.

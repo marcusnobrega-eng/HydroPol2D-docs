@@ -6,6 +6,7 @@ title: DTB
 
 La profundidad hasta el lecho de roca (DTB) define la extensión vertical de la columna de suelo disponible para el almacenamiento de agua en HydroPol2D.
 Representa la distancia entre la superficie terrestre y una capa limitante que restringe el movimiento vertical del agua. Esta capa puede corresponder a un lecho de roca real o a un límite efectivo, como la parte superior de un acuífero poco profundo.
+
 ---
 
 ## Papel en HydroPol2D
@@ -19,7 +20,8 @@ En el esquema predeterminado, DTB se utiliza para definir:
 - Inicio de la saturación dentro de la columna del suelo.
 
 Dentro del modelo, DTB actúa como una **restricción geométrica** de almacenamiento en lugar de un perfil vertical completamente resuelto.
-DTB no debe confundirse con el ráster inicial opcional del nivel freático. En el modelo actual, `PHTOKEN1XYZ_path` define el espesor de la columna de suelo, mientras que `GW_table_path` define la altura/elevación saturada inicial cuando la inicialización del agua subterránea se proporciona explícitamente.
+DTB no debe confundirse con el ráster inicial opcional del nivel freático. En el modelo actual, `DTB_path` define el espesor de la columna de suelo, mientras que `GW_table_path` define la altura/elevación saturada inicial cuando la inicialización del agua subterránea se proporciona explícitamente.
+
 ---
 
 ## Representación
@@ -66,6 +68,7 @@ La entrada DTB debe:
 - Alinearse espacialmente con el DEM y otras entradas
 
 Los valores deben permanecer dentro de rangos físicamente realistas para el área de estudio.
+
 ---
 
 ## Fuentes de datos
@@ -127,6 +130,7 @@ DTB complementa la parametrización del suelo:
 - DTB limita el volumen total disponible para almacenamiento
 
 Esta combinación determina la respuesta efectiva del sistema sin requerir una discretización vertical explícita.
+
 ---
 
 ## Consideraciones prácticas
@@ -138,6 +142,7 @@ Al definir DTB:
 - Utilice suposiciones simplificadas cuando sea necesario, pero documentelas.
 
 DTB suele ser incierto y, cuando sea posible, debe evaluarse como parte del análisis de sensibilidad.
+
 ---
 
 ## Resumen

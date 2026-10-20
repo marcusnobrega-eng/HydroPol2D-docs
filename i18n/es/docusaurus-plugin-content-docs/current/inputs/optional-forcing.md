@@ -11,6 +11,7 @@ Todas las configuraciones de forzado se definen a través del archivo `General_D
 - y los conjuntos de datos de entrada asociados.
 
 El modelo puede operar bajo diferentes estrategias de forzamiento dependiendo de la disponibilidad de datos y los objetivos de la simulación.
+
 ---
 
 ## Descripción general
@@ -24,6 +25,7 @@ HydroPol2D admite las siguientes opciones de forzado:
 - Condiciones de contorno del escenario
 
 Cada tipo de forzado se activa y configura a través de `General_Data.xlsx`.
+
 ---
 
 ## Forzamiento meteorológico (Penman-Monteith)
@@ -42,6 +44,7 @@ Las variables meteorológicas se distribuyen espacialmente mediante:
 - ponderación de distancia inversa (IDW)
 
 Esto garantiza que el forzamiento atmosférico sea consistente en todo el dominio según los puntos de medición disponibles.
+
 ---
 
 ### Variables requeridas
@@ -61,6 +64,7 @@ El forzamiento meteorológico se utiliza para calcular la evapotranspiración, q
 - humedad del suelo
 
 Este enfoque se recomienda cuando se dispone de forzamiento atmosférico total.
+
 ---
 
 ## Entradas directas de evaporación y transpiración
@@ -83,11 +87,13 @@ Estos fundentes se aplican directamente a:
 - humedad del suelo
 
 Este enfoque evita la necesidad de forzamiento meteorológico.
+
 ---
 
 ## Forzamiento de lluvia
 
 HydroPol2D admite múltiples configuraciones de entrada de lluvia.
+
 ---
 
 ### 1. Precipitaciones concentradas (uniformes)
@@ -120,6 +126,7 @@ Los campos de lluvia se calculan usando:
 - ponderación de distancia inversa (IDW)
 
 Las mediciones de calibre se interpolan en todas las celdas de la cuadrícula en función de su ubicación espacial.
+
 ---
 
 #### Descripción
@@ -170,6 +177,7 @@ Definido a través de `General_Data.xlsx`, que incluye:
 - distribución temporal
 
 El modelo genera internamente el hietograma de lluvia.
+
 ---
 
 ## Hidrogramas de entrada externos
@@ -234,6 +242,7 @@ El archivo `General_Data.xlsx` define:
 - consistencia unitaria
 
 Actúa como interfaz central entre las entradas definidas por el usuario y el modelo.
+
 ---
 
 ## Interacción entre componentes forzados
@@ -246,6 +255,7 @@ Las entradas forzadas interactúan de la siguiente manera:
 - Los límites de las etapas limitan la respuesta hidráulica.
 
 Estas interacciones definen la dinámica del sistema.
+
 ---
 
 ## Consideraciones prácticas
