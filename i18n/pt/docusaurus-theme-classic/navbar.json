@@ -8,11 +8,11 @@
     "description": "The alt text of navbar logo"
   },
   "item.label.Documentation": {
-    "message": "Documentacao",
+    "message": "Documentação",
     "description": "Navbar item with label Documentation"
   },
   "item.label.Code": {
-    "message": "Codigo",
+    "message": "Código",
     "description": "Navbar item with label Code"
   }
 }
