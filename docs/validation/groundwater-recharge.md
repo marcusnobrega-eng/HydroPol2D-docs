@@ -5,7 +5,7 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # Groundwater and Recharge Validation
 
-The validation suite groundwater section tests both local groundwater bookkeeping and lateral groundwater dynamics. The central implementation change is the asynchronous scheduler: vadose drainage, recharge production, and capillary rise are evaluated every surface-model step, while saturated groundwater storage and lateral heads are updated only when the groundwater scheduler is due.
+The groundwater section of the validation suite tests both local groundwater bookkeeping and lateral groundwater dynamics. The central implementation change is the asynchronous scheduler: vadose drainage, recharge production, and capillary rise are evaluated every surface-model step, while saturated groundwater storage and lateral heads are updated only when the groundwater scheduler is due.
 
 ## What was tested
 

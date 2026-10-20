@@ -5,7 +5,7 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # Reservoirs, Boundaries, Water Quality, and Risk
 
-These the cases validate model components that are important for applications but are easier to test outside a full watershed run. The logic is the same as in the rest of validation package: isolate the process, define the reference clearly, and separate what the case proves from what it does not prove.
+These cases validate model components that are important for applications but are easier to test outside a full watershed run. The logic is the same as in the rest of the validation suite: isolate the process, define the reference clearly, and separate what the case proves from what it does not prove.
 
 ## Reservoir rating-curve depletion
 
@@ -73,7 +73,7 @@ Three deterministic checks were used:
 | Single-cell washoff | `4.998 × 10^-7` | `2.483 × 10^-4` | 0 | 0 |
 | Two-cell transfer | `6.272 × 10^-8` | `3.722 × 10^-5` | 0 | 0 |
 
-the also exposed an implementation artifact: the original washoff routine rounded remaining pollutant mass to six decimal places at each substep, which created artificial mass error in analytical tests. That quantization was removed, and the current-code metrics shown above are for the corrected implementation.
+The validation also exposed an implementation artifact: the original washoff routine rounded remaining pollutant mass to six decimal places at each substep, which created artificial mass error in analytical tests. That quantization was removed, and the current-code metrics shown above are for the corrected implementation.
 
 <img src={useBaseUrl('/validation/results/ancillary/VAL_WQ_001_SINGLE_CELL.png')} alt="Single-cell water quality validation" />
 

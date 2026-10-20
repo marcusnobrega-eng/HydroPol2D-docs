@@ -4,7 +4,7 @@ title: Limitations
 
 # Validation Limitations
 
-The current validation package is a the verification and controlled-dynamics
+The current validation package is a verification and controlled-dynamics
 campaign. It confirms that the model equations, storage ledgers, forcing
 interpretation, routing options, and boundary conditions behave as expected in
 cases with known references.

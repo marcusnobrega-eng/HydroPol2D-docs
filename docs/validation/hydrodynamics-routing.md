@@ -5,7 +5,7 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # Hydrodynamics and Routing Validation
 
-hydrodynamic validation was organized by routing family. Full momentum was validated first, then local inertial and cellular automata, and then the corrected kinematic and diffusive solvers. The purpose was not only to check hydrographs, but also to confirm conservation, symmetry, boundary enforcement, and behavior relative to the intended equation set.
+Hydrodynamic validation was organized by routing family. Full momentum was validated first, then local inertial and cellular automata, and then the corrected kinematic and diffusive solvers. The purpose was not only to check hydrographs, but also to confirm conservation, symmetry, boundary enforcement, and behavior relative to the intended equation set.
 
 ## Full-momentum hydrodynamics
 
@@ -47,7 +47,7 @@ The tilted-plane case reproduced the kinematic-wave limiting response closely. T
 
 ### What was tested
 
-The same the same sequence was repeated for local-inertial and cellular-automata routing. These results should be interpreted in the context of each method. Local inertial is an approximation to the shallow-water equations. Cellular automata is mainly a routing and storage-redistribution method, not a momentum solver.
+The same sequence was repeated for local-inertial and cellular-automata routing. These results should be interpreted in the context of each method. Local inertial is an approximation to the shallow-water equations. Cellular automata is mainly a routing and storage-redistribution method, not a momentum solver.
 
 ### Main result
 
@@ -122,7 +122,7 @@ Both corrected solvers passed the tilted-plane, V-tilted conservation, and stage
 
 ## What this validation supports
 
-the supports the current full-momentum implementation for the tested analytical and bookkeeping benchmarks. It also supports local inertial, cellular automata, kinematic, and diffusive routing for the specific controlled benchmarks listed above. Only full momentum is evaluated against the Ritter dry-bed solution.
+This validation supports the current full-momentum implementation for the tested analytical and bookkeeping benchmarks. It also supports local inertial, cellular automata, kinematic, and diffusive routing for the specific controlled benchmarks listed above. Only full momentum is evaluated against the Ritter dry-bed solution.
 
 ## Neal (2012) subgrid model
 

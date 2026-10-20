@@ -5,7 +5,7 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # Validation Status
 
-The [validation report](<https://placeholder.invalid>) documents the methods, metrics, and results for the HydroPol2D validation suite. The table below provides a concise index of the current evidence.
+The <a href={useBaseUrl('/reports/validation_report.pdf')}>validation report</a> documents the methods, metrics, and results for the HydroPol2D validation suite. The table below provides a concise index of the current evidence.
 
 <div style={{margin: '1rem 0 1.5rem 0'}}>
   <a className="button button--primary button--lg" href={useBaseUrl('/reports/validation_report.pdf')}>

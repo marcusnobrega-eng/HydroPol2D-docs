@@ -809,7 +809,7 @@ Outlet fluxes are converted to a volume sink and removed from the local water st
 
 ### 2.7 Current validation evidence
 
-The full-momentum solver is part of validation package. Current report-ready evidence includes:
+The full-momentum solver is part of the validation suite. Current report-ready evidence includes:
 
 - tilted-plane runoff against the analytical kinematic-wave limit;
 - V-tilted catchment mass-conservation and bilateral-symmetry checks;

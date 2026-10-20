@@ -32,7 +32,7 @@ HydroPol2D matched the independent reference to round-off precision. The benchma
 | Evaporation RMSE (mm) | `7.31 × 10^-18` | `1.0 × 10^-9` |
 | Maximum mass residual (m³) | `2.22 × 10^-17` | `1.0 × 10^-6` |
 
-This case validates the implemented canopy formulas and storage bookkeeping for the tested conditions. It does not validate field canopy interception behavior because the does not use observed throughfall or stemflow data.
+This case validates the implemented canopy formulas and storage bookkeeping for the tested conditions. It does not validate field canopy interception behavior because the case does not use observed throughfall or stemflow data.
 
 ## Snow module
 
