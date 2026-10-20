@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 530" width="680" height="530" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#1f2328">
+  <title>Layered soil-over-regolith column</title>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1f2328"/>
+    </marker>
+    <marker id="arrowBlue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1f6fb2"/>
+    </marker>
+  </defs>
+
+  <rect x="1" y="1" width="678" height="528" rx="10" fill="#ffffff" stroke="#d0d7de"/>
+
+  <!-- soil slots -->
+  <rect x="60" y="50" width="240" height="20" fill="#d9bf94"/>
+  <rect x="60" y="70" width="240" height="50" fill="#c8a675"/>
+  <rect x="60" y="120" width="240" height="50" fill="#b38d5c"/>
+  <text x="70" y="64" font-size="12">1  near surface</text>
+  <text x="70" y="100" font-size="12">2  root zone</text>
+  <text x="70" y="150" font-size="12">3  transmission</text>
+
+  <!-- regolith slots (not to scale) -->
+  <rect x="60" y="170" width="240" height="15" fill="#e4dfd4"/>
+  <rect x="60" y="185" width="240" height="20" fill="#d8d1c3"/>
+  <rect x="60" y="205" width="240" height="30" fill="#e4dfd4"/>
+  <rect x="60" y="235" width="240" height="50" fill="#d8d1c3"/>
+  <rect x="60" y="285" width="240" height="70" fill="#e4dfd4"/>
+  <rect x="60" y="355" width="240" height="70" fill="#d8d1c3"/>
+  <text x="70" y="181" font-size="11">4</text>
+  <text x="70" y="199" font-size="11">5</text>
+  <text x="70" y="224" font-size="11">6</text>
+  <text x="70" y="250" font-size="11">7</text>
+  <text x="70" y="300" font-size="11">8</text>
+  <text x="70" y="370" font-size="11">9 …</text>
+
+  <!-- saturated zone below the water table -->
+  <rect x="60" y="258" width="240" height="167" fill="#3d8bd0" fill-opacity="0.33"/>
+
+  <!-- column outline -->
+  <rect x="60" y="50" width="240" height="375" fill="none" stroke="#57606a" stroke-width="1.2"/>
+
+  <!-- ground -->
+  <line x1="40" y1="50" x2="320" y2="50" stroke="#3a7d2c" stroke-width="3"/>
+  <text x="335" y="54" font-weight="600">Ground</text>
+
+  <!-- soil base -->
+  <line x1="40" y1="170" x2="320" y2="170" stroke="#1f2328" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="335" y="166" font-weight="600">Soil base</text>
+  <text x="335" y="182" font-size="12">soil properties end, regolith begins</text>
+
+  <!-- regolith ruler bracket -->
+  <path d="M30,172 L24,172 L24,423 L30,423" fill="none" stroke="#57606a" stroke-width="1.2"/>
+  <text x="18" y="300" font-size="11" transform="rotate(-90 18 300)" text-anchor="middle">regolith slots: 0.25, 0.5, 1, 2, 4, 4 … m</text>
+
+  <!-- water table -->
+  <line x1="40" y1="258" x2="320" y2="258" stroke="#1f6fb2" stroke-width="2.5"/>
+  <path d="M120,250 L126,258 L114,258 z" fill="#1f6fb2"/>
+  <text x="335" y="254" font-weight="600" fill="#1f6fb2">Water table h</text>
+  <text x="335" y="270" font-size="12">one head per cell; splits slot 7</text>
+
+  <!-- drainage cascade -->
+  <line x1="200" y1="78" x2="200" y2="236" stroke="#1f2328" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <text x="208" y="200" font-size="11">drainage</text>
+  <text x="208" y="213" font-size="11">K<tspan baseline-shift="sub" font-size="9">v</tspan>·K<tspan baseline-shift="sub" font-size="9">r</tspan></text>
+
+  <!-- Darcy flux at the table -->
+  <line x1="262" y1="240" x2="262" y2="276" stroke="#1f6fb2" stroke-width="1.8" marker-start="url(#arrowBlue)" marker-end="url(#arrowBlue)"/>
+  <text x="335" y="294" font-size="12">Darcy flux at the table:</text>
+  <text x="335" y="309" font-size="12">recharge down, capillary rise up</text>
+
+  <!-- lateral flow -->
+  <line x1="180" y1="345" x2="318" y2="345" stroke="#1f6fb2" stroke-width="2" marker-end="url(#arrowBlue)"/>
+  <text x="335" y="343" font-weight="600" fill="#1f6fb2">Lateral flow</text>
+  <text x="335" y="359" font-size="12">T = Σ K<tspan baseline-shift="sub" font-size="10">h</tspan>·b over the saturated slots</text>
+
+  <!-- column base -->
+  <line x1="40" y1="425" x2="320" y2="425" stroke="#1f2328" stroke-width="3"/>
+  <text x="335" y="422" font-weight="600">Column base</text>
+  <text x="335" y="438" font-size="12">ground − min(depth to bedrock, 50 m)</text>
+
+  <!-- deep reservoir -->
+  <line x1="180" y1="428" x2="180" y2="452" stroke="#1f2328" stroke-width="1.4" stroke-dasharray="3 3" marker-end="url(#arrow)"/>
+  <rect x="60" y="456" width="240" height="44" rx="6" fill="#eef3f8" stroke="#8c959f"/>
+  <text x="180" y="476" text-anchor="middle" font-size="12">deep linear reservoir (per subbasin)</text>
+  <text x="180" y="492" text-anchor="middle" font-size="12">Q = S / τ, returned to river cells</text>
+  <text x="335" y="482" font-size="12">optional; fed by a fixed recharge fraction</text>
+</svg>

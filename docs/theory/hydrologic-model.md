@@ -463,6 +463,55 @@ These expressions are explicitly implemented in the evapotranspiration routine a
 
 HydroPol2D can also use externally supplied raster fields of evaporation and transpiration. In that configuration, the model bypasses the internal Penman–Monteith calculation and applies prescribed $E_{\mathrm{surf}}$ and $T_{\mathrm{r}}$ fields directly in the hydrologic mass balance.
 
+### 3.5 Feddes root-water-uptake stress
+
+Feddes stress is optional. It reduces soil transpiration when the root zone is too wet or too dry (Feddes, Kowalik and Zaradny, 1978, *Simulation of Field Water Use and Crop Yield*, Pudoc, Wageningen).
+
+| Model | Switch | Default |
+|---|---|---|
+| HydroPol2D-Python | `vertical.feddes.enabled: true` | off |
+| HydroPol2D (MATLAB) | `flag_feddes = 1` | `0` |
+
+It works in both subsurface schemes (default and [layered](./layered-subsurface)), on the structured grid and on the Voronoi mesh.
+
+The reduction factor $\alpha$ is a piecewise-linear function of the matric head $h$ (m, negative):
+
+$$
+\alpha(h)
+=
+\begin{cases}
+0, & h > h_1 \\
+\dfrac{h_1 - h}{h_1 - h_2}, & h_2 < h \le h_1 \\
+1, & h_3 \le h \le h_2 \\
+\dfrac{h - h_4}{h_3 - h_4}, & h_4 < h < h_3 \\
+0, & h \le h_4
+\end{cases}
+$$
+
+| Head | Meaning | Default (m) |
+|---|---|---:|
+| $h_1$ | Wetter than this: no uptake (no air for the roots) | −0.1 |
+| $h_2$ | Start of unstressed uptake | −0.25 |
+| $h_3$ | End of unstressed uptake | −4.0 |
+| $h_4$ | Wilting point: no uptake | −80 |
+
+The heads must satisfy $0 \ge h_1 > h_2 \ge h_3 > h_4$. The head of each layer comes from its van Genuchten curve and its current water content.
+
+**Demand-dependent $h_3$ (optional).** As in SWAP, $h_3$ can depend on the potential transpiration rate $T_p$. $h_{3,\mathrm{high}}$ applies at $T_p \ge 5$ mm/day, $h_{3,\mathrm{low}}$ at $T_p \le 1$ mm/day, and $h_3$ is interpolated linearly between them. Both default to $h_3$, so the option is off unless they are set.
+
+**Uptake.** Root density is uniform over the root depth $z_r$. Each rooted layer is asked for its share of the demand, reduced by its own $\alpha$:
+
+$$
+S_\ell = \alpha(h_\ell)\,T_p\,\frac{z_{r,\ell}}{z_r}
+$$
+
+where $z_{r,\ell}$ is the rooted thickness of layer $\ell$. Each take is limited by the water available in that layer. There is no compensation: demand that one layer cannot meet is not moved to another layer.
+
+| Setting | HydroPol2D-Python | HydroPol2D (MATLAB) |
+|---|---|---|
+| Heads | `vertical.feddes.h1_m`, `h2_m`, `h3_m`, `h4_m` | `feddes_h1_m`, `feddes_h2_m`, `feddes_h3_m`, `feddes_h4_m` |
+| Demand-dependent $h_3$ | `vertical.feddes.h3_low_m`, `h3_high_m` | `feddes_h3_low_m`, `feddes_h3_high_m` |
+
 ---
 
 ## 4. Infiltration
@@ -1040,6 +1089,10 @@ $$
 
 where $S_y$ is specific yield. The full canonical groundwater formulation, including the asynchronous scheduler and Boussinesq lateral flow solver, is documented on the [Groundwater Model](./groundwater-model) page.
 
+### 6.5 Layered subsurface option
+
+The structure above is the default. The optional [layered subsurface](./layered-subsurface) keeps the three soil stores but places them over regolith slots that reach the depth to bedrock. In that scheme a rising water table fills the empty pore space of the soil and regolith instead of pushing soil water to the surface.
+
 ---
 
 ## 7. Summary
@@ -1051,6 +1104,7 @@ The hydrologic model in HydroPol2D integrates:
 - Darcy-based infiltration with weighted near-surface conductivity,
 - snow accumulation and melt,
 - layered vadose storage and groundwater coupling,
+- optional Feddes root-water-uptake stress,
 
 into a unified, mass-consistent framework that resolves vertical water fluxes at the grid-cell scale and provides the hydrologic forcing for the hydrodynamic model.
 

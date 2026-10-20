@@ -20,6 +20,9 @@ HydroPol2D couples:
 |---|---|---|
 | Hydrologic core: interception, ET, infiltration, snow, layered vadose storage | [Hydrologic Model](./hydrologic-model) | Default + validated |
 | Groundwater recharge, async scheduler, capillary rise, Boussinesq lateral flow | [Groundwater Model](./groundwater-model) | Default + validated |
+| Layered soil-over-regolith subsurface | [Layered Subsurface](./layered-subsurface) | Optional + kernel parity and controlled V-tilted tests |
+| Feddes root-water-uptake stress | [Hydrologic Model](./hydrologic-model#35-feddes-root-water-uptake-stress) | Optional + consistency tests |
+| Deep aquifer: linear reservoirs per subbasin and their starting state | [Groundwater Model](./groundwater-model#13-deep-aquifer) | Optional + starting-state fixture tests |
 | Local inertial routing | [Hydrodynamic Model](./hydrodynamic-model) | Default + validated |
 | Full-momentum routing | [Hydrodynamic Model](./hydrodynamic-model) | Optional + validated in controlled benchmarks |
 | Diffusive and kinematic D4 routing | [Hydrodynamic Model](./hydrodynamic-model) | Optional + validated in controlled benchmarks |
@@ -35,7 +38,7 @@ The hydrologic theory pages document how HydroPol2D partitions atmospheric input
 
 ### 2. Groundwater coupling
 
-Groundwater theory documents the current layered recharge pathway, optional capillary rise, asynchronous groundwater scheduler, exfiltration, and 2D Boussinesq lateral flow when baseflow is active.
+Groundwater theory documents the current layered recharge pathway, optional capillary rise, asynchronous groundwater scheduler, exfiltration, and 2D Boussinesq lateral flow when baseflow is active. The optional [layered subsurface](./layered-subsurface) replaces the soil-bound aquifer with a soil-over-regolith column, and the optional deep aquifer adds slow linear reservoirs per subbasin.
 
 ### 3. Surface routing
 

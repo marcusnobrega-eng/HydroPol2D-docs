@@ -10,6 +10,7 @@ This legacy overview is retained only as a pointer. The canonical HydroPol2D pro
 - [Mathematical Overview](../theory/overview)
 - [Hydrologic Model](../theory/hydrologic-model)
 - [Groundwater Model](../theory/groundwater-model)
+- [Layered Subsurface](../theory/layered-subsurface)
 - [Hydrodynamic Model](../theory/hydrodynamic-model)
 - [Human Instability](../theory/human-instability)
 

@@ -39,6 +39,19 @@ This structure allows HydroPol2D to represent dynamic coupling between:
   <em>Figure 1. Conceptual representation of the aquifer component in HydroPol2D.</em>
 </p>
 
+### 1.1 Two subsurface schemes
+
+HydroPol2D has two subsurface schemes. This page describes the default one.
+
+| Scheme | Aquifer | Switch | Page |
+|---|---|---|---|
+| Default | Inside the soil column; the aquifer base is the ground minus the soil depth | default | this page |
+| Layered | Soil slots over regolith slots, down to the depth to bedrock (capped at 50 m) | Python `vertical.subsurface.scheme: layered`; MATLAB `flag_layered_subsurface = 1` | [Layered Subsurface](./layered-subsurface) |
+
+Both schemes can feed the optional deep aquifer described in [Section 13](#13-deep-aquifer).
+
+On this page, "layered vadose" means the three soil stores of the default scheme (near surface, root zone, transmission). It is not the layered subsurface scheme.
+
 ---
 
 ## 2. General Conceptual Structure
@@ -660,7 +673,91 @@ This means that HydroPol2D allows groundwater to actively influence flood genera
 
 ---
 
-## 13. Mass Balance
+## 13. Deep Aquifer
+
+The optional deep aquifer represents slow groundwater below the modeled aquifer. It is semi-distributed: each subbasin has one linear reservoir.
+
+### 13.1 Structure
+
+A fixed fraction $f_d$ of the downward recharge goes to the deep aquifer before the rest reaches the water table. The recharge of all cells in subbasin $k$ feeds reservoir $k$. The reservoir releases
+
+$$
+Q_k = \frac{S_k}{\tau}
+$$
+
+where:
+
+- $S_k$ = storage of reservoir $k$ $[\mathrm{L}^3]$
+- $\tau$ = response time $[\mathrm{T}]$, the same for all subbasins
+- $Q_k$ = deep return flow $[\mathrm{L}^3\,\mathrm{T}^{-1}]$
+
+Two rasters define the layout. The subbasin raster says which cells feed which reservoir. The channel-weight raster says where each reservoir discharges: the return flow is spread over the river cells of its own subbasin, in proportion to the weight.
+
+### 13.2 Update
+
+For an input rate $I_k$ over a step $\Delta t$, the reservoir uses the exact solution of the linear-reservoir equation:
+
+$$
+S_{k}^{t+\Delta t}
+=
+S_{k}^{t}\,e^{-\Delta t/\tau}
++
+I_k\,\tau\left(1-e^{-\Delta t/\tau}\right)
+$$
+
+and the discharged volume is
+
+$$
+V_{Q,k} = I_k\,\Delta t - \left(S_{k}^{t+\Delta t} - S_{k}^{t}\right)
+$$
+
+The update is conservative and does not depend on the step length.
+
+### 13.3 Starting state
+
+Because the outflow is storage over $\tau$, the starting storage follows from a starting outflow per unit area $q_0$:
+
+$$
+S_{k,0} = q_0\,A_k\,\tau
+$$
+
+where $A_k$ is the active area of subbasin $k$. Give at most one of the following:
+
+| Setting | Meaning | $q_0$ |
+|---|---|---|
+| `deep_aquifer_initial_baseflow_mm_day` | Deep baseflow on the start date, for example from a gauge | as given |
+| `deep_aquifer_mean_recharge_mm_year` | Long-term mean recharge $\bar{R}$; the reservoirs start at steady state | $f_d\,\bar{R}$ |
+| Deep-aquifer initial-state file | Storage per subbasin, written by the groundwater calibration | storage given directly |
+
+With none of them, the reservoirs start empty.
+
+**From a gauge.** HydroPol2D-Python estimates $q_0$ from a daily discharge record with `hydropol2d estimate-deep-baseflow`:
+
+1. Lyne–Hollick baseflow of the observed discharge;
+2. recession segments and a master recession curve (MRC);
+3. separation of the slow, linear deep tail of the MRC, which also gives $\tau$;
+4. the start-date baseflow placed on the MRC, and its deep part divided by the drainage area.
+
+Pick a start date in a recession. The baseflow filter lags a rising hydrograph, so the tool warns when the start-date discharge is more than twice the baseflow.
+
+### 13.4 Settings
+
+| Item | HydroPol2D-Python | HydroPol2D (MATLAB) |
+|---|---|---|
+| Switch | `flags.deep_aquifer` | `flag_deep_aquifer` |
+| Subbasins | `static.deep_aquifer_subbasin_path` | `DeepAquiferSubbasins_path` |
+| Channel weights | `static.deep_aquifer_channel_weight_path` | `DeepAquiferChannelWeight_path` |
+| Recharge fraction $f_d$ | `vertical.deep_recharge_fraction` | `deep_recharge_fraction` |
+| Response time $\tau$ | `vertical.deep_aquifer_response_time_days` (default 180) | `deep_aquifer_tau_days` |
+| Starting baseflow | `vertical.deep_aquifer_initial_baseflow_mm_day` | `deep_aquifer_initial_baseflow_mm_day` |
+| Mean recharge | `vertical.deep_aquifer_mean_recharge_mm_year` | `deep_aquifer_mean_recharge_mm_year` |
+| Initial-state file | `static.deep_aquifer_initial_state_path` | `DeepAquiferInitialState_path` |
+
+In MATLAB the starting-state values are in the "Deep Aquifer Initial State" block of `General_Data` (see [General Data](../configuration/general_data)). The Case Builder writes the subbasin and channel-weight rasters from the conditioned D8 terrain.
+
+---
+
+## 14. Mass Balance
 
 The groundwater solver performs an explicit mass-balance check during each update.
 
@@ -712,7 +809,7 @@ When asynchronous groundwater is active, pending accumulated recharge and capill
 
 ---
 
-## 14. Summary
+## 15. Summary
 
 The HydroPol2D groundwater model combines:
 
@@ -722,7 +819,8 @@ The HydroPol2D groundwater model combines:
 - a **2D Boussinesq groundwater flow model** for lateral saturated flow,
 - **adaptive explicit time stepping**,
 - **surface exfiltration** when groundwater rises above the ground surface,
-- and a **saturation-excess correction** that preserves mass when the water table reduces vadose storage capacity.
+- a **saturation-excess correction** that preserves mass when the water table reduces vadose storage capacity,
+- and an optional **deep aquifer** of linear reservoirs per subbasin, with a starting state set from a baseflow or a mean recharge.
 
 This structure allows HydroPol2D to represent a dynamically coupled subsurface system in which:
 

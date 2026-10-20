@@ -87,6 +87,7 @@ const sidebars = {
       'theory/overview',
       'theory/hydrologic-model',
       'theory/groundwater-model',
+      'theory/layered-subsurface',
       'theory/hydrodynamic-model',
       'theory/human-instability',
       'theory/water-quality-model',
