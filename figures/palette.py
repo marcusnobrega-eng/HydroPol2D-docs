@@ -27,6 +27,10 @@ REF = {
     "ground": (0.55, 0.110, 145),
     "deep_fill": (0.955, 0.018, 238),
     "bedrock": (0.80, 0.010, 60),
+    "bark": (0.40, 0.055, 55),
+    "root": (0.42, 0.070, 55),
+    "leaf_dark": (0.55, 0.115, 145),
+    "leaf_light": (0.68, 0.125, 135),
 }
 
 # --- semantic roles --------------------------------------------------------------------
@@ -48,6 +52,10 @@ ROLE = {
     "guide": "line",
     "deep_fill": "deep_fill",
     "bedrock_hatch": "bedrock",
+    "trunk": "bark",
+    "roots": "root",
+    "canopy_shade": "leaf_dark",
+    "canopy_light": "leaf_light",
 }
 
 
@@ -135,6 +143,7 @@ if __name__ == "__main__":
     pairs = [("text", f) for f in ("card", "slot_near_surface", "slot_root_zone", "slot_transmission",
                                     "slot_rock_odd", "slot_wet_odd", "deep_fill")]
     pairs += [("water", "card"), ("text_soft", "card"), ("ground", "card")]
+    pairs += [("roots", "slot_near_surface"), ("roots", "slot_root_zone"), ("canopy_shade", "card")]
     for fg, bg in pairs:
         print(f"  {fg:10s} on {bg:20s} {contrast(color(fg), color(bg)):5.2f}:1")
     print("\nAdjacent fills, Delta E_OK (normal / protan / deutan / tritan) and lightness step:")
