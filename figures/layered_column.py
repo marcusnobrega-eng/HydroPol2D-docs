@@ -9,8 +9,9 @@ Run from the repository root:
 
     python3 figures/layered_column.py [preview.png]
 
-Output: static/img/theory/layered-column.svg (and an optional PNG preview on a dark
-background, to check the card edge).
+Output: static/img/theory/layered-column.svg (en), layered-column.pt.svg and
+layered-column.es.svg, and an optional PNG preview of the English figure on a dark
+background, to check the card edge.
 """
 
 from __future__ import annotations
@@ -32,7 +33,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 from palette import color  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
-OUTPUT = ROOT / "static/img/theory/layered-column.svg"
+OUTPUT_DIR = ROOT / "static/img/theory"
 HELVETICA = Path("/System/Library/Fonts/Helvetica.ttc")
 
 W, H = 760, 612  # figure size in px (1 data unit = 1 px at 100 dpi)
@@ -40,15 +41,77 @@ W, H = 760, 612  # figure size in px (1 data unit = 1 px at 100 dpi)
 # Column geometry (px, y downward).
 X0, X1 = 95, 355
 GROUND = 120
-SOIL = [  # (top, bottom, role, label)
-    (120, 144, "slot_near_surface", "1  near surface"),
-    (144, 198, "slot_root_zone", "2  root zone"),
-    (198, 250, "slot_transmission", "3  transmission"),
+SOIL = [  # (top, bottom, role)
+    (120, 144, "slot_near_surface"),
+    (144, 198, "slot_root_zone"),
+    (198, 250, "slot_transmission"),
 ]
 ROOT_DEPTH, SOIL_BASE = 198, 250
 ROCK = [(250, 264), (264, 284), (284, 314), (314, 362), (362, 430), (430, 498)]
 TABLE, COLUMN_BASE = 334, 498
 NOTE_X, LEADER_END = 392, 382
+
+# Figure text per language. Math stays the same in every language.
+LABELS = {
+    "en": {
+        "slots": ["1  near surface", "2  root zone", "3  transmission"],
+        "saturated": r"saturated, $\theta = \theta_s$",
+        "reservoir": "deep linear reservoir",
+        "drainage": "drainage",
+        "bracket_soil": "soil",
+        "bracket_rock": "regolith: 0.25, 0.5, 1, 2, 4, 4 … m",
+        "ground": "Ground surface",
+        "root": ("Root depth", ["from the land-cover class; roots take", "soil ET from slots 1 and 2"]),
+        "soil_base": ("Soil base", ["soil parameters end, regolith begins"]),
+        "table": (r"Water table $h$, one per cell",
+                  [r"rise fills $\theta_s - \theta$; fall leaves $\theta_{fc}$, so $S_y = \theta_s - \theta_{fc}$",
+                   r"flux $q = K(\theta)\,(\psi/\Delta z + 1)$: recharge down, rise up"]),
+        "lateral": ("Lateral flow", [r"$T = \Sigma\, K_h\, b$, summed over the saturated slots"]),
+        "column_base": "Column base",
+        "deep": ("Deep aquifer (optional)",
+                 [r"one reservoir per subbasin, fed by a fraction $f_d$", "of the recharge, returned to river cells"]),
+    },
+    "pt": {
+        "slots": ["1  camada superficial", "2  zona radicular", "3  transmissão"],
+        "saturated": r"saturado, $\theta = \theta_s$",
+        "reservoir": "reservatório linear profundo",
+        "drainage": "drenagem",
+        "bracket_soil": "solo",
+        "bracket_rock": "regolito: 0.25, 0.5, 1, 2, 4, 4 … m",
+        "ground": "Superfície do terreno",
+        "root": ("Profundidade radicular", ["definida pela classe de uso do solo; as raízes",
+                                            "retiram a ET do solo das camadas 1 e 2"]),
+        "soil_base": ("Base do solo", ["fim dos parâmetros do solo, início do regolito"]),
+        "table": (r"Lençol freático $h$, um por célula",
+                  [r"ao subir preenche $\theta_s - \theta$; ao descer deixa $\theta_{fc}$,",
+                   r"logo $S_y = \theta_s - \theta_{fc}$",
+                   r"fluxo $q = K(\theta)\,(\psi/\Delta z + 1)$: recarga ou ascensão capilar"]),
+        "lateral": ("Fluxo lateral", [r"$T = \Sigma\, K_h\, b$, somado nas camadas saturadas"]),
+        "column_base": "Base da coluna",
+        "deep": ("Aquífero profundo (opcional)",
+                 [r"um reservatório por sub-bacia, alimentado por uma", r"fração $f_d$ da recarga, devolvida às células de rio"]),
+    },
+    "es": {
+        "slots": ["1  capa superficial", "2  zona de raíces", "3  transmisión"],
+        "saturated": r"saturado, $\theta = \theta_s$",
+        "reservoir": "embalse lineal profundo",
+        "drainage": "drenaje",
+        "bracket_soil": "suelo",
+        "bracket_rock": "regolito: 0.25, 0.5, 1, 2, 4, 4 … m",
+        "ground": "Superficie del terreno",
+        "root": ("Profundidad de raíces", ["según la clase de cobertura; las raíces",
+                                           "extraen la ET del suelo de las capas 1 y 2"]),
+        "soil_base": ("Base del suelo", ["terminan los parámetros del suelo, empieza el regolito"]),
+        "table": (r"Nivel freático $h$, uno por celda",
+                  [r"al subir llena $\theta_s - \theta$; al bajar deja $\theta_{fc}$,",
+                   r"así $S_y = \theta_s - \theta_{fc}$",
+                   r"flujo $q = K(\theta)\,(\psi/\Delta z + 1)$: recarga o ascenso capilar"]),
+        "lateral": ("Flujo lateral", [r"$T = \Sigma\, K_h\, b$, sumado en las capas saturadas"]),
+        "column_base": "Base de la columna",
+        "deep": ("Acuífero profundo (opcional)",
+                 [r"un embalse por subcuenca, alimentado por una", r"fracción $f_d$ de la recarga, devuelta a las celdas de río"]),
+    },
+}
 
 
 def helvetica_faces(folder: Path) -> tuple[FontProperties, FontProperties]:
@@ -173,10 +236,12 @@ def main(preview: Path | None = None) -> None:
     )
     with tempfile.TemporaryDirectory() as tmp:
         light, bold = helvetica_faces(Path(tmp))
-        draw(light, bold, preview)
+        for lang in LABELS:
+            draw(light, bold, lang, preview if lang == "en" else None)
 
 
-def draw(light: FontProperties, bold: FontProperties, preview: Path | None = None) -> None:
+def draw(light: FontProperties, bold: FontProperties, lang: str, preview: Path | None = None) -> None:
+    t = LABELS[lang]
     fig = plt.figure(figsize=(W / 100, H / 100), dpi=100)
     ax = fig.add_axes((0, 0, 1, 1))
     ax.set_xlim(0, W)
@@ -205,7 +270,7 @@ def draw(light: FontProperties, bold: FontProperties, preview: Path | None = Non
     )
 
     # Soil slots.
-    for top, bot, role, label in SOIL:
+    for (top, bot, role), label in zip(SOIL, t["slots"]):
         ax.add_patch(Rectangle((X0, top), X1 - X0, bot - top, facecolor=color(role), linewidth=0))
         text(X0 + 10, (top + bot) / 2, label)
 
@@ -223,7 +288,7 @@ def draw(light: FontProperties, bold: FontProperties, preview: Path | None = Non
         label = f"{k + 4}" if k < len(ROCK) - 1 else f"{k + 4} …"
         label_y = (top + dry_bot) / 2 if dry_bot - top >= 10 else (top + bot) / 2
         text(X0 + 10, label_y, label, size=8, c=soft)
-    text(X0 + 118, 470, r"saturated, $\theta = \theta_s$", size=9, c=soft)
+    text(X0 + 118, 470, t["saturated"], size=9, c=soft)
 
     # Column outline, bedrock and the deep reservoir.
     ax.add_patch(Rectangle((X0, GROUND), X1 - X0, COLUMN_BASE - GROUND, fill=False,
@@ -234,7 +299,7 @@ def draw(light: FontProperties, bold: FontProperties, preview: Path | None = Non
         FancyBboxPatch((128, 518), 194, 54, boxstyle="round,pad=0,rounding_size=7",
                        facecolor=color("deep_fill"), edgecolor=water, linewidth=1, zorder=4)
     )
-    text(225, 536, "deep linear reservoir", size=9, ha="center")
+    text(225, 536, t["reservoir"], size=9, ha="center")
     text(225, 555, r"$Q = S/\tau$", size=11, ha="center")
 
     # Boundaries, extended as leaders to the notes.
@@ -256,7 +321,7 @@ def draw(light: FontProperties, bold: FontProperties, preview: Path | None = Non
     # Drainage down the unsaturated slots: a tapered ribbon with a slight S.
     ribbon_arrow(ax, [(232, 206), (222, 250), (242, 282), (232, 324)], width=(1.2, 4.2),
                  head=(13, 12), c=ink)
-    text(250, 268, "drainage", size=9)
+    text(250, 268, t["drainage"], size=9)
     text(250, 286, r"$K_v\,K_r(S_e)$", size=10)
 
     # Darcy flux at the table: recharge down, capillary rise up, side by side.
@@ -277,30 +342,27 @@ def draw(light: FontProperties, bold: FontProperties, preview: Path | None = Non
     text(183, 357, r"$f_d$", size=10)
 
     # Left brackets: soil and regolith.
-    for top, bot, label in ((GROUND, SOIL_BASE, "soil"),
-                            (SOIL_BASE, COLUMN_BASE, "regolith: 0.25, 0.5, 1, 2, 4, 4 … m")):
+    for top, bot, label in ((GROUND, SOIL_BASE, t["bracket_soil"]),
+                            (SOIL_BASE, COLUMN_BASE, t["bracket_rock"])):
         ax.plot([80, 74, 74, 80], [top + 2, top + 2, bot - 2, bot - 2], color=soft, linewidth=1)
         text(62, (top + bot) / 2, label, size=9, c=soft, rotation=90, ha="center")
 
-    # Notes.
-    note(GROUND, "Ground surface")
-    note(ROOT_DEPTH - 2, "Root depth", ["from the land-cover class; roots take", "soil ET from slots 1 and 2"])
-    note(SOIL_BASE + 6, "Soil base", ["soil parameters end, regolith begins"])
-    note(TABLE - 2, r"Water table $h$, one per cell",
-         [r"rise fills $\theta_s - \theta$; fall leaves $\theta_{fc}$, so $S_y = \theta_s - \theta_{fc}$",
-          r"flux $q = K(\theta)\,(\psi/\Delta z + 1)$: recharge down, rise up"],
-         c=water)
-    note(408, "Lateral flow", [r"$T = \Sigma\, K_h\, b$, summed over the saturated slots"], c=water)
-    note(COLUMN_BASE + 8, "Column base", [r"$z_{\mathrm{surf}} - \min(D_{\mathrm{DTB}},\ 50\ \mathrm{m})$"])
-    note(552, "Deep aquifer (optional)",
-         [r"one reservoir per subbasin, fed by a fraction $f_d$", "of the recharge, returned to river cells"])
+    # Notes. A three-line water-table note pushes nothing: the lateral note sits at 408.
+    note(GROUND, t["ground"])
+    note(ROOT_DEPTH - 2, *t["root"])
+    note(SOIL_BASE + 6, *t["soil_base"])
+    note(TABLE - 2, *t["table"], c=water)
+    note(408 if len(t["table"][1]) < 3 else 414, *t["lateral"], c=water)
+    note(COLUMN_BASE + 8, t["column_base"], [r"$z_{\mathrm{surf}} - \min(D_{\mathrm{DTB}},\ 50\ \mathrm{m})$"])
+    note(552, *t["deep"])
 
-    OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(OUTPUT, format="svg", transparent=True, metadata={"Date": None})
+    output = OUTPUT_DIR / ("layered-column.svg" if lang == "en" else f"layered-column.{lang}.svg")
+    output.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(output, format="svg", transparent=True, metadata={"Date": None})
     if preview is not None:
         fig.savefig(preview, format="png", dpi=250, facecolor="#2b2f33")
     plt.close(fig)
-    print(f"wrote {OUTPUT.relative_to(ROOT)}")
+    print(f"wrote {output.relative_to(ROOT)}")
 
 
 if __name__ == "__main__":

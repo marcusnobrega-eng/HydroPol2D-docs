@@ -12,8 +12,12 @@
     "description": "The label for category 'Inputs' in sidebar 'tutorialSidebar'"
   },
   "sidebar.tutorialSidebar.category.Configuration": {
-    "message": "Configuracion",
+    "message": "Configuración",
     "description": "The label for category 'Configuration' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.Calibration": {
+    "message": "Calibración",
+    "description": "The label for category 'Calibration' in sidebar 'tutorialSidebar'"
   },
   "sidebar.tutorialSidebar.category.Validation": {
     "message": "Validación",
@@ -32,7 +36,7 @@
     "description": "The label for category 'Examples' in sidebar 'tutorialSidebar'"
   },
   "sidebar.tutorialSidebar.category.Theory": {
-    "message": "Teoria",
+    "message": "Teoría",
     "description": "The label for category 'Theory' in sidebar 'tutorialSidebar'"
   }
 }
