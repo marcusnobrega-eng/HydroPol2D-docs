@@ -42,6 +42,11 @@ const sidebars = {
     },
     {
       type: 'category',
+      label: 'Calibration',
+      items: ['calibration/groundwater-recession'],
+    },
+    {
+      type: 'category',
       label: 'Validation',
       items: [
         'validation/overview',
