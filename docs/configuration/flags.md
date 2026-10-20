@@ -40,6 +40,9 @@ HydroPol2D is controlled through binary and categorical flags defined in `Genera
 | $\mathrm{groundwater\_courant}$ | Safety factor used in the explicit groundwater timestep cap. |
 | $\mathrm{flag\_capillary\_rise}$ | Enables layered capillary rise from shallow groundwater into vadose storage. |
 | $\mathrm{flag\_baseflow}$ | Activates 2D Boussinesq lateral groundwater routing. |
+| $\mathrm{flag\_layered\_subsurface}$ | Replaces the three-layer soil column over a single aquifer with the [layered soil-over-regolith column](../theory/layered-subsurface). Default `0`. Settings: the "Layered Subsurface" and "Lateral Conductivity Multipliers" blocks of [General Data](./general_data). |
+| $\mathrm{flag\_feddes}$ | Adds [Feddes root-water-uptake stress](../theory/hydrologic-model#35-feddes-root-water-uptake-stress) to soil ET, in either subsurface scheme. Default `0`. |
+| $\mathrm{flag\_deep\_aquifer}$ | Activates the [deep aquifer](../theory/groundwater-model#13-deep-aquifer): one linear reservoir per subbasin, fed by `deep_recharge_fraction` of the recharge. Default `0`. |
 | $\mathrm{flag\_snow\_modeling}$ | Activates per-LULC snow accumulation, melt, sublimation, density, and depth. Requires internal meteorological forcing: `flag_ETP = 1` and `flag_input_ETP_map = 0`. |
 | $\mathrm{flag\_waterquality}$ | Activates water-quality transport. |
 | $\mathrm{flag\_wq\_model}$ | Selects the pollutant build-up/washoff model. |
@@ -152,5 +155,6 @@ The solver computes channel and floodplain discharge separately on each orthogon
 - Legacy `flag_subgrid` and `flag_overbanks` inputs are accepted only by the migration layer and produce an explicit warning.
 - `flag_D8` should be treated as secondary/limited-scope rather than as another report-ready routing family.
 - Groundwater async scheduling and capillary rise are public configuration behaviors, not hidden internal details.
+- `flag_deep_aquifer`, `flag_layered_subsurface` and `flag_feddes` are rows 37 to 39 of the `Flags` sheet (column E) in the distributed workbooks.
 - Snow parameters are entered in the LULC parameter table. `Initial_SWE_path` and `Initial_Snow_Depth_path` are optional initial-state rasters.
 - Human-instability mode `2` is not implemented and should not be presented as an available public method.

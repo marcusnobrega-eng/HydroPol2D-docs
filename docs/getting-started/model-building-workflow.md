@@ -128,6 +128,29 @@ The transmission store is initialized from a van Genuchten equilibrium profile
 conditioned on the selected groundwater table. Both solvers read these three
 maps, while older single-moisture cases retain their documented fallback.
 
+### Layered subsurface cases
+
+With `--subsurface-scheme layered` (default `legacy`), the Builder prepares a
+[layered subsurface](../theory/layered-subsurface) case for Python, MATLAB or both:
+
+1. **Global inputs.** It derives the soil base from SoilGrids BDRICM, the
+   regolith van Genuchten parameters from the texture class at 200 cm, and the
+   regolith conductivity from GLHYMPS 2.0. The rules are on the
+   [Soil](../inputs/soil#global-sources-used-by-the-case-builder) and
+   [DTB](../inputs/dtb#global-sources-used-by-the-case-builder) pages.
+2. **Solver adapters.** The Python case gets `vertical.subsurface.scheme: layered`
+   and the static paths. The MATLAB adapter passes the soil-base and regolith
+   rasters and `HYDROPOL_SUBSURFACE_SCHEME`.
+3. **Deep-aquifer starting state.** `--deep-aquifer-initial-baseflow-mm-day`
+   or `--deep-aquifer-mean-recharge-mm-year` (at most one) sets the starting
+   storage of the deep reservoirs. A calibration's
+   `DeepAquiferInitialState.json` replaces both.
+4. **Calibration.** In layered cases the recession calibration fits two
+   lateral-conductivity multipliers, one for the soil slots and one for the
+   regolith slots, instead of `Ksat,h` and `Sy`. Finalization writes them to
+   the Python case and to the MATLAB runner. $S_y$ stays on the retention
+   curves. See [Groundwater Recession Calibration](../calibration/groundwater-recession).
+
 ## Component responsibilities
 
 | Component | Owns | Does not own |

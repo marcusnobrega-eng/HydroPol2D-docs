@@ -45,6 +45,8 @@ The soil map still provides one categorical soil class per model cell. That clas
 
 The layer geometry adapts to depth to bedrock and groundwater position. If root depth is shallower than the near-surface layer, the explicit root-zone layer collapses into the near-surface layer. If bedrock or the water table is shallower than the requested root depth, the root zone is truncated to the available vadose depth.
 
+This is the default scheme. The optional [layered subsurface](#soil-and-regolith-in-the-layered-subsurface) keeps the same three soil layers but places regolith layers below them, with their own parameters.
+
 ---
 
 ## Required Soil Parameters
@@ -60,6 +62,66 @@ Hydraulic parameters are defined externally and associated with soil classes. Ty
 - Optional layer multipliers for saturated hydraulic conductivity
 
 These parameters must be physically consistent and representative of the soil classes defined in the raster.
+
+---
+
+## Soil and Regolith in the Layered Subsurface
+
+With the [layered subsurface](../theory/layered-subsurface), the column has three soil slots above the soil base and regolith slots below it. Each slot has its own van Genuchten curve.
+
+### Soil slots
+
+The three soil slots use the soil-class parameters: `ksat` with the three layer multipliers, `n`, `alpha`, `θsat`, `θr` and `l_vg`. Two soil-table columns change role:
+
+| Column | Default scheme | Layered subsurface |
+|---|---|---|
+| `Sy` | Specific yield of the aquifer | Ignored. Each slot takes $S_y$ from its retention curve. |
+| `kgsat` | Lateral conductivity of the aquifer | Horizontal conductivity of the regolith slots, used when `regolith_ksat_h_mm_h` is empty |
+
+The specific yield of every slot is the drainable porosity at field capacity:
+
+$$
+S_y = \theta_s - \theta\left(\psi = -h_{fc}\right)
+$$
+
+with $h_{fc}$ = `capillary_field_capacity_head_m` (default 3.3 m). In HydroPol2D-Python, `vertical.specific_yield` and `static.specific_yield_path` are not used by the layered scheme; the path raises a warning.
+
+The horizontal conductivity of the soil slots is `ksat` × `soil_lateral_anisotropy` (default 1) × `soil_lateral_conductivity_multiplier` (default 1).
+
+### Regolith slots
+
+Regolith parameters are scalars or rasters. A raster wins wherever it is finite; the scalar fills the rest.
+
+| Parameter | Units | Default | MATLAB raster (`General_Data`) | Python raster |
+|---|---|---|---|---|
+| `regolith_theta_s` | m³/m³ | 0.35 | `RegolithThetaS_path` | `static.regolith_theta_s_path` |
+| `regolith_theta_r` | m³/m³ | 0.05 | `RegolithThetaR_path` | `static.regolith_theta_r_path` |
+| `regolith_alpha_vg_m_inverse` | 1/m | 2.0 | `RegolithAlphaVG_path` | `static.regolith_alpha_vg_m_inverse_path` |
+| `regolith_n_vg` | — | 1.5 | `RegolithNVG_path` | `static.regolith_n_vg_path` |
+| `regolith_ksat_v_mm_h` | mm/h | 5.0 | `RegolithKsatV_path` | `static.regolith_ksat_v_mm_h_path` |
+| `regolith_ksat_h_mm_h` | mm/h | empty: `kgsat` | `RegolithKsatH_path` | `static.regolith_ksat_h_mm_h_path` |
+| `regolith_specific_yield` | — | empty: $\theta_s - \theta_{fc}$ | `RegolithSpecificYield_path` | `static.regolith_specific_yield_path` |
+
+A given regolith $S_y$ must lie in $(0,\ \theta_s - \theta_r]$. The horizontal conductivity of the regolith slots is multiplied by `regolith_lateral_conductivity_multiplier` (default 1).
+
+There is no regolith class table yet. Regolith properties are scalars or rasters only.
+
+### Root-water-uptake heads
+
+The Feddes heads $h_1$ to $h_4$ are global settings, not soil-class parameters. See [Hydrologic Model, Section 3.5](../theory/hydrologic-model#35-feddes-root-water-uptake-stress).
+
+### Global sources used by the Case Builder
+
+The Case Builder (`--subsurface-scheme layered`) derives the regolith maps from global data, so the same rules apply to any domain:
+
+| Map | Rule | Source |
+|---|---|---|
+| `RegolithThetaS/ThetaR/AlphaVG/NVG.tif` | USDA texture class at 200 cm, mapped to van Genuchten parameters through the Builder soil table | OpenLandMap texture v0.2, 200 cm |
+| `RegolithKsatH.tif` | Permeability × $\rho g/\mu$ at 20 °C. Where GLHYMPS has no polygon, the groundwater Ksat of the 200 cm texture class. | GLHYMPS 2.0 global tiles (Gleeson et al., 2014; Huscroft et al., 2018) |
+| `RegolithKsatV.tif` | `RegolithKsatH` ÷ `groundwater_vertical_anisotropy_ratio` | — |
+| `RegolithSpecificYield.tif` | Default `derived_capped`: $\theta_s - \theta(3.3\ \mathrm{m})$, capped by GLHYMPS porosity; nodata where GLHYMPS is missing, so the model derives $S_y$ there. With `derived`, no map is written. | `--regolith-specific-yield-rule` |
+
+GLHYMPS tiles are downloaded once, checked against the manifest SHA-256 and cached. Provenance, coverage and statistics go to `quality_report/layered_subsurface_rasters.json`. In layered cases the Builder does not wire `SpecificYield.tif` into the case.
 
 ---
 

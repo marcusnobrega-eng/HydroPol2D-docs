@@ -12,7 +12,9 @@ It represents the distance between the land surface and a limiting layer that co
 
 ## Role in HydroPol2D
 
-DTB is used to define:
+What DTB controls depends on the subsurface scheme. In the default scheme, DTB is the soil depth: the soil and the aquifer share the same column. In the [layered subsurface](#dtb-in-the-layered-subsurface), DTB is only the bottom of the aquifer, and a separate soil base marks where the soil ends.
+
+In the default scheme, DTB is used to define:
 
 - Maximum subsurface storage capacity  
 - Vertical limit for infiltration and percolation  
@@ -58,19 +60,12 @@ This approach is appropriate when:
 
 ## Default Assignment from Soil Classes
 
-If a DTB map is not available, values can be assigned through the **soil parameter tables**.
+If a DTB map is not available, a soil depth per soil class can stand in for it.
 
-In this case:
+- **HydroPol2D-Python** can take the soil depth from its soil table, from a soil-depth raster, or from the scalar `vertical.soil_depth_m`.
+- **HydroPol2D (MATLAB)** does not currently read the `DTB (m)` column of `SOIL_parameters.xlsx`. With `DTB_path` empty, the soil depth is 1 m.
 
-- Each soil class is associated with a representative DTB value  
-- The DTB field is constructed implicitly from the soil classification  
-
-This approach ensures consistency between:
-
-- Soil hydraulic properties  
-- Available storage depth  
-
-It is particularly useful in data-scarce environments.
+Whether the MATLAB `DTB (m)` column should be read or removed is an open decision.
 
 ---
 
@@ -109,6 +104,36 @@ DTB data is not as widely standardized as DEM or LULC, but can be derived from:
 
 ---
 
+## DTB in the Layered Subsurface
+
+With the [layered subsurface](../theory/layered-subsurface) (Python `vertical.subsurface.scheme: layered`, MATLAB `flag_layered_subsurface = 1`), two depths define the column:
+
+| Depth | What it marks | Input |
+|---|---|---|
+| Soil base | Where soil properties end and regolith begins | `SoilBaseDepth_path` raster, else `subsurface_soil_base_depth_m` (default 2 m) |
+| Depth to bedrock | Where the aquifer ends | `DTB_path` raster, else `subsurface_depth_to_bedrock_m`, else the default-scheme soil depth (with a warning) |
+
+The aquifer base is the ground minus $\min(\mathrm{DTB},\ D_{\max})$, with $D_{\max}$ = `subsurface_max_depth_m` (default 50 m). Cells with DTB deeper than the cap stop at the cap.
+
+Between the soil base and the column base, the model places regolith slots on a fixed ruler: 0.25, 0.5, 1, 2, 4, 4, … m from the soil base (first thickness, growth ratio and maximum thickness are configurable). The ruler is cut at the column base, so a deeper DTB adds more 4 m slots.
+
+In Python the same keys are `vertical.subsurface.soil_base_depth_m`, `depth_to_bedrock_m`, `max_depth_m` and `deep_layers`, and the rasters are `static.soil_base_depth_path` and `static.depth_to_bedrock_path`.
+
+Whether `DTB_path` should be required in MATLAB Excel mode when the layered scheme is on is an open decision. Today the fallback to the default soil depth applies, with a warning.
+
+### Global sources used by the Case Builder
+
+The Case Builder applies the same rules to any domain:
+
+| Map | Source |
+|---|---|
+| `DTB.tif` (column bottom) | SoilGrids depth to bedrock, BDTICM (Shangguan et al., 2017) |
+| `SoilBaseDepth.tif` (soil base) | SoilGrids depth to the R horizon, BDRICM, censored at 2 m, converted from cm to m |
+
+Both maps come from the same Shangguan et al. (2017) model, so their definitions agree.
+
+---
+
 ## Interaction with Soil Properties
 
 DTB complements the soil parameterization:
@@ -135,7 +160,7 @@ DTB is often uncertain and should be evaluated as part of sensitivity analysis w
 
 ## Summary
 
-DTB defines the effective vertical storage available to the model and constrains the depth of the vadose zone.
+In the default scheme, DTB defines the effective vertical storage available to the model and constrains the depth of the vadose zone. In the layered subsurface, DTB sets the aquifer base and the soil base sets the bottom of the soil.
 
 It can represent either the depth to bedrock or the depth to the aquifer surface, depending on the modeling objective.
 
