@@ -224,7 +224,8 @@ El script calcula **valores medianos** durante el rango de tiempo especificado p
 - **Albedo** (MODIS MCD43A3)
 - **LAI** (MODIS MCD15A3H)
 
-**Elegir fechas**:- Utilice períodos de 3 a 5 años para suavizar la variabilidad interanual
+**Elegir fechas**:
+- Utilice períodos de 3 a 5 años para suavizar la variabilidad interanual
 - Evite períodos con eventos extremos conocidos (a menos que los estudie)
 - Ejemplo: `'2015-01-01'` a `'2020-01-01'` captura condiciones recientes y relativamente estables
 
@@ -290,12 +291,14 @@ La salida SOIL contiene clases de textura USDA:
 
 ### Salidas ráster (GeoTIFF)
 
-Todos los archivos GeoTIFF comparten:- **Valor sin datos**: `-9999`
+Todos los archivos GeoTIFF comparten:
+- **Valor sin datos**: `-9999`
 - **Proyección**: Según lo especificado por `crs`
 - **Resolución**: Según lo especificado por `scale_of_image`
 - **Extensión**: Recortado al límite de la unión de cuencas
 
-**Nombre de archivo**:- `DEM.tif` – Elevación en metros
+**Nombre de archivo**:
+- `DEM.tif` – Elevación en metros
 - `LULC.tif` – Códigos de clase de uso del suelo (10-100)
 - `SOIL.tif` – Códigos de clase de textura del suelo (1-12)
 - `DTB.tif` – Profundidad hasta el lecho de roca en metros
@@ -307,7 +310,8 @@ Todos los archivos GeoTIFF comparten:- **Valor sin datos**: `-9999`
 
 ### Salida de archivo de forma
 
-**Catchment_Union.shp** contiene:- Límite fusionado de todas las cuencas seleccionadas
+**Catchment_Union.shp** contiene:
+- Límite fusionado de todas las cuencas seleccionadas
 - Atributos originales HydroBASINS para cada subcuenca
 - Se puede utilizar para:
   - Visualizar el dominio en SIG
@@ -333,11 +337,11 @@ Resumen de una sola fila de todo el dominio de modelado:
 | `dominant_LULC` | Clase de uso de suelo más común | código |
 | `dominant_SOIL` | Clase de suelo más común | código |
 | `avg_albedo` | Albedo medio de la superficie | 0-1 |
-| `mean_elevation_m` | Elevación media | metro |
-| `mean_DTB_m` | Profundidad media al lecho de roca | metro |
+| `mean_elevation_m` | Elevación media | m |
+| `mean_DTB_m` | Profundidad media al lecho de roca | m |
 | `mean_LAI` | Índice de área foliar media | m²/m² |
 | `worldpop_year` | Año de datos del WorldPop | año |
-| `export_scale_m` | Resolución de exportación | metro |
+| `export_scale_m` | Resolución de exportación | m |
 | `crs` | sistema de coordenadas | código EPSG |
 
 ---
@@ -359,8 +363,8 @@ Estadísticas por cuenca con una fila por subcuenca:
 | `dominant_LULC` | Uso de suelo dominante | código |
 | `dominant_SOIL` | Clase de suelo dominante | código |
 | `avg_albedo` | albedo medio | 0-1 |
-| `mean_elevation_m` | Elevación media | metro |
-| `mean_DTB_m` | Profundidad media al lecho de roca | metro |
+| `mean_elevation_m` | Elevación media | m |
+| `mean_DTB_m` | Profundidad media al lecho de roca | m |
 | `mean_LAI` | Media LAI | m²/m² |
 
 **Caso de uso**: comparar características de subcuencas, identificar patrones espaciales, validar entradas del modelo.
@@ -373,7 +377,8 @@ Estadísticas por cuenca con una fila por subcuenca:
 
 #### 1. Errores de memoria ("Se agotó el tiempo de cálculo")
 
-**Solución**:- Reducir el número de captaciones
+**Solución**:
+- Reducir el número de captaciones
 - Aumentar `scale_stats_continuous` y `scale_stats_categorical`
 - Exportar regiones más pequeñas por separado
 - Utilice el parámetro `tileScale` en operaciones de reducción (ya implementado en el script)
@@ -384,10 +389,13 @@ Estadísticas por cuenca con una fila por subcuenca:
 
 La profundidad hasta la capa de lecho de roca proviene del conjunto de datos de suelos globales ORNL DAAC:
 **Cita**: Pelletier, J.D., et al. (2016). Un conjunto de datos globales cuadriculados de suelos, regolitos intactos y espesores de depósitos sedimentarios para el modelado de la superficie terrestre regional y global. *Revista de avances en el modelado de sistemas terrestres*, 8(1), 41-65.
-**Acceso**:- Datos originales: [ORNL DAAC](https://daac.ornl.gov/SOILS/guides/Global_Soil_Regolith_Sediment.html)
+
+**Acceso**:
+- Datos originales: [ORNL DAAC](https://daac.ornl.gov/SOILS/guides/Global_Soil_Regolith_Sediment.html)
 - El script utiliza una versión preprocesada cargada en Google Earth Engine como recurso personalizado
 
-**Si DTB no está disponible**:- Póngase en contacto con los autores del script para acceder a los activos
+**Si DTB no está disponible**:
+- Póngase en contacto con los autores del script para acceder a los activos
 - Utilice una profundidad alternativa al conjunto de datos de lecho de roca
 - Comente la Sección 7 si no es necesaria para su solicitud.
 

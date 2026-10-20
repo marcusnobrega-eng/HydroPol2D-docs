@@ -32,7 +32,8 @@ Para los cálculos de evapotranspiración, el script extrae:
 - Humedad relativa (UR, %)
 - Radiación solar (G, MJ/m²/día)
 
-Los insumos climáticos se generan a partir de:- **ERA5-Tierra**
+Los insumos climáticos se generan a partir de:
+- **ERA5-Tierra**
 - **NLDAS**
 
 ---
@@ -75,7 +76,9 @@ Estos ayudan a identificar lagunas de datos, valores atípicos o inconsistencias
 ### Formato CSV de lluvia
 
 Cada archivo de lluvia contiene:
-**Filas de encabezado**:- Fila de título
+
+**Filas de encabezado**:
+- Fila de título
 - fila en blanco
 - Números de índice de calibre
 - Nombres de calibre
@@ -83,7 +86,8 @@ Cada archivo de lluvia contiene:
 - Coordenadas norte (m)
 - Nombres de variables
 
-**Filas de datos** (una por día):- Columna 1: Días transcurridos
+**Filas de datos** (una por día):
+- Columna 1: Días transcurridos
 - Columna 2: Fecha (minutos desde el inicio)
 - Columnas 3+: Intensidad de lluvia (mm/h) en cada pluviómetro
 

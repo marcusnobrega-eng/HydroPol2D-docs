@@ -64,7 +64,8 @@ india = ee.FeatureCollection("FAO/GAUL/2015/level0") \
     .filter(ee.Filter.eq("ADM0_NAME", "India"))
 ```
 
-Saídas:- Geometria
+Saídas:
+- Geometria
 - Caixa delimitadora
 - Recursos de captação
 
@@ -76,25 +77,27 @@ Saídas:- Geometria
 
 | Camada | Descrição | Unidades |
 |------|------------|------|
-| DEM | Elevação | eu |
+| DEM | Elevação | m |
 | LULC | Cobertura da terra | categórico |
 | SOLO | Classe de solo | categórico |
-| DTB | Profundidade até o alicerce | eu |
+| DTB | Profundidade até o alicerce | m |
 | LAI | Índice de área foliar | adimensional |
 | Albedo | Refletância de superfície | - |
-| Umidade do solo | Condição inicial | milímetros |
+| Umidade do solo | Condição inicial | mm |
 | MundoPop | População | pessoas/km² |
 
 ---
 
 ### Tabelas
 
-**Registro de domínio**- População total
+**Registro de domínio**
+- População total
 - Elevação média
 - Umidade média do solo
 - Cobertura dominante da terra e solo
 
-**Registro de Captação**- Área
+**Registro de Captação**
+- Área
 - População
 - Estatísticas hidrológicas por bacia hidrográfica
 

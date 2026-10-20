@@ -178,13 +178,6 @@ $$
 P_{\mathrm{int}} = \Delta P_{\mathrm{agg}}
 $$
 donde $\Delta P_{\mathrm{agg}}$ es la profundidad de lluvia agregada durante el paso de tiempo del modelo.
-- $C_a$ es el área efectiva de células humedecidas $[\mathrm{L}^2]$
-
-De lo contrario,
-$$
-P_{\mathrm{int}} = \Delta P_{\mathrm{agg}}
-$$
-Esta corrección no se utiliza como evidencia de validación hasta que el flujo de trabajo hidráulico acoplado a la subred sea reparado y revalidado.
 
 ---
 

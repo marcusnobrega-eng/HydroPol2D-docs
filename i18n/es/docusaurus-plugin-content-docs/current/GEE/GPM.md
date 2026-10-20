@@ -40,19 +40,24 @@ El script descarga datos de precipitación de **GPM IMERG V07** (Recuperaciones 
 ### Convención de nombre de archivo
 
 El script genera nombres de archivos descriptivos que codifican información temporal:
-**Datos de 30 minutos**:- GPM_30min_2023_01_14_00_00.tif
+
+**Datos de 30 minutos**:
+- GPM_30min_2023_01_14_00_00.tif
 - GPM_30min_2023_01_14_00_30.tif
 - GPM_30min_2023_01_14_01_00.tif
 
-**Agregación horaria**:- GPM_60min_2023_01_14_00_00.tif
+**Agregación horaria**:
+- GPM_60min_2023_01_14_00_00.tif
 - GPM_60min_2023_01_14_01_00.tif
 - GPM_60min_2023_01_14_02_00.tif
 
-**Agregación cada 3 horas** (misma resolución temporal que MSWEP):- GPM_180min_2023_01_14_00_00.tif
+**Agregación cada 3 horas** (misma resolución temporal que MSWEP):
+- GPM_180min_2023_01_14_00_00.tif
 - GPM_180min_2023_01_14_03_00.tif
 - GPM_180min_2023_01_14_06_00.tif
 
-**Agregación diaria**:- GPM_1440min_2023_01_14_00_00.tif
+**Agregación diaria**:
+- GPM_1440min_2023_01_14_00_00.tif
 - GPM_1440min_2023_01_15_00_00.tif
 - GPM_1440min_2023_01_16_00_00.tif
 
@@ -63,21 +68,27 @@ El script genera nombres de archivos descriptivos que codifican información tem
 ### Paso 1: Defina su área de estudio
 
 **Opción A: uso de HydroBASINS** (recomendado para la mayoría de los usuarios)
-Modifique estos parámetros en el script:- Establecer useHydroBASINS en verdadero
+
+Modifique estos parámetros en el script:
+- Establecer useHydroBASINS en verdadero
 - Elija el nivel HydroBASINS (1-12, donde más alto equivale a cuencas más pequeñas)
 - Ingrese su(s) ID de cuenca en la lista de ID de cuenca
 
-Recomendaciones de nivel:- Nivel 5-6: Grandes cuencas fluviales (mayores que 10,000 km²)
+Recomendaciones de nivel:
+- Nivel 5-6: Grandes cuencas fluviales (mayores que 10,000 km²)
 - Nivel 7: Cuencas medias (1,000-5,000 km²)
 - Nivel 8-9: Pequeñas cuencas (100-1,000 km²)
 
-**Encontrar su HYBAS_ID**:1. Visite el sitio web HydroSHEDS o utilice la herramienta Inspector de GEE
+**Encontrar su HYBAS_ID**:
+1. Visite el sitio web HydroSHEDS o utilice la herramienta Inspector de GEE
 2. Cargue HydroBASINS en el nivel deseado en Google Earth Engine
 3. Haga clic en su cuenca con la herramienta Inspector
 4. Copie el valor HYBAS_ID
 
 **Opción B: uso de Shapefile personalizado**
-Si tiene su propio archivo de forma de captación:1. Cargue el archivo de forma en los activos GEE (Activo → Nuevo → Archivos de forma)
+
+Si tiene su propio archivo de forma de captación:
+1. Cargue el archivo de forma en los activos GEE (Activo → Nuevo → Archivos de forma)
 2. Establezca useHydroBASINS en falso en el script
 3. Descomente y modifique la línea customCatchment con la ruta de su activo
 
@@ -87,12 +98,15 @@ Si tiene su propio archivo de forma de captación:1. Cargue el archivo de forma 
 
 Especifique el evento de lluvia o el período de estudio que desea descargar.
 **Formato**: AAAA-MM-DD
-**Notas importantes**:- GPM IMERG V07 disponible desde el **1 de junio de 2000** hasta casi en tiempo real
+
+**Notas importantes**:
+- GPM IMERG V07 disponible desde el **1 de junio de 2000** hasta casi en tiempo real
 - Normalmente hay un retraso de 3 meses para el producto final.
 - Para eventos cortos (de días a semanas): use una resolución de 30 minutos
 - Para períodos largos (meses a años): considere resoluciones agregadas
 
-**Configuraciones de ejemplo**:- **Evento de inundación repentina**: 2-3 días con una resolución de 30 minutos
+**Configuraciones de ejemplo**:
+- **Evento de inundación repentina**: 2-3 días con una resolución de 30 minutos
 - **Simulación mensual**: 30 días con resolución horaria o de 3 horas
 - **Análisis estacional**: 90 días con resolución de 3 horas o diaria
 - **Balance hídrico anual**: 365 días a resolución diaria
@@ -111,7 +125,8 @@ Seleccione el paso de tiempo (en minutos) para sus resultados de lluvia.
 | **cada 12 horas** | 720 | 2 | Análisis climático a largo plazo |
 | **A diario** | 1440 | 1 | Balance hídrico, análisis estacional/anual. |
 
-**Ejemplos de recuento de archivos**:- Evento de 2 días a 30 min: 96 archivos (aproximadamente 200 MB)
+**Ejemplos de recuento de archivos**:
+- Evento de 2 días a 30 min: 96 archivos (aproximadamente 200 MB)
 - 1 mes por hora: 720 archivos (aproximadamente 1,5 GB)
 - 1 mes a 3 horas: 240 archivos (aproximadamente 500 MB)
 - 1 año al día: 365 archivos (aproximadamente 750 MB)
@@ -124,7 +139,9 @@ Seleccione el paso de tiempo (en minutos) para sus resultados de lluvia.
 
 **Carpeta de salida**: especifique el nombre de la carpeta de Google Drive donde se guardarán los archivos. El script creará esta carpeta si no existe.
 **Sistema de coordenadas**: manténgalo como EPSG:4326 (WGS84) para la proyección nativa GPM o especifique una proyección local (por ejemplo, zonas UTM, plano estatal) para su región.
-Proyecciones comunes:- EPSG:4326 - WGS84 (global, recomendado para GPM)
+
+Proyecciones comunes:
+- EPSG:4326 - WGS84 (global, recomendado para GPM)
 - EPSG:3310 - Albers de California
 - EPSG:32610 - Zona UTM 10N (California)
 - EPSG: 32643 - Zona UTM 43N (India)
@@ -143,7 +160,8 @@ Proyecciones comunes:- EPSG:4326 - WGS84 (global, recomendado para GPM)
 8. **Haga clic en EJECUTAR** en cada tarea de exportación
 9. **Espere a que se completen las exportaciones**: los archivos aparecen en Google Drive
 
-**Tiempo de procesamiento**:- Envío de tareas: 10-30 segundos
+**Tiempo de procesamiento**:
+- Envío de tareas: 10-30 segundos
 - Exportación por archivo: 1-5 minutos (depende del tamaño de la cuenca)
 - Tiempo total: varía según la cantidad de archivos
 
@@ -154,7 +172,9 @@ Proyecciones comunes:- EPSG:4326 - WGS84 (global, recomendado para GPM)
 ### Cuadro delimitador frente a captación exacta
 
 El script exporta datos de lluvia para el **cuadro delimitador rectangular** alrededor de su cuenca, no la forma exacta de la cuenca.
-**¿Por qué?**- Procesamiento más rápido
+
+**¿Por qué?**
+- Procesamiento más rápido
 - Mantiene la estructura de cuadrícula regular GPM
 - Proporciona contexto para áreas adyacentes.
 - HydroPol2D y la mayoría de los modelos hidrológicos pueden ajustarse a límites exactos durante el procesamiento
@@ -165,11 +185,13 @@ El script exporta datos de lluvia para el **cuadro delimitador rectangular** alr
 
 ### Archivos incluidos en la exportación
 
-**Rásteres de lluvia**:- Un GeoTIFF por paso de tiempo
+**Rásteres de lluvia**:
+- Un GeoTIFF por paso de tiempo
 - El nombre del archivo incluye fecha y hora.
 - Unidades: mm/h (tasa de precipitación)
 
-**Límite de cuenca**:- Shapefile (.shp + archivos de soporte)
+**Límite de cuenca**:
+- Shapefile (.shp + archivos de soporte)
 - Mismo sistema de coordenadas que los rásteres de lluvia
 - Úselo para recortar o visualizar
 
@@ -177,12 +199,14 @@ El script exporta datos de lluvia para el **cuadro delimitador rectangular** alr
 
 ### Seguro de calidad
 
-El script incluye capas de visualización en el mapa:- **Polígono rojo**: Límite de cuenca fusionado
+El script incluye capas de visualización en el mapa:
+- **Polígono rojo**: Límite de cuenca fusionado
 - **Rectángulo azul**: Exportar cuadro delimitador
 - **Capa de lluvia de muestra**: visualización del primer paso
 - **Capa de lluvia total**: Precipitación acumulada durante todo el período
 
-**Salidas de consola**:- Área de captación en kilómetros cuadrados
+**Salidas de consola**:
+- Área de captación en kilómetros cuadrados
 - Número de imágenes de 30 minutos disponibles
 - Confirmación del rango de fechas
 - Exportar estado de envío de tarea
@@ -210,12 +234,14 @@ El script incluye capas de visualización en el mapa:- **Polígono rojo**: Lími
 
 ### Recomendaciones de validación
 
-**Siempre valide GPM con observaciones locales cuando estén disponibles**:- Comparar con los datos del pluviómetro
+**Siempre valide GPM con observaciones locales cuando estén disponibles**:
+- Comparar con los datos del pluviómetro
 - Comparar con estimaciones de radar
 - Verificar acumulaciones totales
 - Evaluar patrones espaciales
 
-Para aplicaciones críticas, considere:- Corrección de sesgo utilizando datos de calibre local.
+Para aplicaciones críticas, considere:
+- Corrección de sesgo utilizando datos de calibre local.
 - Enfoques conjuntos con múltiples conjuntos de datos
 - Cuantificación de la incertidumbre
 
@@ -254,19 +280,23 @@ Este flujo de trabajo está diseñado para:
 
 ### Problemas comunes
 
-**Error "Capacidad de memoria excedida"**:- Reduzca el rango de fechas (pruebe con períodos de tiempo más pequeños)
+**Error "Capacidad de memoria excedida"**:
+- Reduzca el rango de fechas (pruebe con períodos de tiempo más pequeños)
 - Aumentar la resolución temporal (p. ej., usar diariamente en lugar de 30 minutos)
 - Reducir el tamaño de la cuenca (use un nivel HydroBASINS más pequeño)
 
-**No hay datos en rásteres exportados**:- El rango de fechas de verificación está dentro del período GPM (2000-06-01 en adelante)
+**No hay datos en rásteres exportados**:
+- El rango de fechas de verificación está dentro del período GPM (2000-06-01 en adelante)
 - Verifique que la cuenca esté dentro de la cobertura GPM (60°N-60°S)
 - Confirmar que el ID de la cuenca es correcto
 
-**Las exportaciones no aparecen en Tareas**:- Espere entre 10 y 30 segundos después de ejecutar el script
+**Las exportaciones no aparecen en Tareas**:
+- Espere entre 10 y 30 segundos después de ejecutar el script
 - Verifique la consola para ver mensajes de error
 - Actualizar pestaña Tareas
 
-**Tamaños de archivos muy grandes**:- Considere utilizar resolución temporal agregada
+**Tamaños de archivos muy grandes**:
+- Considere utilizar resolución temporal agregada
 - Exportar rangos de fechas más pequeños
 - Utilice la resolución espacial adecuada para su aplicación
 
@@ -284,7 +314,8 @@ Este flujo de trabajo está diseñado para:
 
 ## Apoyo
 
-Para problemas con:- **El guión**: contacta a tu equipo de soporte
+Para problemas con:
+- **El guión**: contacta a tu equipo de soporte
 - **Datos GPM**: Visite la mesa de ayuda de GES DISC o GPM
 - **Google Earth Engine**: Consulte el foro de desarrolladores GEE
 - **HydroPol2D**: Visite el sitio web de documentación del modelo

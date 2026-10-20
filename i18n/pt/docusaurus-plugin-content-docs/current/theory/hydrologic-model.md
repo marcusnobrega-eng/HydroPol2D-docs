@@ -178,13 +178,6 @@ $$
 P_{\mathrm{int}} = \Delta P_{\mathrm{agg}}
 $$
 onde $\Delta P_{\mathrm{agg}}$ é a profundidade agregada da precipitação ao longo do intervalo de tempo do modelo.
-- $C_a$ é a área celular molhada efetiva $[\mathrm{L}^2]$
-
-De outra forma,
-$$
-P_{\mathrm{int}} = \Delta P_{\mathrm{agg}}
-$$
-Esta correção não é usada como evidência de validação até que o fluxo de trabalho hidráulico da sub-rede acoplada seja reparado e revalidado.
 
 ---
 

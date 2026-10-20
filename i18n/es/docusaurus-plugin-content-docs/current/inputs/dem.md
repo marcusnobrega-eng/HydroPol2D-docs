@@ -72,7 +72,9 @@ Varios conjuntos de datos DEM globales de alta calidad están disponibles gratui
 ## Datos de alta resolución (recomendado)
 
 Si están disponibles, se recomienda encarecidamente **DEM basados ​​en LiDAR**.
-Ventajas:- Resolución espacial muy alta (de submetro a unos pocos metros)
+
+Ventajas:
+- Resolución espacial muy alta (de submetro a unos pocos metros)
 - Representación precisa del terreno y la microtopografía.
 - Mejor representación de rutas de flujo, canales y características urbanas.
 

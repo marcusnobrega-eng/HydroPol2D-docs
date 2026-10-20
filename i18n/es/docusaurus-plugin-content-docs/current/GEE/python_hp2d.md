@@ -64,7 +64,8 @@ india = ee.FeatureCollection("FAO/GAUL/2015/level0") \
     .filter(ee.Filter.eq("ADM0_NAME", "India"))
 ```
 
-Salidas:- Geometría
+Salidas:
+- Geometría
 - cuadro delimitador
 - Características de la cuenca
 
@@ -76,25 +77,27 @@ Salidas:- Geometría
 
 | Capa | Descripción | Unidades |
 |------|------------|------|
-| DEM | Elevación | metro |
+| DEM | Elevación | m |
 | LULC | Cobertura terrestre | categórico |
 | SUELO | clase de suelo | categórico |
-| DTB | Profundidad hasta el lecho de roca | metro |
+| DTB | Profundidad hasta el lecho de roca | m |
 | LAI | Índice de área foliar | sin dimensiones |
 | Albedo | Reflectancia de superficie | - |
-| Humedad del suelo | Condición inicial | milímetros |
+| Humedad del suelo | Condición inicial | mm |
 | pop mundial | Población | personas/km² |
 
 ---
 
 ### Mesas
 
-**Registro de dominio**- Población total
+**Registro de dominio**
+- Población total
 - Elevación media
 - Humedad media del suelo
 - Cobertura terrestre y suelo dominantes.
 
-**Registro de cuenca**- Área
+**Registro de cuenca**
+- Área
 - Población
 - Estadísticas hidrológicas por cuenca
 

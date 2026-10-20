@@ -224,7 +224,8 @@ O script calcula **valores medianos** no intervalo de tempo especificado para:
 - **Albedo** (MODIS MCD43A3)
 - **LAI** (MODIS MCD15A3H)
 
-**Escolhendo datas**:- Use períodos de 3 a 5 anos para suavizar a variabilidade interanual
+**Escolhendo datas**:
+- Use períodos de 3 a 5 anos para suavizar a variabilidade interanual
 - Evite períodos com eventos extremos conhecidos (a menos que os estude)
 - Exemplo: `'2015-01-01'` a `'2020-01-01'` captura condições recentes e relativamente estáveis
 
@@ -290,12 +291,14 @@ A saída SOIL contém classes de textura do USDA:
 
 ### Saídas raster (GeoTIFF)
 
-Todos os arquivos GeoTIFF compartilham:- **Valor sem dados**: `-9999`
+Todos os arquivos GeoTIFF compartilham:
+- **Valor sem dados**: `-9999`
 - **Projeção**: Conforme especificado por `crs`
 - **Resolução**: conforme especificado por `scale_of_image`
 - **Extensão**: Recortado ao limite da união de captação
 
-**Nomeação de arquivo**:- `DEM.tif` – Elevação em metros
+**Nomeação de arquivo**:
+- `DEM.tif` – Elevação em metros
 - `LULC.tif` – Códigos de classe de uso do solo (10-100)
 - `SOIL.tif` – Códigos de classe de textura do solo (1-12)
 - `DTB.tif` – Profundidade até o leito rochoso em metros
@@ -307,7 +310,8 @@ Todos os arquivos GeoTIFF compartilham:- **Valor sem dados**: `-9999`
 
 ### Saída do arquivo shape
 
-**Catchment_Union.shp** contém:- Limite mesclado de todas as bacias hidrográficas selecionadas
+**Catchment_Union.shp** contém:
+- Limite mesclado de todas as bacias hidrográficas selecionadas
 - Atributos HydroBASINS originais para cada sub-bacia
 - Pode ser usado para:
   - Visualize o domínio em GIS
@@ -333,11 +337,11 @@ Resumo de linha única de todo o domínio de modelagem:
 | `dominant_LULC` | Classe de uso da terra mais comum | código |
 | `dominant_SOIL` | Classe de solo mais comum | código |
 | `avg_albedo` | Albedo médio da superfície | 0-1 |
-| `mean_elevation_m` | Elevação média | eu |
-| `mean_DTB_m` | Profundidade média até o leito rochoso | eu |
+| `mean_elevation_m` | Elevação média | m |
+| `mean_DTB_m` | Profundidade média até o leito rochoso | m |
 | `mean_LAI` | Índice médio de área foliar | m²/m² |
 | `worldpop_year` | Ano de dados do WorldPop | ano |
-| `export_scale_m` | Resolução de exportação | eu |
+| `export_scale_m` | Resolução de exportação | m |
 | `crs` | Sistema de coordenadas | Código EPSG |
 
 ---
@@ -359,8 +363,8 @@ Estatísticas por bacia hidrográfica com uma linha por sub-bacia hidrográfica:
 | `dominant_LULC` | Uso dominante da terra | código |
 | `dominant_SOIL` | Classe de solo dominante | código |
 | `avg_albedo` | Albedo médio | 0-1 |
-| `mean_elevation_m` | Elevação média | eu |
-| `mean_DTB_m` | Profundidade média até o leito rochoso | eu |
+| `mean_elevation_m` | Elevação média | m |
+| `mean_DTB_m` | Profundidade média até o leito rochoso | m |
 | `mean_LAI` | Média LAI | m²/m² |
 
 **Caso de uso**: Compare características da sub-bacia, identifique padrões espaciais, valide dados do modelo.
@@ -373,7 +377,8 @@ Estatísticas por bacia hidrográfica com uma linha por sub-bacia hidrográfica:
 
 #### 1. Erros de memória ("Tempo limite de cálculo esgotado")
 
-**Solução**:- Reduzir o número de captações
+**Solução**:
+- Reduzir o número de captações
 - Aumente `scale_stats_continuous` e `scale_stats_categorical`
 - Exporte regiões menores separadamente
 - Utilize o parâmetro `tileScale` nas operações de redução (já implementado no script)
@@ -384,10 +389,13 @@ Estatísticas por bacia hidrográfica com uma linha por sub-bacia hidrográfica:
 
 A profundidade até a camada rochosa é proveniente do conjunto de dados globais de solo ORNL DAAC:
 **Citação**: Pelletier, J.D., et al. (2016). Um conjunto de dados globais em grade de solo, regolito intacto e espessuras de depósitos sedimentares para modelagem regional e global da superfície terrestre. *Jornal de Avanços na Modelagem de Sistemas Terrestres*, 8(1), 41-65.
-**Acesso**:- Dados originais: [ORNL DAAC](https://daac.ornl.gov/SOILS/guides/Global_Soil_Regolith_Sediment.html)
+
+**Acesso**:
+- Dados originais: [ORNL DAAC](https://daac.ornl.gov/SOILS/guides/Global_Soil_Regolith_Sediment.html)
 - O script usa uma versão pré-processada enviada para Google Earth Engine como um ativo personalizado
 
-**Se DTB não estiver disponível**:- Entre em contato com os autores do script para obter acesso aos ativos
+**Se DTB não estiver disponível**:
+- Entre em contato com os autores do script para obter acesso aos ativos
 - Use uma profundidade alternativa para o conjunto de dados rochosos
 - Comente a Seção 7 se não for necessário para sua aplicação
 

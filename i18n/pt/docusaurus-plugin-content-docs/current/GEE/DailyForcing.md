@@ -32,7 +32,8 @@ Para cálculos de evapotranspiração, o script extrai:
 - Umidade relativa (UR, %)
 - Radiação solar (G, MJ/m²/dia)
 
-Os insumos climáticos são gerados a partir de:- **ERA5-Terreno**
+Os insumos climáticos são gerados a partir de:
+- **ERA5-Terreno**
 - **NLDAS**
 
 ---
@@ -75,7 +76,9 @@ Isso ajuda a identificar lacunas de dados, valores discrepantes ou inconsistênc
 ### Formato CSV de chuva
 
 Cada arquivo de precipitação contém:
-**Linhas de cabeçalho**:- Linha de título
+
+**Linhas de cabeçalho**:
+- Linha de título
 - Linha em branco
 - Números de índice do medidor
 - Nomes de medidores
@@ -83,7 +86,8 @@ Cada arquivo de precipitação contém:
 - Coordenadas norte (m)
 - Nomes de variáveis
 
-**Linhas de dados** (uma por dia):- Coluna 1: Dias decorridos
+**Linhas de dados** (uma por dia):
+- Coluna 1: Dias decorridos
 - Coluna 2: Data (minutos desde o início)
 - Colunas 3+: Intensidade da precipitação (mm/h) em cada medidor
 
