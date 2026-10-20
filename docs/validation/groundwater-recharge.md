@@ -77,8 +77,51 @@ Both analytical hillslope cases passed.
 
 <p><em>Transient hillslope benchmark. The upper panel compares head profiles during perturbation decay; the lower panel compares modeled and analytical toe flux per unit width.</em></p>
 
+## Layered subsurface
+
+The [layered subsurface](../theory/layered-subsurface) was added in October 2026. Its evidence is of four kinds: Python unit tests of the column rules, Python-to-MATLAB parity, full-model V-tilted runs in MATLAB, and a calibration twin experiment.
+
+### Python column tests
+
+HydroPol2D-Python tests the layered column, Feddes stress and the deep starting state directly (`tests/test_subsurface_column.py`, `test_subsurface_geometry.py`, `test_subsurface_lateral.py`, `test_subsurface_mesh.py`, `test_subsurface_run.py`, `test_feddes.py`, `test_deep_aquifer_initial_state.py`).
+
+The key numerical test compares the explicit and implicit water-table flux:
+
+| Case | Flux | Sign flips | Water moved over 24 h vs a 36-s reference |
+|---|---|---:|---:|
+| Sandy soil, wet, table 15 cm deep, 1-h steps | Explicit | 2 | 53 % too much |
+| Same | Implicit (default) | 0 | within 0.1 % |
+
+At a 0.01-s step the two forms agree to $1.5 \times 10^{-5}$.
+
+### Python-to-MATLAB parity
+
+The MATLAB port is checked against fixtures exported from HydroPol2D-Python (`Validation/Groundwater/Layered` in the MATLAB repository). The fixtures use the explicit water-table flux, because the implicit flux is not yet ported.
+
+| Script | What it checks | Recorded result |
+|---|---|---|
+| `run_layered_kernel_parity.m` | Every column kernel: geometry, MMF table update, drainage, Darcy flux, Feddes, shared-table bisection, lateral advance | 193 checks, worst $2.8 \times 10^{-16}$ |
+| `run_layered_step_parity.m` | The full layered vertical step on a 2 × 2 V-tilted grid, 4 scenarios, 312 steps | 3,120 checks, worst $2.1 \times 10^{-17}$ |
+| `run_layered_vtilted_case.m` | Full-model V-tilted runs: `local`, `lateral`, `feddes`, `legacy`, `deep`, `deep_legacy`, `deep_empty` | Run from a copy of `Examples/VTilted_Excel`; `lateral` volume error $-1.7 \times 10^{-10}$ m³ |
+| `run_feddes_legacy_consistency.m` | Feddes in the default three-layer ET equals layered Feddes ET for the same state; Feddes never takes more than the unstressed rule | consistency check |
+| `run_layered_mesh_case.m` | 20 m V-tilted Voronoi mesh with 2 HRUs: default, layered, layered + Feddes | every step closes mass within $10^{-8}$ of the rain volume |
+
+`run_deep_aquifer_initial_state_validation.m` checks the deep starting state $S_0 = q_0 A \tau$ against a fixture shared with HydroPol2D-Python. `Validation/Groundwater/run_groundwater_release_checks.m` runs all of these.
+
+### Calibration twin experiment
+
+A twin experiment recovered known soil and regolith conductivity multipliers from a synthetic 30-day recession with 0, 5 and 10 % noise. The setup, results and limits are on the [Groundwater Recession Calibration](../calibration/groundwater-recession#5-twin-experiments) page.
+
+### What the layered evidence does not cover
+
+- The implicit water-table flux is tested in Python only.
+- No field case: the tests use synthetic V-tilted domains.
+- The open issues listed under [Known Limits](../theory/layered-subsurface#9-known-limits), including the circulation at the water table, are not resolved by these tests.
+
 ## What this validation supports
 
 Together, these cases support the implemented recharge accumulation, asynchronous scheduler, local water-table rise and drawdown through `S_y`, simple layered capillary rise, and idealized lateral hillslope groundwater dynamics.
+
+The layered-subsurface tests support the implementation of the soil-over-regolith column and its Python-MATLAB agreement on controlled cases.
 
 They do not validate regional aquifer parameters, field baseflow, groundwater pumping, confined aquifer behavior, or calibration against observed wells.

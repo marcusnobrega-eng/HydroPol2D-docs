@@ -20,6 +20,22 @@ and unresolved channels are supported only by the local-inertial solver. A
 case that needs kinematic, diffusive, or full-momentum routing must use fully
 resolved 2D channels until a separate channel-coupling validation is added.
 
+## Layered Subsurface and Recession Calibration
+
+The layered subsurface has controlled tests and Python-MATLAB parity on
+synthetic V-tilted domains, not field validation. Open limits:
+
+- no lateral flow of perched water above unsaturated regolith;
+- no regolith class table and no per-slot raster outputs;
+- water cycles up and down near a shallow table, which inflates the gross
+  capillary rise and recharge in the ledger while the net stays near zero;
+- the implicit water-table flux is tested in Python only;
+- the compiled Python city loop does not yet run the layered scheme with
+  lateral groundwater flow.
+
+The recession calibration has been tested with a twin experiment on a
+synthetic valley, not against observed wells or a field hydrograph.
+
 ## Evidence Boundaries
 
 Some hydrodynamic and groundwater cases use numerical references. These are
