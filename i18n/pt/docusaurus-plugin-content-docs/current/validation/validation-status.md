@@ -1,35 +1,41 @@
 ---
-title: Estado da validacao
+title: Estado da validação
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-# Estado da validacao
+# Estado da validação
 
-O relatorio de validacao documenta os metodos, as metricas e os resultados da suite de validacao do HydroPol2D. A tabela apresenta um indice conciso das evidencias atuais.
+O <a href={useBaseUrl('/reports/validation_report.pdf')}>relatório de validação</a> documenta os métodos, as métricas e os resultados da suíte de validação do HydroPol2D. A tabela apresenta um índice conciso das evidências atuais.
 
 <div style={{margin: '1rem 0 1.5rem 0'}}>
   <a className="button button--primary button--lg" href={useBaseUrl('/reports/validation_report.pdf')}>
-    Abrir o relatorio de validacao
+    Abrir o relatório de validação
   </a>
 </div>
 
-| Modulo | Estado | Evidencia |
+| Módulo | Estado | Evidência |
 |---|---|---|
-| Interceptacao pelo dossel | Validado | Referencia independente de armazenamento em dossel e balanco exato de massa. |
-| Neve | Validado | Parametros por LULC, mapas iniciais opcionais, refinamento temporal, equivalencia entre planilha e script, e balanco do evento em V. |
-| Infiltracao | Validado | Casos analiticos e de solo estratificado em dominios de coluna e V. |
-| Evapotranspiracao | Validado | Calculos independentes de ET de referencia e limites de extracao. |
-| Aguas subterraneas e recarga | Validado | Testes de elevacao do nivel freatico, agendamento, ascensao capilar e encostas analiticas. |
-| Hidrodinamica de momento completo | Validado | Plano inclinado, bacia em V, ruptura de barragem de Ritter, onda nao quebrante e contornos. |
-| Hidrodinamica inercial local | Validado | Plano inclinado, bacia em V, contorno de nivel e conservacao. |
-| Automatos celulares | Validado | Casos de bacia em V, plano e condicoes de contorno. |
-| Ondas cinematica e difusiva | Validado | Benchmarks de plano, bacia em V e contorno de nivel adequados as equacoes reduzidas. |
-| Modelo subgrid de Neal (2012) | Validado para as geometrias testadas | Referencias de malha fina para escoamento em canal, canal composto, ativacao de margens e extensao inundada. |
-| Reservatorios e estruturas de controle | Validado | Solucao de deplecao por curva-chave e balanco de volume. |
-| Contorno por hidrograma de entrada | Validado | Volume do hidrograma prescrito e balanco de armazenamento ou saida. |
-| Contorno por hidrograma de nivel | Validado | Aplicacao do nivel prescrito e resposta de volume. |
-| Rasters de chuva espacial | Validado | Totais exatos por celula e por dominio. |
-| Qualidade da agua | Validado | Escala de acumulacao do SWMM e solucoes analiticas de lavagem por escoamento. |
-| Risco e instabilidade humana | Validado | Referencias independentes de limiares e equilibrio de forcas. |
+| Interceptação pelo dossel | Validado | Referência independente de armazenamento em dossel e balanço exato de massa. |
+| Neve | Validado | Parâmetros por LULC, mapas iniciais opcionais, refinamento temporal, equivalência entre planilha e script, e balanço do evento em V. |
+| Infiltração | Validado | Casos analíticos e de solo estratificado em domínios de coluna e V. |
+| Evapotranspiração | Validado | Cálculos independentes de ET de referência e limites de extração. |
+| Águas subterrâneas e recarga | Validado | Testes de elevação do nível freático, agendamento, ascensão capilar e encostas analíticas. |
+| Subsuperfície em camadas (opcional) | Testes controlados e paridade Python-MATLAB | Paridade dos kernels e do passo da coluna, simulações do modelo completo na bacia em V, fechamento de massa na malha Voronoi e teste de rigidez do fluxo implícito (Python). Sem caso de campo. |
+| Estresse hídrico radicular de Feddes (opcional) | Testes controlados de consistência | A ET de Feddes nos esquemas padrão e em camadas concorda para o mesmo estado; o Feddes nunca excede a absorção sem estresse. |
+| Estado inicial do aquífero profundo (opcional) | Paridade com fixture | $S_0 = q_0 A \tau$ verificado em Python e MATLAB contra um fixture compartilhado. |
+| Calibração por recessão em camadas | Apenas experimento gêmeo | Multiplicadores conhecidos recuperados com 0, 5 e 10 % de ruído em um vale sintético. Sem teste de campo. |
+| Hidrodinâmica de momento completo | Validado | Plano inclinado, bacia em V, ruptura de barragem de Ritter, onda não quebrante e contornos. |
+| Hidrodinâmica inercial local | Validado | Plano inclinado, bacia em V, contorno de nível e conservação. |
+| Autômatos celulares | Validado | Casos de bacia em V, plano e condições de contorno. |
+| Ondas cinemática e difusiva | Validado | Benchmarks de plano, bacia em V e contorno de nível adequados às equações reduzidas. |
+| Modelo subgrid de Neal (2012) | Validado para as geometrias testadas | Referências de malha fina para escoamento em canal, canal composto, ativação de margens e extensão inundada. |
+| Reservatórios e estruturas de controle | Validado | Solução de depleção por curva-chave e balanço de volume. |
+| Contorno por hidrograma de entrada | Validado | Volume do hidrograma prescrito e balanço de armazenamento ou saída. |
+| Contorno por hidrograma de nível | Validado | Aplicação do nível prescrito e resposta de volume. |
+| Rasters de chuva espacial | Validado | Totais exatos por célula e por domínio. |
+| Qualidade da água | Validado | Escala de acumulação do SWMM e soluções analíticas de lavagem por escoamento. |
+| Risco e instabilidade humana | Validado | Referências independentes de limiares e equilíbrio de forças. |
 
-Os casos de roteamento sao interpretados de acordo com as equacoes que cada metodo resolve. A ruptura de barragem seca de Ritter e um benchmark de aceitacao para o momento completo; os metodos reduzidos sao avaliados com casos de escoamento gradual, conservacao, simetria e condicoes de contorno.
+Na execução mais recente da suíte completa de testes, o HydroPol2D-Python passou em 911 testes (2026-10-17) e o Case Builder passou em 181 testes (2026-10-19).
+
+Os casos de roteamento são interpretados de acordo com as equações que cada método resolve. A ruptura de barragem seca de Ritter é um benchmark de aceitação para o momento completo; os métodos reduzidos são avaliados com casos de escoamento gradual, conservação, simetria e condições de contorno.

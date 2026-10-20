@@ -34,6 +34,20 @@ Esta estructura permite que HydroPol2D represente el acoplamiento dinámico entr
 <p align="center">
   <em>Figura 1. Representación conceptual del componente acuífero en HydroPol2D.</em>
 </p>
+
+### 1.1 Dos esquemas de subsuelo {#11-two-subsurface-schemes}
+
+HydroPol2D tiene dos esquemas de subsuelo. Esta página describe el esquema predeterminado.
+
+| Esquema | Acuífero | Activación | Página |
+|---|---|---|---|
+| Predeterminado | Dentro de la columna de suelo; la base del acuífero es el terreno menos la profundidad del suelo | predeterminado | esta página |
+| En capas | Capas de suelo sobre capas de regolito, hasta la profundidad hasta el lecho de roca (limitada a 50 m) | Python `vertical.subsurface.scheme: layered`; MATLAB `flag_layered_subsurface = 1` | [Subsuelo en Capas](./layered-subsurface) |
+
+Ambos esquemas pueden alimentar el acuífero profundo opcional descrito en la [sección 13](#13-deep-aquifer).
+
+En esta página, "zona vadosa en capas" se refiere a los tres almacenamientos de suelo del esquema predeterminado (cerca de la superficie, zona de raíces y transmisión). No se refiere al esquema de subsuelo en capas.
+
 ---
 
 ## 2. Estructura conceptual general
@@ -60,7 +74,7 @@ Las principales variables son:
 - $S_y$ = rendimiento específico $[-]$
 - $K$ = conductividad hidráulica saturada $[\mathrm{L}\,\mathrm{T}^{-1}]$
 
-### 2.1 Programador asincrónico
+### 2.1 Programador asincrónico {#21-asynchronous-scheduler}
 
 El programador asincrónico está activo de forma predeterminada cuando el modelado de aguas subterráneas está habilitado. Los principales controles son:
 | Control | Por defecto | Significado |
@@ -468,7 +482,7 @@ $$
 se inicializa y se transporta a través de la interfaz de acoplamiento como el término de intercambio de río. Esto significa que la interfaz está presente, pero el intercambio río-acuífero debería describirse actualmente como un **marcador de posición/gancho estructural**, no como una afirmación teórica madura e independiente en el mismo plano que la recarga, el flujo lateral de agua subterránea, el ascenso capilar o la exfiltración.
 ---
 
-## 11. Corrección del exceso de saturación después del aumento del nivel freático
+## 11. Corrección del exceso de saturación después del aumento del nivel freático {#11-saturation-excess-correction-after-water-table-rise}
 
 Después de la actualización Boussinesq, HydroPol2D vuelve a calcular la profundidad del nivel freático y, por lo tanto, el nuevo almacenamiento insaturado máximo:
 $$
@@ -518,7 +532,91 @@ con la conversión de unidad apropiada en el código de $\mathrm{m}$ a $\mathrm{
 Esto significa que HydroPol2D permite que el agua subterránea influya activamente en la generación de inundaciones y la humedad cerca de la superficie, en lugar de tratarlo como un proceso desconectado de límite inferior.
 ---
 
-## 13. Balance de masa
+## 13. Acuífero profundo {#13-deep-aquifer}
+
+El acuífero profundo opcional representa el agua subterránea lenta situada por debajo del acuífero modelado. Es semidistribuido, con un embalse lineal por subcuenca.
+
+### 13.1 Estructura {#131-structure}
+
+Una fracción fija $f_d$ de la recarga descendente se envía al acuífero profundo antes de que el resto llegue al nivel freático. La recarga de todas las celdas de la subcuenca $k$ alimenta el embalse $k$. El embalse descarga
+
+$$
+Q_k = \frac{S_k}{\tau}
+$$
+
+donde:
+
+- $S_k$ = almacenamiento del embalse $k$ $[\mathrm{L}^3]$
+- $\tau$ = tiempo de respuesta $[\mathrm{T}]$, igual para todas las subcuencas
+- $Q_k$ = flujo de retorno profundo $[\mathrm{L}^3\,\mathrm{T}^{-1}]$
+
+Dos rásteres definen la disposición. El ráster de subcuencas indica qué celdas alimentan cada embalse. El ráster de pesos del canal indica dónde descarga cada embalse. El flujo de retorno se reparte entre las celdas de río de su propia subcuenca, en proporción al peso.
+
+### 13.2 Actualización {#132-update}
+
+Para una tasa de entrada $I_k$ durante un paso $\Delta t$, el embalse usa la solución exacta de la ecuación del embalse lineal
+
+$$
+S_{k}^{t+\Delta t}
+=
+S_{k}^{t}\,e^{-\Delta t/\tau}
++
+I_k\,\tau\left(1-e^{-\Delta t/\tau}\right)
+$$
+
+y el volumen descargado es
+
+$$
+V_{Q,k} = I_k\,\Delta t - \left(S_{k}^{t+\Delta t} - S_{k}^{t}\right)
+$$
+
+La actualización es conservativa y no depende de la duración del paso.
+
+### 13.3 Estado inicial {#133-starting-state}
+
+Como el caudal de salida es el almacenamiento dividido por $\tau$, el almacenamiento inicial se obtiene de un caudal de salida inicial por unidad de área $q_0$,
+
+$$
+S_{k,0} = q_0\,A_k\,\tau
+$$
+
+donde $A_k$ es el área activa de la subcuenca $k$. Se debe indicar como máximo una de las opciones siguientes.
+
+| Parámetro | Significado | $q_0$ |
+|---|---|---|
+| `deep_aquifer_initial_baseflow_mm_day` | Flujo base profundo en la fecha de inicio, por ejemplo a partir de una estación de aforo | el valor indicado |
+| `deep_aquifer_mean_recharge_mm_year` | Recarga media de largo plazo $\bar{R}$; los embalses parten en estado estacionario | $f_d\,\bar{R}$ |
+| Archivo de estado inicial del acuífero profundo | Almacenamiento por subcuenca, escrito por la calibración del agua subterránea | almacenamiento indicado directamente |
+
+Si no se indica ninguna, los embalses parten vacíos.
+
+**A partir de una estación de aforo.** HydroPol2D-Python estima $q_0$ a partir de un registro diario de caudal con `hydropol2d estimate-deep-baseflow`, en los pasos siguientes.
+
+1. Flujo base de Lyne–Hollick del caudal observado.
+2. Segmentos de recesión y una curva maestra de recesión (MRC).
+3. Separación de la cola profunda, lenta y lineal, de la MRC, que también da $\tau$.
+4. Ubicación del flujo base de la fecha de inicio sobre la MRC y división de su parte profunda por el área de drenaje.
+
+Conviene elegir una fecha de inicio dentro de una recesión. El filtro de flujo base se retrasa respecto de un hidrograma en ascenso, por lo que la herramienta emite una advertencia cuando el caudal de la fecha de inicio es mayor que el doble del flujo base.
+
+### 13.4 Configuración {#134-settings}
+
+| Elemento | HydroPol2D-Python | HydroPol2D (MATLAB) |
+|---|---|---|
+| Activación | `flags.deep_aquifer` | `flag_deep_aquifer` |
+| Subcuencas | `static.deep_aquifer_subbasin_path` | `DeepAquiferSubbasins_path` |
+| Pesos del canal | `static.deep_aquifer_channel_weight_path` | `DeepAquiferChannelWeight_path` |
+| Fracción de recarga $f_d$ | `vertical.deep_recharge_fraction` | `deep_recharge_fraction` |
+| Tiempo de respuesta $\tau$ | `vertical.deep_aquifer_response_time_days` (180 por defecto) | `deep_aquifer_tau_days` |
+| Flujo base inicial | `vertical.deep_aquifer_initial_baseflow_mm_day` | `deep_aquifer_initial_baseflow_mm_day` |
+| Recarga media | `vertical.deep_aquifer_mean_recharge_mm_year` | `deep_aquifer_mean_recharge_mm_year` |
+| Archivo de estado inicial | `static.deep_aquifer_initial_state_path` | `DeepAquiferInitialState_path` |
+
+En MATLAB, los valores del estado inicial están en el bloque "Deep Aquifer Initial State" de `General_Data` (ver [Parámetros de configuración](../configuration/general_data)). El Case Builder escribe los rásteres de subcuencas y de pesos del canal a partir del terreno D8 acondicionado.
+
+---
+
+## 14. Balance de masa {#14-mass-balance}
 
 El solucionador de aguas subterráneas realiza una verificación explícita del balance de masa durante cada actualización.
 El volumen de entrada de recarga es
@@ -555,7 +653,7 @@ Esta cantidad se almacena como un error de diagnóstico de agua subterránea en 
 Cuando el agua subterránea asíncrona está activa, la recarga acumulada pendiente y el intercambio capilar no se tratan como pérdida del modelo. Se almacenan como intercambio de agua subterránea en tránsito hasta que la próxima actualización saturada consuma el volumen del programador. Esta distinción es importante para interpretar los diagnósticos del balance hídrico de todo el modelo.
 ---
 
-## 14. Resumen
+## 15. Resumen {#15-summary}
 
 El modelo de aguas subterráneas HydroPol2D combina:
 - un **módulo de recarga de zona vadosa en capas** basado en un cierre de Darcy-van Genuchten-Mualem,
@@ -564,7 +662,8 @@ El modelo de aguas subterráneas HydroPol2D combina:
 - un **modelo de flujo de agua subterránea 2D Boussinesq** para flujo saturado lateral,
 - **paso de tiempo explícito adaptativo**,
 - **exfiltración superficial** cuando el agua subterránea se eleva por encima de la superficie del suelo,
-- y una **corrección de exceso de saturación** que preserva la masa cuando el nivel freático reduce la capacidad de almacenamiento vadosa.
+- una **corrección de exceso de saturación** que preserva la masa cuando el nivel freático reduce la capacidad de almacenamiento vadosa,
+- y un **acuífero profundo** opcional formado por embalses lineales por subcuenca, con un estado inicial definido a partir de un flujo base o de una recarga media.
 
 Esta estructura permite que HydroPol2D represente un sistema de subsuelo acoplado dinámicamente en el que:
 - la infiltración no desaparece simplemente en un cubo estático,

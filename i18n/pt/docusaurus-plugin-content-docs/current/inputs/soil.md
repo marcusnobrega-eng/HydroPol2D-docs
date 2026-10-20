@@ -36,6 +36,9 @@ O mapa de solos ainda fornece uma classe categórica de solo por célula do mode
 - uma zona de águas subterrâneas começando no lençol freático atual.
 
 A geometria da camada se adapta à profundidade da rocha e à posição da água subterrânea. Se a profundidade da raiz for menor que a camada próxima à superfície, a camada explícita da zona raiz colapsará na camada próxima à superfície. Se o leito rochoso ou o lençol freático for mais raso do que a profundidade radicular solicitada, a zona radicular será truncada para a profundidade vadosa disponível.
+
+Este é o esquema padrão. A [subsuperfície em camadas](#soil-and-regolith-in-the-layered-subsurface), opcional, mantém as mesmas três camadas de solo, mas coloca camadas de regolito abaixo delas, com parâmetros próprios.
+
 ---
 
 ## Parâmetros de solo necessários
@@ -50,6 +53,67 @@ Os parâmetros hidráulicos são definidos externamente e associados às classes
 - Multiplicadores de camada opcionais para condutividade hidráulica saturada
 
 Estes parâmetros devem ser fisicamente consistentes e representativos das classes de solos definidas no raster.
+
+---
+
+## Solo e Regolito na Subsuperfície em Camadas {#soil-and-regolith-in-the-layered-subsurface}
+
+Na [subsuperfície em camadas](../theory/layered-subsurface), a coluna tem três camadas de solo acima da base do solo e camadas de regolito abaixo dela. Cada camada tem a sua própria curva de van Genuchten.
+
+### Camadas de solo {#soil-slots}
+
+As três camadas de solo usam os parâmetros da classe de solo, ou seja, `ksat` com os três multiplicadores de camada, `n`, `alpha`, `θsat`, `θr` e `l_vg`. Duas colunas da tabela de solos mudam de papel.
+
+| Coluna | Esquema padrão | Subsuperfície em camadas |
+|---|---|---|
+| `Sy` | Rendimento específico do aquífero | Ignorada. Cada camada toma $S_y$ da sua curva de retenção. |
+| `kgsat` | Condutividade lateral do aquífero | Condutividade horizontal das camadas de regolito, usada quando `regolith_ksat_h_mm_h` está vazio |
+
+O rendimento específico de cada camada é a porosidade drenável na capacidade de campo
+
+$$
+S_y = \theta_s - \theta\left(\psi = -h_{fc}\right)
+$$
+
+com $h_{fc}$ = `capillary_field_capacity_head_m` (padrão 3.3 m). No HydroPol2D-Python, o esquema em camadas não usa `vertical.specific_yield` nem `static.specific_yield_path`. Informar esse caminho gera um aviso.
+
+A condutividade horizontal das camadas de solo é `ksat` × `soil_lateral_anisotropy` (padrão 1) × `soil_lateral_conductivity_multiplier` (padrão 1).
+
+### Camadas de regolito {#regolith-slots}
+
+Os parâmetros do regolito são escalares ou rasters. Um raster prevalece onde for finito, e o escalar preenche o restante.
+
+| Parâmetro | Unidades | Padrão | Raster MATLAB (`General_Data`) | Raster Python |
+|---|---|---|---|---|
+| `regolith_theta_s` | m³/m³ | 0.35 | `RegolithThetaS_path` | `static.regolith_theta_s_path` |
+| `regolith_theta_r` | m³/m³ | 0.05 | `RegolithThetaR_path` | `static.regolith_theta_r_path` |
+| `regolith_alpha_vg_m_inverse` | 1/m | 2.0 | `RegolithAlphaVG_path` | `static.regolith_alpha_vg_m_inverse_path` |
+| `regolith_n_vg` | - | 1.5 | `RegolithNVG_path` | `static.regolith_n_vg_path` |
+| `regolith_ksat_v_mm_h` | mm/h | 5.0 | `RegolithKsatV_path` | `static.regolith_ksat_v_mm_h_path` |
+| `regolith_ksat_h_mm_h` | mm/h | vazio: `kgsat` | `RegolithKsatH_path` | `static.regolith_ksat_h_mm_h_path` |
+| `regolith_specific_yield` | - | vazio: $\theta_s - \theta_{fc}$ | `RegolithSpecificYield_path` | `static.regolith_specific_yield_path` |
+
+Um $S_y$ do regolito informado deve estar em $(0,\ \theta_s - \theta_r]$. A condutividade horizontal das camadas de regolito é multiplicada por `regolith_lateral_conductivity_multiplier` (padrão 1).
+
+Ainda não existe tabela de classes de regolito. As propriedades do regolito são apenas escalares ou rasters.
+
+### Cargas da absorção de água pelas raízes {#root-water-uptake-heads}
+
+As cargas de Feddes $h_1$ a $h_4$ são configurações globais, e não parâmetros da classe de solo. Veja [Modelo Hidrológico, Seção 3.5](../theory/hydrologic-model#35-feddes-root-water-uptake-stress).
+
+### Fontes globais usadas pelo Case Builder {#global-sources-used-by-the-case-builder}
+
+O Case Builder (`--subsurface-scheme layered`) deriva os mapas do regolito de dados globais, e as mesmas regras valem para qualquer domínio.
+
+| Mapa | Regra | Fonte |
+|---|---|---|
+| `RegolithThetaS/ThetaR/AlphaVG/NVG.tif` | Classe textural do USDA a 200 cm, convertida em parâmetros de van Genuchten pela tabela de solos do Builder | OpenLandMap texture v0.2, 200 cm |
+| `RegolithKsatH.tif` | Permeabilidade × $\rho g/\mu$ a 20 °C. Onde o GLHYMPS não tem polígono, usa o Ksat das águas subterrâneas da classe textural a 200 cm. | Tiles globais do GLHYMPS 2.0 (Gleeson et al., 2014; Huscroft et al., 2018) |
+| `RegolithKsatV.tif` | `RegolithKsatH` ÷ `groundwater_vertical_anisotropy_ratio` | - |
+| `RegolithSpecificYield.tif` | Padrão `derived_capped`: $\theta_s - \theta(3.3\ \mathrm{m})$, limitado pela porosidade do GLHYMPS; nodata onde falta o GLHYMPS, para que o modelo derive $S_y$ ali. Com `derived`, nenhum mapa é gravado. | `--regolith-specific-yield-rule` |
+
+Os tiles do GLHYMPS são baixados uma vez, conferidos contra o SHA-256 do manifesto e guardados em cache. Proveniência, cobertura e estatísticas vão para `quality_report/layered_subsurface_rasters.json`. Em casos em camadas, o Builder não conecta `SpecificYield.tif` ao caso.
+
 ---
 
 ## Fontes de dados do solo

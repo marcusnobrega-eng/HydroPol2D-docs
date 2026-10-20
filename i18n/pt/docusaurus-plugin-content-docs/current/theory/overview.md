@@ -20,6 +20,9 @@ O HydroPol2D acopla:
 |---|---|---|
 | Nucleo hidrologico: interceptacao, ET, infiltracao, neve, armazenamento vadoso em camadas | [Hydrologic Model](./hydrologic-model) | Padrao + validado |
 | Recarga subterranea, agendador assincrono, ascensao capilar e fluxo lateral de Boussinesq | [Groundwater Model](./groundwater-model) | Padrao + validado |
+| Subsuperfície em camadas de solo sobre regolito | [Subsuperfície em Camadas](./layered-subsurface) | Opcional + paridade dos kernels e testes controlados na bacia em V |
+| Estresse de Feddes na absorção de água pelas raízes | [Modelo Hidrológico](./hydrologic-model#35-feddes-root-water-uptake-stress) | Opcional + testes de consistência |
+| Aquífero profundo, com reservatórios lineares por sub-bacia e o seu estado inicial | [Modelo de Águas Subterrâneas](./groundwater-model#13-deep-aquifer) | Opcional + testes com fixtures do estado inicial |
 | Roteamento local inertial | [Hydrodynamic Model](./hydrodynamic-model) | Padrao + validado |
 | Roteamento full momentum | [Hydrodynamic Model](./hydrodynamic-model) | Opcional + validado em benchmarks controlados |
 | Roteamentos diffusive e kinematic D4 | [Hydrodynamic Model](./hydrodynamic-model) | Opcionais + validados em benchmarks controlados |
@@ -35,7 +38,7 @@ As paginas hidrologicas documentam como o HydroPol2D particiona a entrada atmosf
 
 ### 2. Acoplamento do groundwater
 
-A teoria do groundwater documenta o caminho atual de recarga em camadas, a ascensao capilar opcional, o agendador assincrono, a exfiltracao e o fluxo lateral bidimensional de Boussinesq quando o baseflow esta ativo.
+A teoria do groundwater documenta o caminho atual de recarga em camadas, a ascensao capilar opcional, o agendador assincrono, a exfiltracao e o fluxo lateral bidimensional de Boussinesq quando o baseflow esta ativo. A [subsuperfície em camadas](./layered-subsurface), opcional, substitui o aquífero contido no solo por uma coluna de solo sobre regolito, e o aquífero profundo, também opcional, acrescenta reservatórios lineares lentos por sub-bacia.
 
 ### 3. Roteamento superficial
 

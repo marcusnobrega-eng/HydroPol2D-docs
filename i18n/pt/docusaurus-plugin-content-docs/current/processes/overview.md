@@ -9,6 +9,7 @@ Esta visão geral herdada é mantida apenas como um ponteiro. A documentação c
 - [Visão geral matemática](../theory/overview)
 - [Modelo Hidrológico](../theory/hydrologic-model)
 - [Modelo de águas subterrâneas](../theory/groundwater-model)
+- [Subsuperfície em Camadas](../theory/layered-subsurface)
 - [Modelo Hidrodinâmico](../theory/hydrodynamic-model)
 - [Instabilidade Humana](../theory/human-instability)
 

@@ -20,6 +20,9 @@ HydroPol2D acopla:
 |---|---|---|
 | Nucleo hidrologico: intercepcion, ET, infiltracion, nieve, almacenamiento vadoso en capas | [Hydrologic Model](./hydrologic-model) | Predeterminado + validado |
 | Recarga subterranea, programador asincrono, ascenso capilar y flujo lateral de Boussinesq | [Groundwater Model](./groundwater-model) | Predeterminado + validado |
+| Subsuelo en capas de suelo sobre regolito | [Subsuelo en Capas](./layered-subsurface) | Opcional + paridad de núcleos y pruebas controladas en la cuenca en V |
+| Estrés de Feddes en la absorción de agua por las raíces | [Modelo hidrológico](./hydrologic-model#35-feddes-root-water-uptake-stress) | Opcional + pruebas de consistencia |
+| Acuífero profundo: embalses lineales por subcuenca y su estado inicial | [Modelo de aguas subterráneas](./groundwater-model#13-deep-aquifer) | Opcional + pruebas del estado inicial con fixtures |
 | Enrutamiento local inertial | [Hydrodynamic Model](./hydrodynamic-model) | Predeterminado + validado |
 | Enrutamiento full momentum | [Hydrodynamic Model](./hydrodynamic-model) | Opcional + validado en benchmarks controlados |
 | Enrutamientos diffusive y kinematic D4 | [Hydrodynamic Model](./hydrodynamic-model) | Opcionales + validados en benchmarks controlados |
@@ -35,7 +38,7 @@ Las paginas hidrologicas documentan como HydroPol2D reparte la entrada atmosferi
 
 ### 2. Acoplamiento del groundwater
 
-La teoria del groundwater documenta la ruta actual de recarga en capas, el ascenso capilar opcional, el programador asincrono, la exfiltracion y el flujo lateral bidimensional de Boussinesq cuando el baseflow esta activo.
+La teoria del groundwater documenta la ruta actual de recarga en capas, el ascenso capilar opcional, el programador asincrono, la exfiltracion y el flujo lateral bidimensional de Boussinesq cuando el baseflow esta activo. El [subsuelo en capas](./layered-subsurface) opcional reemplaza el acuífero limitado al suelo por una columna de suelo sobre regolito, y el acuífero profundo opcional añade embalses lineales lentos por subcuenca.
 
 ### 3. Enrutamiento superficial
 

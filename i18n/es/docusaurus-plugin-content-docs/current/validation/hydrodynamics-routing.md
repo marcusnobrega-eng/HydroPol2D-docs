@@ -5,7 +5,7 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # Validación de la hidrodinámica y el enrutamiento
 
-La validación hidrodinámica de la validación se organizó por familia de enrutamiento. La secuencia evaluó el modelo de momento completo, los métodos inercial local y autómatas celulares y, por último, los modelos cinemático y difusivo corregidos. Las pruebas verifican hidrogramas, conservación, simetría, condiciones de contorno y el comportamiento esperado de cada conjunto de ecuaciones.
+La validación hidrodinámica se organizó por familia de enrutamiento. La secuencia evaluó el modelo de momento completo, los métodos inercial local y autómatas celulares y, por último, los modelos cinemático y difusivo corregidos. Las pruebas verifican hidrogramas, conservación, simetría, condiciones de contorno y el comportamiento esperado de cada conjunto de ecuaciones.
 
 ## Hidrodinámica con momento completo
 

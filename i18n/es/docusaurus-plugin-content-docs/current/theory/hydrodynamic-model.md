@@ -646,7 +646,7 @@ Los flujos de salida se convierten en un sumidero de volumen y se retiran del al
 
 ### 2.7 Evidencia de validación actual
 
-El solucionador de impulso total es parte del paquete de validación de la validación. La evidencia actual lista para informes incluye:
+El solucionador de impulso total es parte de la suite de validación. La evidencia actual lista para informes incluye:
 - escorrentía en plano inclinado contra el límite analítico de onda cinemática;
 - Verificaciones de conservación de masa y simetría bilateral de cuencas inclinadas en V;
 - Perfiles analíticos de rotura de presas en lecho seco de Ritter;

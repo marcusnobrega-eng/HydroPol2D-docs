@@ -21,7 +21,7 @@ dónde:
 - $B_t$ = masa de contaminante por celda $[\mathrm{M}]$
 
 El modelo es totalmente **conservador de masas** y está acoplado dinámicamente al enrutamiento de flujo.
-La validación actual de la validación se centra en el modo de lavado masivo
+La validación actual se centra en el modo de lavado masivo
 (`flag_wq_model = 0`). La validación utiliza escalas de parámetros de acumulación de estilo SWMM.
 para sólidos suspendidos totales, pero la fuente verdadera es un balance de masa analítico
 solución en lugar de un análisis numérico SWMM o un polutógrafo de campo calibrado.

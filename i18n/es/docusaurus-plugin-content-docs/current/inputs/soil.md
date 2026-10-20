@@ -36,6 +36,9 @@ El mapa de suelo todavía proporciona una clase de suelo categórica por celda d
 - una zona de agua subterránea que comienza en el nivel freático actual.
 
 La geometría de la capa se adapta a la profundidad, al lecho rocoso y a la posición del agua subterránea. Si la profundidad de la raíz es menor que la capa cercana a la superficie, la capa explícita de la zona de la raíz colapsa en la capa cercana a la superficie. Si el lecho de roca o el nivel freático es menos profundo que la profundidad de raíz solicitada, la zona de raíz se trunca a la profundidad vadosa disponible.
+
+Este es el esquema predeterminado. El [subsuelo en capas](#soil-and-regolith-in-the-layered-subsurface) opcional conserva las mismas tres capas de suelo, pero coloca debajo de ellas capas de regolito con sus propios parámetros.
+
 ---
 
 ## Parámetros requeridos del suelo
@@ -50,6 +53,67 @@ Los parámetros hidráulicos se definen externamente y se asocian con las clases
 - Multiplicadores de capa opcionales para conductividad hidráulica saturada
 
 Estos parámetros deben ser físicamente consistentes y representativos de las clases de suelo definidas en el ráster.
+
+---
+
+## Suelo y regolito en el subsuelo en capas {#soil-and-regolith-in-the-layered-subsurface}
+
+Con el [subsuelo en capas](../theory/layered-subsurface), la columna tiene tres capas de suelo por encima de la base del suelo y capas de regolito por debajo. Cada capa tiene su propia curva de van Genuchten.
+
+### Capas de suelo {#soil-slots}
+
+Las tres capas de suelo usan los parámetros de la clase de suelo, que son `ksat` con los tres multiplicadores de capa, `n`, `alpha`, `θsat`, `θr` y `l_vg`. Dos columnas de la tabla de suelos cambian de función.
+
+| Columna | Esquema predeterminado | Subsuelo en capas |
+|---|---|---|
+| `Sy` | Rendimiento específico del acuífero | Se ignora. Cada capa toma $S_y$ de su curva de retención. |
+| `kgsat` | Conductividad lateral del acuífero | Conductividad horizontal de las capas de regolito, usada cuando `regolith_ksat_h_mm_h` está vacío |
+
+El rendimiento específico de cada capa es la porosidad drenable a capacidad de campo,
+
+$$
+S_y = \theta_s - \theta\left(\psi = -h_{fc}\right)
+$$
+
+con $h_{fc}$ = `capillary_field_capacity_head_m` (3.3 m por defecto). En HydroPol2D-Python, el esquema en capas no usa `vertical.specific_yield` ni `static.specific_yield_path`. Si se indica esa ruta, se emite una advertencia.
+
+La conductividad horizontal de las capas de suelo es `ksat` × `soil_lateral_anisotropy` (1 por defecto) × `soil_lateral_conductivity_multiplier` (1 por defecto).
+
+### Capas de regolito {#regolith-slots}
+
+Los parámetros del regolito son escalares o rásteres. Un ráster tiene prioridad donde es finito, y el escalar completa el resto.
+
+| Parámetro | Unidades | Predeterminado | Ráster de MATLAB (`General_Data`) | Ráster de Python |
+|---|---|---|---|---|
+| `regolith_theta_s` | m³/m³ | 0.35 | `RegolithThetaS_path` | `static.regolith_theta_s_path` |
+| `regolith_theta_r` | m³/m³ | 0.05 | `RegolithThetaR_path` | `static.regolith_theta_r_path` |
+| `regolith_alpha_vg_m_inverse` | 1/m | 2.0 | `RegolithAlphaVG_path` | `static.regolith_alpha_vg_m_inverse_path` |
+| `regolith_n_vg` | - | 1.5 | `RegolithNVG_path` | `static.regolith_n_vg_path` |
+| `regolith_ksat_v_mm_h` | mm/h | 5.0 | `RegolithKsatV_path` | `static.regolith_ksat_v_mm_h_path` |
+| `regolith_ksat_h_mm_h` | mm/h | vacío: `kgsat` | `RegolithKsatH_path` | `static.regolith_ksat_h_mm_h_path` |
+| `regolith_specific_yield` | - | vacío: $\theta_s - \theta_{fc}$ | `RegolithSpecificYield_path` | `static.regolith_specific_yield_path` |
+
+Un $S_y$ del regolito indicado debe estar en $(0,\ \theta_s - \theta_r]$. La conductividad horizontal de las capas de regolito se multiplica por `regolith_lateral_conductivity_multiplier` (1 por defecto).
+
+Todavía no hay una tabla de clases de regolito. Las propiedades del regolito solo pueden ser escalares o rásteres.
+
+### Cargas de absorción de agua por las raíces {#root-water-uptake-heads}
+
+Las cargas de Feddes $h_1$ a $h_4$ son parámetros globales, no parámetros de la clase de suelo. Ver [Modelo hidrológico, sección 3.5](../theory/hydrologic-model#35-feddes-root-water-uptake-stress).
+
+### Fuentes globales usadas por el Case Builder {#global-sources-used-by-the-case-builder}
+
+El Case Builder (`--subsurface-scheme layered`) deriva los mapas del regolito a partir de datos globales, por lo que las mismas reglas se aplican a cualquier dominio.
+
+| Mapa | Regla | Fuente |
+|---|---|---|
+| `RegolithThetaS/ThetaR/AlphaVG/NVG.tif` | Clase textural del USDA a 200 cm, asignada a parámetros de van Genuchten mediante la tabla de suelos del Builder | OpenLandMap texture v0.2, 200 cm |
+| `RegolithKsatH.tif` | Permeabilidad × $\rho g/\mu$ a 20 °C. Donde GLHYMPS no tiene polígono, se usa el Ksat de agua subterránea de la clase textural a 200 cm. | Teselas globales de GLHYMPS 2.0 (Gleeson et al., 2014; Huscroft et al., 2018) |
+| `RegolithKsatV.tif` | `RegolithKsatH` ÷ `groundwater_vertical_anisotropy_ratio` | - |
+| `RegolithSpecificYield.tif` | Regla predeterminada `derived_capped`: $\theta_s - \theta(3.3\ \mathrm{m})$, limitado por la porosidad de GLHYMPS; sin datos (nodata) donde falta GLHYMPS, de modo que el modelo deriva $S_y$ allí. Con `derived`, no se escribe ningún mapa. | `--regolith-specific-yield-rule` |
+
+Las teselas de GLHYMPS se descargan una vez, se verifican con el SHA-256 del manifiesto y se guardan en caché. La procedencia, la cobertura y las estadísticas se escriben en `quality_report/layered_subsurface_rasters.json`. En los casos en capas, el Builder no conecta `SpecificYield.tif` al caso.
+
 ---
 
 ## Fuentes de datos del suelo

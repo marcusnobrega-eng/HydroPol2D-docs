@@ -39,6 +39,9 @@ HydroPol2D se controla mediante indicadores binarios y categóricos definidos en
 | $\mathrm{groundwater\_courant}$ | Factor de seguridad utilizado en el límite temporal explícito del agua subterránea. |
 | $\mathrm{flag\_capillary\_rise}$ | Permite el ascenso capilar en capas desde aguas subterráneas poco profundas hasta el almacenamiento vadoso. |
 | $\mathrm{flag\_baseflow}$ | Activa el enrutamiento lateral de aguas subterráneas 2D Boussinesq. |
+| $\mathrm{flag\_layered\_subsurface}$ | Reemplaza la columna de suelo de tres capas sobre un único acuífero por la [columna en capas de suelo sobre regolito](../theory/layered-subsurface). `0` por defecto. Parámetros: bloques "Layered Subsurface" y "Lateral Conductivity Multipliers" de [Parámetros de configuración](./general_data). |
+| $\mathrm{flag\_feddes}$ | Añade el [estrés de Feddes en la absorción de agua por las raíces](../theory/hydrologic-model#35-feddes-root-water-uptake-stress) a la ET del suelo, en cualquiera de los dos esquemas de subsuelo. `0` por defecto. |
+| $\mathrm{flag\_deep\_aquifer}$ | Activa el [acuífero profundo](../theory/groundwater-model#13-deep-aquifer), con un embalse lineal por subcuenca alimentado por la fracción `deep_recharge_fraction` de la recarga. `0` por defecto. |
 | $\mathrm{flag\_snow\_modeling}$ | Activa acumulación, fusión, sublimación, densidad y profundidad de nieve por LULC. Requiere forzamiento meteorológico interno: `flag_ETP = 1` y `flag_input_ETP_map = 0`. |
 | $\mathrm{flag\_waterquality}$ | Activa el transporte de calidad del agua. |
 | $\mathrm{flag\_wq\_model}$ | Selecciona el modelo de acumulación/lavado de contaminantes. |
@@ -151,5 +154,6 @@ El solucionador calcula por separado los caudales del canal y de la llanura en c
 - Los antiguos `flag_subgrid` y `flag_overbanks` se aceptan sólo en la capa de migración y generan una advertencia explícita.
 - `flag_D8` debe tratarse como secundario/de alcance limitado en lugar de otra familia de enrutamiento lista para generar informes.
 - La programación asíncrona del agua subterránea y el ascenso capilar son comportamientos de configuración públicos, no detalles internos ocultos.
+- `flag_deep_aquifer`, `flag_layered_subsurface` y `flag_feddes` son las filas 37 a 39 de la hoja `Flags` (columna E) en los libros distribuidos.
 - Los parámetros de nieve se definen por clase en la tabla LULC. `Initial_SWE_path` e `Initial_Snow_Depth_path` son rásteres iniciales opcionales.
 - El modo de inestabilidad humana `2` no está implementado y no debe presentarse como un método público disponible.

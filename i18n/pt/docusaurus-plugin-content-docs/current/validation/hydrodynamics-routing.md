@@ -5,7 +5,7 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # Validação da hidrodinâmica e do roteamento
 
-A validação hidrodinâmica da validação foi organizada por família de roteamento. A sequência avaliou o modelo de momento completo, os métodos inercial local e autômatos celulares e, por fim, os modelos cinemático e difusivo corrigidos. Os testes verificam hidrogramas, conservação, simetria, condições de contorno e o comportamento esperado de cada conjunto de equações.
+A validação hidrodinâmica foi organizada por família de roteamento. A sequência avaliou o modelo de momento completo, os métodos inercial local e autômatos celulares e, por fim, os modelos cinemático e difusivo corrigidos. Os testes verificam hidrogramas, conservação, simetria, condições de contorno e o comportamento esperado de cada conjunto de equações.
 
 ## Hidrodinâmica com momento completo
 

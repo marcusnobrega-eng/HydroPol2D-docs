@@ -5,7 +5,7 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # Validação dos módulos hidrológicos
 
-Esta página descreve os testes da validação para interceptação pelo dossel, neve, infiltração e evapotranspiração. A pergunta é direta: cada módulo reproduz suas equações e seu balanço de armazenamento sob condições controladas? Essa evidência é separada de calibração e desempenho em campo.
+Esta página descreve os testes de validação para interceptação pelo dossel, neve, infiltração e evapotranspiração. A pergunta é direta: cada módulo reproduz suas equações e seu balanço de armazenamento sob condições controladas? Essa evidência é separada de calibração e desempenho em campo.
 
 ## Configuração comum
 

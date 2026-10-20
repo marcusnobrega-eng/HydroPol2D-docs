@@ -368,9 +368,59 @@ Estas expressões são explicitamente implementadas na rotina de evapotranspira�
 ### 3.4 Evaporação direta e forçamento de transpiração
 
 HydroPol2D também pode usar campos raster de evaporação e transpiração fornecidos externamente. Nessa configuração, o modelo ignora o cálculo interno de Penman – Monteith e aplica os campos $E_{\mathrm{surf}}$ e $T_{\mathrm{r}}$ prescritos diretamente no balanço de massa hidrológico.
+
+### 3.5 Estresse de Feddes na absorção de água pelas raízes {#35-feddes-root-water-uptake-stress}
+
+O estresse de Feddes é opcional. Ele reduz a transpiração do solo quando a zona radicular está úmida demais ou seca demais (Feddes, Kowalik e Zaradny, 1978, *Simulation of Field Water Use and Crop Yield*, Pudoc, Wageningen).
+
+| Modelo | Chave | Padrão |
+|---|---|---|
+| HydroPol2D-Python | `vertical.feddes.enabled: true` | desligado |
+| HydroPol2D (MATLAB) | `flag_feddes = 1` | `0` |
+
+Funciona nos dois esquemas de subsuperfície (padrão e [em camadas](./layered-subsurface)), na grade estruturada e na malha Voronoi.
+
+O fator de redução $\alpha$ é uma função linear por partes da carga matricial $h$ (m, negativa)
+
+$$
+\alpha(h)
+=
+\begin{cases}
+0, & h > h_1 \\
+\dfrac{h_1 - h}{h_1 - h_2}, & h_2 < h \le h_1 \\
+1, & h_3 \le h \le h_2 \\
+\dfrac{h - h_4}{h_3 - h_4}, & h_4 < h < h_3 \\
+0, & h \le h_4
+\end{cases}
+$$
+
+| Carga | Significado | Padrão (m) |
+|---|---|---:|
+| $h_1$ | Mais úmido que isso: sem absorção (falta ar para as raízes) | −0.1 |
+| $h_2$ | Início da absorção sem estresse | −0.25 |
+| $h_3$ | Fim da absorção sem estresse | −4.0 |
+| $h_4$ | Ponto de murcha: sem absorção | −80 |
+
+As cargas devem satisfazer $0 \ge h_1 > h_2 \ge h_3 > h_4$. A carga de cada camada vem da sua curva de van Genuchten e do seu conteúdo de água atual.
+
+**$h_3$ dependente da demanda (opcional).** Como no SWAP, $h_3$ pode depender da taxa de transpiração potencial $T_p$. $h_{3,\mathrm{high}}$ vale para $T_p \ge 5$ mm/dia, $h_{3,\mathrm{low}}$ vale para $T_p \le 1$ mm/dia, e $h_3$ é interpolado linearmente entre os dois. Ambos valem $h_3$ por padrão, e a opção fica desligada enquanto não forem definidos.
+
+**Absorção.** A densidade de raízes é uniforme ao longo da profundidade radicular $z_r$. Cada camada com raízes recebe a sua parcela da demanda, reduzida pelo próprio $\alpha$
+
+$$
+S_\ell = \alpha(h_\ell)\,T_p\,\frac{z_{r,\ell}}{z_r}
+$$
+
+onde $z_{r,\ell}$ é a espessura com raízes da camada $\ell$. Cada retirada é limitada pela água disponível na camada. Não há compensação. A demanda que uma camada não consegue atender não passa para outra camada.
+
+| Configuração | HydroPol2D-Python | HydroPol2D (MATLAB) |
+|---|---|---|
+| Cargas | `vertical.feddes.h1_m`, `h2_m`, `h3_m`, `h4_m` | `feddes_h1_m`, `feddes_h2_m`, `feddes_h3_m`, `feddes_h4_m` |
+| $h_3$ dependente da demanda | `vertical.feddes.h3_low_m`, `h3_high_m` | `feddes_h3_low_m`, `feddes_h3_high_m` |
+
 ---
 
-## 4. Infiltração
+## 4. Infiltração {#4-infiltration}
 
 O módulo de infiltração calcula a transferência de água da superfície para a zona vadosa usando uma formulação baseada em Darcy acoplada às relações constitutivas de van Genuchten-Mualem. A formulação é projetada para aproximar o comportamento do fluxo insaturado do tipo Richards, mantendo a compatibilidade com a estrutura baseada em armazenamento do HydroPol2D.
 A cada passo de tempo, a infiltração é controlada por três restrições simultâneas:
@@ -753,6 +803,11 @@ h_{\mathrm{gw}} - z_{\mathrm{surf}}
 \frac{S_y}{\Delta t}
 $$
 onde $S_y$ é o rendimento específico. A formulação canônica completa das águas subterrâneas, incluindo o programador assíncrono e o solucionador de fluxo lateral Boussinesq, está documentada na página [Modelo de Águas Subterrâneas](./groundwater-model).
+
+### 6.5 Opção de subsuperfície em camadas {#65-layered-subsurface-option}
+
+A estrutura acima é a padrão. A [subsuperfície em camadas](./layered-subsurface), opcional, mantém os três armazenamentos de solo, mas os coloca sobre camadas de regolito que chegam à profundidade do leito rochoso. Nesse esquema, um lençol freático em elevação preenche o espaço poroso vazio do solo e do regolito, em vez de empurrar a água do solo para a superfície.
+
 ---
 
 ## 7. Resumo
@@ -763,6 +818,7 @@ O modelo hidrológico em HydroPol2D integra:
 - Infiltração baseada em Darcy com condutividade próxima à superfície ponderada,
 - acúmulo de neve e derretimento,
 - armazenamento vadoso em camadas e acoplamento de águas subterrâneas,
+- estresse de Feddes opcional na absorção de água pelas raízes,
 
 em uma estrutura unificada e consistente em massa que resolve os fluxos verticais de água na escala da célula da grade e fornece o forçamento hidrológico para o modelo hidrodinâmico.
 ---

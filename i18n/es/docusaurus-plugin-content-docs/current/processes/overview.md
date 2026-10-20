@@ -9,6 +9,7 @@ Esta descripción general heredada se conserva sólo como indicador. La document
 - [Resumen matemático](../theory/overview)
 - [Modelo hidrológico](../theory/hydrologic-model)
 - [Modelo de aguas subterráneas](../theory/groundwater-model)
+- [Subsuelo en Capas](../theory/layered-subsurface)
 - [Modelo hidrodinámico](../theory/hydrodynamic-model)
 - [Inestabilidad humana](../theory/human-instability)
 

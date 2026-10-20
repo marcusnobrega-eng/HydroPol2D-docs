@@ -56,6 +56,8 @@ O HydroPol2D consegue reamostrar e mascarar muitos rasters opcionais internament
 |---|---|
 | Terreno e classes principais | `DEM_path`, `LULC_path`, `SOIL_path` |
 | Apoio da zona vadosa e groundwater | `DTB_path`, `GW_table_path` |
+| Subsuperfície em camadas (opcional) | `SoilBaseDepth_path`, `RegolithThetaS_path`, `RegolithThetaR_path`, `RegolithAlphaVG_path`, `RegolithNVG_path`, `RegolithKsatV_path`, `RegolithKsatH_path`, `RegolithSpecificYield_path` |
+| Aquífero profundo (opcional) | `DeepAquiferSubbasins_path`, `DeepAquiferChannelWeight_path`, `DeepAquiferInitialState_path` |
 | Refinamentos de propriedade superficial | `LAI_path`, `Albedo_path`, `ImperviousFraction_path` |
 | Estados iniciais | `Warmup_Depth_path`, `Initial_Soil_Moisture_path`, `Initial_SWE_path`, `Initial_Snow_Depth_path`, `Initial_Buildup_path` |
 | Geometria do canal | `RiverWidths_path`, `RiverDepths_path` |

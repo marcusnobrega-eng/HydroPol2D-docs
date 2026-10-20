@@ -4,9 +4,21 @@ title: Limitaciones
 
 # Limitaciones de la validación
 
-El paquete actual corresponde a la validación de verificación y análisis de dinámica controlada. Las pruebas evalúan las ecuaciones, el almacenamiento, la interpretación de los forzamientos, las opciones de enrutamiento y las condiciones de contorno en casos con referencias conocidas.
+El paquete de validación actual corresponde a una campaña de verificación y de análisis de dinámica controlada. Las pruebas evalúan las ecuaciones, el almacenamiento, la interpretación de los forzamientos, las opciones de enrutamiento y las condiciones de contorno en casos con referencias conocidas.
 
 Estas pruebas no sustituyen la calibración de campo, el análisis de incertidumbre ni la validación observacional específica de cada sitio.
+
+## Subsuelo en capas y calibración por recesión {#layered-subsurface-and-recession-calibration}
+
+El subsuelo en capas cuenta con pruebas controladas y paridad entre Python y MATLAB en dominios sintéticos en V, pero no con validación de campo. Sus límites abiertos son los siguientes.
+
+- no hay flujo lateral del agua colgada sobre regolito no saturado;
+- no hay tabla de clases de regolito ni salidas ráster por capa;
+- el agua circula hacia arriba y hacia abajo cerca de un nivel freático somero, lo que infla el ascenso capilar bruto y la recarga bruta en el balance, mientras el valor neto se mantiene cercano a cero;
+- el flujo implícito en el nivel freático solo se prueba en Python;
+- el bucle compilado de ciudad de Python todavía no ejecuta el esquema en capas con flujo lateral de agua subterránea.
+
+La calibración por recesión se probó con un experimento gemelo en un valle sintético, no con pozos observados ni con un hidrograma de campo.
 
 ## Límites de la evidencia
 

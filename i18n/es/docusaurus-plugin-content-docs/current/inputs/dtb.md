@@ -10,7 +10,9 @@ Representa la distancia entre la superficie terrestre y una capa limitante que r
 
 ## Papel en HydroPol2D
 
-DTB se utiliza para definir:
+Lo que controla DTB depende del esquema de subsuelo. En el esquema predeterminado, DTB es la profundidad del suelo, y el suelo y el acuífero comparten la misma columna. En el [subsuelo en capas](#dtb-in-the-layered-subsurface), DTB es solo el fondo del acuífero, y una base del suelo separada marca dónde termina el suelo.
+
+En el esquema predeterminado, DTB se utiliza para definir:
 - Capacidad máxima de almacenamiento subterráneo
 - Límite vertical de infiltración y percolación.
 - Espesor efectivo de la zona vadosa.
@@ -47,16 +49,13 @@ Este enfoque es apropiado cuando:
 
 ## Asignación predeterminada de clases de suelo
 
-Si no hay un mapa DTB disponible, los valores se pueden asignar a través de las **tablas de parámetros del suelo**.
-En este caso:
-- Cada clase de suelo está asociada con un valor representativo de DTB.
-- El campo DTB se construye implícitamente a partir de la clasificación del suelo.
+Si no hay un mapa DTB disponible, una profundidad del suelo por clase de suelo puede reemplazarlo.
 
-Este enfoque garantiza la coherencia entre:
-- Propiedades hidráulicas del suelo.
-- Profundidad de almacenamiento disponible
+- **HydroPol2D-Python** puede tomar la profundidad del suelo de su tabla de suelos, de un ráster de profundidad del suelo o del escalar `vertical.soil_depth_m`.
+- **HydroPol2D (MATLAB)** actualmente no lee la columna `DTB (m)` de `SOIL_parameters.xlsx`. Con `DTB_path` vacío, la profundidad del suelo es 1 m.
 
-Es particularmente útil en entornos con escasez de datos.
+Si la columna `DTB (m)` de MATLAB debe leerse o eliminarse es una decisión pendiente.
+
 ---
 
 ## Unidades y Requisitos
@@ -91,6 +90,36 @@ Los datos DTB no están tan ampliamente estandarizados como DEM o LULC, pero pue
 
 ---
 
+## DTB en el subsuelo en capas {#dtb-in-the-layered-subsurface}
+
+Con el [subsuelo en capas](../theory/layered-subsurface) (Python `vertical.subsurface.scheme: layered`, MATLAB `flag_layered_subsurface = 1`), dos profundidades definen la columna.
+
+| Profundidad | Qué marca | Entrada |
+|---|---|---|
+| Base del suelo | Donde terminan las propiedades del suelo y comienza el regolito | Ráster `SoilBaseDepth_path`; si no existe, `subsurface_soil_base_depth_m` (2 m por defecto) |
+| Profundidad hasta el lecho de roca | Donde termina el acuífero | Ráster `DTB_path`; si no existe, `subsurface_depth_to_bedrock_m`; si tampoco existe, la profundidad del suelo del esquema predeterminado (con una advertencia) |
+
+La base del acuífero es el terreno menos $\min(\mathrm{DTB},\ D_{\max})$, con $D_{\max}$ = `subsurface_max_depth_m` (50 m por defecto). En las celdas con DTB más profunda que el límite, la columna se detiene en el límite.
+
+Entre la base del suelo y la base de la columna, el modelo coloca capas de regolito según una regla fija de 0.25, 0.5, 1, 2, 4, 4, … m a partir de la base del suelo (el primer espesor, la razón de crecimiento y el espesor máximo son configurables). La regla se corta en la base de la columna, por lo que una DTB más profunda añade más capas de 4 m.
+
+En Python, las claves equivalentes son `vertical.subsurface.soil_base_depth_m`, `depth_to_bedrock_m`, `max_depth_m` y `deep_layers`, y los rásteres son `static.soil_base_depth_path` y `static.depth_to_bedrock_path`.
+
+Si `DTB_path` debe ser obligatorio en el modo Excel de MATLAB cuando el esquema en capas está activo es una decisión pendiente. Actualmente se aplica la alternativa de la profundidad del suelo predeterminada, con una advertencia.
+
+### Fuentes globales usadas por el Case Builder {#global-sources-used-by-the-case-builder}
+
+El Case Builder aplica las mismas reglas a cualquier dominio.
+
+| Mapa | Fuente |
+|---|---|
+| `DTB.tif` (fondo de la columna) | Profundidad hasta el lecho de roca de SoilGrids, BDTICM (Shangguan et al., 2017) |
+| `SoilBaseDepth.tif` (base del suelo) | Profundidad hasta el horizonte R de SoilGrids, BDRICM, censurada en 2 m y convertida de cm a m |
+
+Ambos mapas provienen del mismo modelo de Shangguan et al. (2017), por lo que sus definiciones son coherentes.
+
+---
+
 ## Interacción con las propiedades del suelo
 
 DTB complementa la parametrización del suelo:
@@ -113,6 +142,6 @@ DTB suele ser incierto y, cuando sea posible, debe evaluarse como parte del aná
 
 ## Resumen
 
-DTB define el almacenamiento vertical efectivo disponible para el modelo y limita la profundidad de la zona vadosa.
+En el esquema predeterminado, DTB define el almacenamiento vertical efectivo disponible para el modelo y limita la profundidad de la zona vadosa. En el subsuelo en capas, DTB define la base del acuífero y la base del suelo define el fondo del suelo.
 Puede representar la profundidad del lecho de roca o la profundidad de la superficie del acuífero, según el objetivo del modelado.
 Aunque tiene una forma simple, desempeña un papel central en el control de la generación de escorrentía y la capacidad de almacenamiento en HydroPol2D.

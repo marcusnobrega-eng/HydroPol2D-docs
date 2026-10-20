@@ -11,7 +11,7 @@ HydroPol2D inclui um módulo de instabilidade humana implementado que usa profun
 | `2` | Não implementado | Apenas espaço reservado. Não documente ou use como opção pública ativa. |
 | `3` | Implementado | Classificador de instabilidade baseado em geometria com limites de deslizamento, tombamento e afogamento/desenho. |
 
-O status de validação atual para esses modos é rastreado no [status de validação da validação](../validation/validation-status).
+O status de validação atual para esses modos é rastreado no [estado da validação](../validation/validation-status).
 ---
 
 ## 1. Entradas e Acoplamento
@@ -158,5 +158,5 @@ A atual história pública sobre a instabilidade humana deve permanecer alinhada
 - o modo `1` é implementado e documentado como uma relação de equilíbrio de força,
 - o modo `3` é implementado e documentado como um classificador baseado em geometria,
 - o modo `2` não está implementado,
-- as reivindicações de validação devem permanecer vinculadas às evidências controladas resumidas no [status de validação da validação](../validation/validation-status),
+- as reivindicações de validação devem permanecer vinculadas às evidências controladas resumidas no [estado da validação](../validation/validation-status),
 - e o módulo de instabilidade humana deve ser descrito como um diagnóstico de perigo acoplado conduzido pelas profundidades e velocidades do HydroPol2D.

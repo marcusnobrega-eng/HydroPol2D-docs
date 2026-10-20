@@ -34,6 +34,20 @@ Esta estrutura permite que HydroPol2D represente o acoplamento dinâmico entre:
 <p align="center">
   <em>Figura 1. Representação conceitual do componente aquífero em HydroPol2D.</em>
 </p>
+
+### 1.1 Dois esquemas de subsuperfície {#11-two-subsurface-schemes}
+
+O HydroPol2D tem dois esquemas de subsuperfície. Esta página descreve o esquema padrão.
+
+| Esquema | Aquífero | Chave | Página |
+|---|---|---|---|
+| Padrão | Dentro da coluna de solo; a base do aquífero é o terreno menos a profundidade do solo | padrão | esta página |
+| Em camadas | Camadas de solo sobre camadas de regolito, até a profundidade do leito rochoso (limitada a 50 m) | Python `vertical.subsurface.scheme: layered`; MATLAB `flag_layered_subsurface = 1` | [Subsuperfície em Camadas](./layered-subsurface) |
+
+Os dois esquemas podem alimentar o aquífero profundo opcional descrito na [Seção 13](#13-deep-aquifer).
+
+Nesta página, "vadose em camadas" se refere aos três armazenamentos de solo do esquema padrão (camada superficial, zona radicular e transmissão). Não é o esquema de subsuperfície em camadas.
+
 ---
 
 ## 2. Estrutura Conceitual Geral
@@ -60,7 +74,7 @@ As principais variáveis ​​são:
 - $S_y$ = rendimento específico $[-]$
 - $K$ = condutividade hidráulica saturada $[\mathrm{L}\,\mathrm{T}^{-1}]$
 
-### 2.1 Agendador assíncrono
+### 2.1 Agendador assíncrono {#21-asynchronous-scheduler}
 
 O agendador assíncrono fica ativo por padrão quando a modelagem de águas subterrâneas está habilitada. Os principais controles são:
 | Controlar | Padrão | Significado |
@@ -468,7 +482,7 @@ $$
 é inicializado e transportado pela interface de acoplamento como o termo de troca de rio. Isto significa que a interface está presente, mas a troca rio-aquífero deve atualmente ser descrita como um **espaço reservado/gancho estrutural**, e não uma reivindicação de teoria autônoma madura no mesmo nível que recarga, fluxo lateral de águas subterrâneas, ascensão capilar ou exfiltração.
 ---
 
-## 11. Correção do excesso de saturação após elevação do lençol freático
+## 11. Correção do excesso de saturação após elevação do lençol freático {#11-saturation-excess-correction-after-water-table-rise}
 
 Após a atualização do Boussinesq, o HydroPol2D recalcula a profundidade do lençol freático e, portanto, o novo armazenamento máximo não saturado:
 $$
@@ -518,7 +532,91 @@ com a conversão de unidade apropriada no código de $\mathrm{m}$ para $\mathrm{
 Isto significa que HydroPol2D permite que as águas subterrâneas influenciem ativamente a geração de inundações e a humidade próxima da superfície, em vez de tratá-las como um processo desconectado de limites inferiores.
 ---
 
-## 13. Balanço de Massa
+## 13. Aquífero Profundo {#13-deep-aquifer}
+
+O aquífero profundo opcional representa as águas subterrâneas lentas abaixo do aquífero modelado. Ele é semidistribuído, com um reservatório linear por sub-bacia.
+
+### 13.1 Estrutura {#131-structure}
+
+Uma fração fixa $f_d$ da recarga descendente vai para o aquífero profundo antes que o restante chegue ao lençol freático. A recarga de todas as células da sub-bacia $k$ alimenta o reservatório $k$. O reservatório libera
+
+$$
+Q_k = \frac{S_k}{\tau}
+$$
+
+onde:
+
+- $S_k$ = armazenamento do reservatório $k$ $[\mathrm{L}^3]$
+- $\tau$ = tempo de resposta $[\mathrm{T}]$, o mesmo para todas as sub-bacias
+- $Q_k$ = vazão de retorno profunda $[\mathrm{L}^3\,\mathrm{T}^{-1}]$
+
+Dois rasters definem a organização espacial. O raster de sub-bacias indica quais células alimentam cada reservatório. O raster de pesos do canal indica onde cada reservatório descarrega. A vazão de retorno é distribuída pelas células de rio da própria sub-bacia, em proporção ao peso.
+
+### 13.2 Atualização {#132-update}
+
+Para uma taxa de entrada $I_k$ ao longo de um passo $\Delta t$, o reservatório usa a solução exata da equação do reservatório linear
+
+$$
+S_{k}^{t+\Delta t}
+=
+S_{k}^{t}\,e^{-\Delta t/\tau}
++
+I_k\,\tau\left(1-e^{-\Delta t/\tau}\right)
+$$
+
+e o volume descarregado é
+
+$$
+V_{Q,k} = I_k\,\Delta t - \left(S_{k}^{t+\Delta t} - S_{k}^{t}\right)
+$$
+
+A atualização é conservativa e não depende do tamanho do passo.
+
+### 13.3 Estado inicial {#133-starting-state}
+
+Como a vazão de saída é o armazenamento dividido por $\tau$, o armazenamento inicial decorre de uma vazão inicial por unidade de área $q_0$
+
+$$
+S_{k,0} = q_0\,A_k\,\tau
+$$
+
+onde $A_k$ é a área ativa da sub-bacia $k$. Informe no máximo uma das opções abaixo.
+
+| Configuração | Significado | $q_0$ |
+|---|---|---|
+| `deep_aquifer_initial_baseflow_mm_day` | Escoamento de base profundo na data inicial, obtido por exemplo de um posto fluviométrico | como informado |
+| `deep_aquifer_mean_recharge_mm_year` | Recarga média de longo prazo $\bar{R}$; os reservatórios começam em regime permanente | $f_d\,\bar{R}$ |
+| Arquivo de estado inicial do aquífero profundo | Armazenamento por sub-bacia, gravado pela calibração das águas subterrâneas | armazenamento informado diretamente |
+
+Sem nenhuma delas, os reservatórios começam vazios.
+
+**A partir de um posto fluviométrico.** O HydroPol2D-Python estima $q_0$ a partir de uma série de vazões diárias com `hydropol2d estimate-deep-baseflow`, em quatro etapas.
+
+1. Escoamento de base de Lyne–Hollick da vazão observada.
+2. Segmentos de recessão e uma curva mestra de recessão (MRC).
+3. Separação da cauda profunda, lenta e linear, da MRC, que também fornece $\tau$.
+4. Posicionamento do escoamento de base da data inicial na MRC e divisão da sua parte profunda pela área de drenagem.
+
+Escolha uma data inicial dentro de uma recessão. O filtro de escoamento de base fica atrasado em relação a um hidrograma em ascensão, e por isso a ferramenta avisa quando a vazão na data inicial é mais que o dobro do escoamento de base.
+
+### 13.4 Configurações {#134-settings}
+
+| Item | HydroPol2D-Python | HydroPol2D (MATLAB) |
+|---|---|---|
+| Chave | `flags.deep_aquifer` | `flag_deep_aquifer` |
+| Sub-bacias | `static.deep_aquifer_subbasin_path` | `DeepAquiferSubbasins_path` |
+| Pesos do canal | `static.deep_aquifer_channel_weight_path` | `DeepAquiferChannelWeight_path` |
+| Fração da recarga $f_d$ | `vertical.deep_recharge_fraction` | `deep_recharge_fraction` |
+| Tempo de resposta $\tau$ | `vertical.deep_aquifer_response_time_days` (padrão 180) | `deep_aquifer_tau_days` |
+| Escoamento de base inicial | `vertical.deep_aquifer_initial_baseflow_mm_day` | `deep_aquifer_initial_baseflow_mm_day` |
+| Recarga média | `vertical.deep_aquifer_mean_recharge_mm_year` | `deep_aquifer_mean_recharge_mm_year` |
+| Arquivo de estado inicial | `static.deep_aquifer_initial_state_path` | `DeepAquiferInitialState_path` |
+
+No MATLAB, os valores do estado inicial ficam no bloco "Deep Aquifer Initial State" de `General_Data` (veja [Parâmetros de configuração](../configuration/general_data)). O Case Builder gera os rasters de sub-bacias e de pesos do canal a partir do terreno D8 condicionado.
+
+---
+
+## 14. Balanço de Massa {#14-mass-balance}
 
 O solucionador de águas subterrâneas realiza uma verificação explícita do balanço de massa durante cada atualização.
 O volume de entrada de recarga é
@@ -555,7 +653,7 @@ Esta quantidade é armazenada como erro de diagnóstico de águas subterrâneas 
 Quando a água subterrânea assíncrona está ativa, a recarga acumulada e a troca capilar pendentes não são tratadas como perda de modelo. Eles são armazenados como troca de água subterrânea em trânsito até que a próxima atualização saturada consuma o volume do escalonador. Esta distinção é importante para interpretar o diagnóstico do balanço hídrico de todo o modelo.
 ---
 
-## 14. Resumo
+## 15. Resumo {#15-summary}
 
 O modelo de águas subterrâneas HydroPol2D combina:
 - um **módulo de recarga de zona vadose em camadas** baseado em um fechamento Darcy – van Genuchten – Mualem,
@@ -564,7 +662,8 @@ O modelo de águas subterrâneas HydroPol2D combina:
 - um **modelo 2D Boussinesq de fluxo de águas subterrâneas** para fluxo lateral saturado,
 - **passo de tempo explícito adaptativo**,
 - **exfiltração superficial** quando a água subterrânea sobe acima da superfície do solo,
-- e uma **correção do excesso de saturação** que preserva a massa quando o lençol freático reduz a capacidade de armazenamento vadoso.
+- uma **correção do excesso de saturação** que preserva a massa quando o lençol freático reduz a capacidade de armazenamento vadoso,
+- e um **aquífero profundo** opcional, com reservatórios lineares por sub-bacia e estado inicial definido a partir de um escoamento de base ou de uma recarga média.
 
 Esta estrutura permite que HydroPol2D represente um sistema de subsuperfície acoplado dinamicamente no qual:
 - a infiltração não desaparece simplesmente em um balde estático,
