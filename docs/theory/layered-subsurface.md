@@ -60,7 +60,7 @@ In the layered scheme the soil depth of the default scheme is used only as this 
 ## 3. Column Structure
 
 <p align="center">
-  <img src={useBaseUrl('/img/theory/layered-column.svg')} width="640" alt="Layered soil-over-regolith column: three soil slots, regolith slots that double in thickness, one water table, the column base at the capped depth to bedrock, and the deep linear reservoir below" />
+  <img src={useBaseUrl('/img/theory/layered-column.svg')} width="720" alt="Layered soil-over-regolith column: three soil slots, regolith slots that double in thickness, one water table, the column base at the capped depth to bedrock, and the deep linear reservoir below" />
 </p>
 
 <p align="center">
