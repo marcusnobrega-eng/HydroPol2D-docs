@@ -95,13 +95,14 @@ If `flag_reduce_dem` is activated, river cells elevation are reduced to account 
 
 | Variable | Units | Description |
 |----------|------|-------------|
-| $\mathrm{topo\_path}$ | — | Path to TopoToolbox directory |
 | $\mathrm{DEM\_path}$ | — | Path to Digital Elevation Model |
 | $\mathrm{LULC\_path}$ | — | Path to Land Use / Land Cover raster |
 | $\mathrm{SOIL\_path}$ | — | Path to soil classification raster |
 | $\mathrm{Warmup\_Depth\_path}$ | — | Path to initial warm-up water depth condition |
 | $\mathrm{Initial\_Buildup\_path}$ | — | Path to initial pollutant buildup map |
 | $\mathrm{Initial\_Soil\_Moisture\_path}$ | — | Path to initial soil moisture condition |
+| $\mathrm{Initial\_SWE\_path}$ | — | Optional path to initial snow water equivalent in millimeters |
+| $\mathrm{Initial\_Snow\_Depth\_path}$ | — | Optional path to initial physical snow depth in millimeters |
 | $\mathrm{Albedo\_path}$ | — | Path to albedo raster |
 | $\mathrm{LAI\_path}$ | — | Path to leaf area index raster |
 | $\mathrm{RiverWidths\_path}$ | — | Path to river width raster |

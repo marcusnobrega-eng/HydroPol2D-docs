@@ -29,9 +29,9 @@ A constant inflow of $5\ \mathrm{m^3\,s^{-1}}$ is applied to an initially dry, 3
 
 The ordinary coarse grid treats the full `30 m` cell width as flowing water. It therefore stores too much water and delays the hydrograph. The embedded `10 m` channel gives a stage and travel time much closer to the explicit reference.
 
-<img src={useBaseUrl('/validation/phase1/subgrid-neal/simple-channel-hydrograph-stage.png')} alt="Outlet discharge and internal stage for the fine, ordinary coarse, and Neal (2012) channel simulations" />
+<img src={useBaseUrl('/validation/results/subgrid-neal/simple-channel-hydrograph-stage.png')} alt="Outlet discharge and internal stage for the fine, ordinary coarse, and Neal (2012) channel simulations" />
 
-<img src={useBaseUrl('/validation/phase1/subgrid-neal/simple-channel-profile.png')} alt="Longitudinal water-surface profiles for the fine, ordinary coarse, and Neal (2012) channel simulations" />
+<img src={useBaseUrl('/validation/results/subgrid-neal/simple-channel-profile.png')} alt="Longitudinal water-surface profiles for the fine, ordinary coarse, and Neal (2012) channel simulations" />
 
 ## Composite channel
 
@@ -48,9 +48,9 @@ The constant-flow test applies $100\ \mathrm{m^3\,s^{-1}}$. The transient test a
 
 The Neal (2012) simulation reduces discharge and storage errors for both forcing conditions. The transient comparison also shows that the improvement is retained during the rising limb, peak, and recession.
 
-<img src={useBaseUrl('/validation/phase1/subgrid-neal/composite-constant-hydrographs.png')} alt="Constant-flow hydrographs for the explicit, ordinary coarse, and Neal (2012) channel simulations" />
+<img src={useBaseUrl('/validation/results/subgrid-neal/composite-constant-hydrographs.png')} alt="Constant-flow hydrographs for the explicit, ordinary coarse, and Neal (2012) channel simulations" />
 
-<img src={useBaseUrl('/validation/phase1/subgrid-neal/composite-nash-hydrographs.png')} alt="Nash inflow and simulated downstream and internal hydrographs" />
+<img src={useBaseUrl('/validation/results/subgrid-neal/composite-nash-hydrographs.png')} alt="Nash inflow and simulated downstream and internal hydrographs" />
 
 ## Staged overbank flow
 
@@ -62,7 +62,7 @@ The third case tests the transition from channel flow to floodplain inundation. 
 
 The explicit reference uses `5 m` cells. The ordinary and Neal (2012) simulations use `100 m` cells. A Nash hydrograph reaches $200\ \mathrm{m^3\,s^{-1}}$ at `45 min`, exceeding the analytical activation discharges of $31.4\ \mathrm{m^3\,s^{-1}}$ for the benches and $110.8\ \mathrm{m^3\,s^{-1}}$ for the external floodplain.
 
-<img src={useBaseUrl('/validation/phase1/subgrid-neal/staged-geometry-rating.png')} alt="Staged channel geometry and analytical uniform-flow rating curve" />
+<img src={useBaseUrl('/validation/results/subgrid-neal/staged-geometry-rating.png')} alt="Staged channel geometry and analytical uniform-flow rating curve" />
 
 | Metric | Ordinary, 100 m | Neal (2012), 100 m |
 |---|---:|---:|
@@ -75,11 +75,11 @@ The explicit reference uses `5 m` cells. The ordinary and Neal (2012) simulation
 
 The Neal (2012) model reproduces the bench activation at `21 min`, the same time as the explicit reference. It activates the external floodplain at `35 min`, compared with `34 min` in the reference. The hydrograph, depth, and maximum inundation extent are all closer to the reference than the ordinary `100 m` result.
 
-<img src={useBaseUrl('/validation/phase1/subgrid-neal/staged-hydrographs.png')} alt="Staged-channel outlet and internal hydrographs" />
+<img src={useBaseUrl('/validation/results/subgrid-neal/staged-hydrographs.png')} alt="Staged-channel outlet and internal hydrographs" />
 
-<img src={useBaseUrl('/validation/phase1/subgrid-neal/staged-depth-activation.png')} alt="Channel, bench, and external floodplain depths through time" />
+<img src={useBaseUrl('/validation/results/subgrid-neal/staged-depth-activation.png')} alt="Channel, bench, and external floodplain depths through time" />
 
-<img src={useBaseUrl('/validation/phase1/subgrid-neal/staged-maximum-depth.png')} alt="Maximum water-depth maps for the explicit, ordinary coarse, and Neal (2012) simulations" />
+<img src={useBaseUrl('/validation/results/subgrid-neal/staged-maximum-depth.png')} alt="Maximum water-depth maps for the explicit, ordinary coarse, and Neal (2012) simulations" />
 
 All retained cases conserve water to numerical precision. The staged test also identifies a limitation. The Neal (2012) benches become dry at `126 min`, compared with `196 min` in the explicit reference, and the external floodplain becomes dry at `152 min`, compared with `237 min`. A coarse Neal (2012) cell has one representative water level, so residual water on benches and floodplains cannot drain independently from the embedded channel.
 

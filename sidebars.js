@@ -8,7 +8,12 @@ const sidebars = {
     {
       type: 'category',
       label: 'Getting Started',
-      items: ['getting-started/overview'],
+      items: [
+        'getting-started/overview',
+        'getting-started/model-building-workflow',
+        'getting-started/excel-workflow',
+        'getting-started/ecosystem-architecture',
+      ],
     },
     {
       type: 'category',
@@ -40,7 +45,7 @@ const sidebars = {
       label: 'Validation',
       items: [
         'validation/overview',
-        'validation/phase1-status',
+        'validation/validation-status',
         'validation/hydrologic-modules',
         'validation/groundwater-recharge',
         {
@@ -50,7 +55,7 @@ const sidebars = {
             type: 'doc',
             id: 'validation/hydrodynamics-routing',
           },
-          items: ['validation/neal-subgrid'],
+          items: ['validation/neal-subgrid', 'validation/voronoi-mesh'],
         },
         'validation/ancillary-modules',
         'validation/limitations',

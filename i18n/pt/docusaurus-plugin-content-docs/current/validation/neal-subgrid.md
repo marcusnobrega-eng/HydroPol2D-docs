@@ -29,9 +29,9 @@ Uma vazão constante de $5\ \mathrm{m^3\,s^{-1}}$ é aplicada a um trecho inicia
 
 A grade grosseira comum considera que toda a largura de `30 m` contém água em movimento. Por isso, ela armazena água em excesso e atrasa o hidrograma. O canal embutido de `10 m` produz nível e tempo de propagação mais próximos da referência explícita.
 
-<img src={useBaseUrl('/validation/phase1/subgrid-neal/simple-channel-hydrograph-stage.png')} alt="Vazão de saída e nível interno nas simulações fina, grosseira comum e com canal de Neal (2012)" />
+<img src={useBaseUrl('/validation/results/subgrid-neal/simple-channel-hydrograph-stage.png')} alt="Vazão de saída e nível interno nas simulações fina, grosseira comum e com canal de Neal (2012)" />
 
-<img src={useBaseUrl('/validation/phase1/subgrid-neal/simple-channel-profile.png')} alt="Perfis longitudinais da superfície da água nas simulações fina, grosseira comum e com canal de Neal (2012)" />
+<img src={useBaseUrl('/validation/results/subgrid-neal/simple-channel-profile.png')} alt="Perfis longitudinais da superfície da água nas simulações fina, grosseira comum e com canal de Neal (2012)" />
 
 ## Canal composto
 
@@ -48,9 +48,9 @@ O teste permanente aplica $100\ \mathrm{m^3\,s^{-1}}$. O teste transiente aplica
 
 A simulação de Neal (2012) reduz os erros de vazão e armazenamento para as duas forçantes. A comparação transiente mostra que a melhoria permanece durante a subida, o pico e a recessão do hidrograma.
 
-<img src={useBaseUrl('/validation/phase1/subgrid-neal/composite-constant-hydrographs.png')} alt="Hidrogramas com vazão constante nas simulações explícita, grosseira comum e com canal de Neal (2012)" />
+<img src={useBaseUrl('/validation/results/subgrid-neal/composite-constant-hydrographs.png')} alt="Hidrogramas com vazão constante nas simulações explícita, grosseira comum e com canal de Neal (2012)" />
 
-<img src={useBaseUrl('/validation/phase1/subgrid-neal/composite-nash-hydrographs.png')} alt="Hidrograma de entrada de Nash e hidrogramas simulados na saída e na seção interna" />
+<img src={useBaseUrl('/validation/results/subgrid-neal/composite-nash-hydrographs.png')} alt="Hidrograma de entrada de Nash e hidrogramas simulados na saída e na seção interna" />
 
 ## Escoamento escalonado sobre as margens
 
@@ -62,7 +62,7 @@ O terceiro caso avalia a transição entre o canal e a planície de inundação.
 
 A referência explícita usa células de `5 m`. As simulações comum e Neal (2012) usam células de `100 m`. Um hidrograma de Nash atinge $200\ \mathrm{m^3\,s^{-1}}$ em `45 min`, acima das vazões analíticas de ativação de $31,4\ \mathrm{m^3\,s^{-1}}$ para as bancadas e $110,8\ \mathrm{m^3\,s^{-1}}$ para a planície externa.
 
-<img src={useBaseUrl('/validation/phase1/subgrid-neal/staged-geometry-rating.png')} alt="Geometria escalonada do canal e curva analítica de vazão uniforme" />
+<img src={useBaseUrl('/validation/results/subgrid-neal/staged-geometry-rating.png')} alt="Geometria escalonada do canal e curva analítica de vazão uniforme" />
 
 | Métrica | Comum, 100 m | Neal (2012), 100 m |
 |---|---:|---:|
@@ -75,11 +75,11 @@ A referência explícita usa células de `5 m`. As simulações comum e Neal (20
 
 O modelo de Neal (2012) reproduz a ativação das bancadas em `21 min`, no mesmo instante da referência explícita. A planície externa é ativada em `35 min`, comparada com `34 min` na referência. O hidrograma, a profundidade e a extensão máxima da inundação são mais próximos da referência que os resultados da grade comum de `100 m`.
 
-<img src={useBaseUrl('/validation/phase1/subgrid-neal/staged-hydrographs.png')} alt="Hidrogramas na saída e na seção interna do canal escalonado" />
+<img src={useBaseUrl('/validation/results/subgrid-neal/staged-hydrographs.png')} alt="Hidrogramas na saída e na seção interna do canal escalonado" />
 
-<img src={useBaseUrl('/validation/phase1/subgrid-neal/staged-depth-activation.png')} alt="Profundidades no canal, nas bancadas e na planície externa ao longo do tempo" />
+<img src={useBaseUrl('/validation/results/subgrid-neal/staged-depth-activation.png')} alt="Profundidades no canal, nas bancadas e na planície externa ao longo do tempo" />
 
-<img src={useBaseUrl('/validation/phase1/subgrid-neal/staged-maximum-depth.png')} alt="Mapas de profundidade máxima para as simulações explícita, grosseira comum e de Neal (2012)" />
+<img src={useBaseUrl('/validation/results/subgrid-neal/staged-maximum-depth.png')} alt="Mapas de profundidade máxima para as simulações explícita, grosseira comum e de Neal (2012)" />
 
 Todos os casos mantidos conservam água até a precisão numérica. O teste escalonado também identifica uma limitação. As bancadas do modelo de Neal (2012) secam em `126 min`, comparadas com `196 min` na referência explícita, e a planície externa seca em `152 min`, comparada com `237 min`. Uma célula grosseira de Neal (2012) tem um único nível representativo de água. Portanto, a água residual nas bancadas e na planície não pode drenar de forma independente do canal embutido.
 

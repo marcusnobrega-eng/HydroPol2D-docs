@@ -92,23 +92,23 @@ Si se activa `flag_reduce_dem`, la elevación de las celdas del río se reduce p
 
 | Variable | Unidades | Descripción |
 |----------|------|-------------|
-| $\mathrm{topo\_path}$ | — | Ruta al directorio TopoToolbox |
-| $\mathrm{PHTOKEN0XYZ\_path}$ | — | Camino hacia el modelo de elevación digital |
-| $\mathrm{PHTOKEN0XYZ\_path}$ | — | Ruta al ráster de uso del suelo/cobertura del suelo |
+| $\mathrm{DEM\_path}$ | — | Ruta al modelo digital de elevación |
+| $\mathrm{LULC\_path}$ | — | Ruta al ráster de uso y cobertura del suelo |
 | $\mathrm{SOIL\_path}$ | — | Ruta al ráster de clasificación del suelo |
 | $\mathrm{Warmup\_Depth\_path}$ | — | Camino hacia la condición inicial de profundidad del agua de calentamiento |
 | $\mathrm{Initial\_Buildup\_path}$ | — | Ruta hacia el mapa inicial de acumulación de contaminantes |
 | $\mathrm{Initial\_Soil\_Moisture\_path}$ | — | Camino hacia la condición inicial de humedad del suelo. |
+| $\mathrm{Initial\_SWE\_path}$ | — | Ruta opcional al SWE inicial en milímetros |
+| $\mathrm{Initial\_Snow\_Depth\_path}$ | — | Ruta opcional a la profundidad física inicial de nieve en milímetros |
 | $\mathrm{Albedo\_path}$ | — | Camino a la trama de albedo |
-| $\mathrm{PHTOKEN0XYZ\_path}$ | — | Ruta al ráster de índice de área foliar |
+| $\mathrm{LAI\_path}$ | — | Ruta al ráster de índice de área foliar |
 | $\mathrm{RiverWidths\_path}$ | — | Ruta al ráster de ancho del río |
 | $\mathrm{RiverDepths\_path}$ | — | Trama de ruta a la profundidad del río |
-| $\mathrm{PHTOKEN0XYZ\_path}$ | — | Ruta al ráster desde la profundidad hasta el lecho de roca |
+| $\mathrm{DTB\_path}$ | — | Ruta al ráster de profundidad al lecho rocoso |
 | $\mathrm{B1\_path}$ | — | Ruta al ráster de parámetros relacionados con contaminantes |
 | $\mathrm{B2\_path}$ | — | Ruta al ráster de parámetros relacionados con contaminantes |
 | $\mathrm{W1\_path}$ | — | Ruta hacia el ráster de parámetros de eliminación de contaminantes |
 | $\mathrm{W2\_path}$ | — | Ruta hacia el ráster de parámetros de eliminación de contaminantes |
-| $\mathrm{hydropol2d\_tools}$ | — | Ruta a la biblioteca de funciones HydroPol2D |
 
 ---
 

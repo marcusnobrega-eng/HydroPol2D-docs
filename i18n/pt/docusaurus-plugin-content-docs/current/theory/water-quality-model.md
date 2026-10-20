@@ -21,7 +21,7 @@ onde:
 - $B_t$ = massa poluente por célula $[\mathrm{M}]$
 
 O modelo é totalmente **conservador de massa** e acoplado dinamicamente ao roteamento de fluxo.
-A validação atual da Fase 1 concentra-se no modo de lavagem baseado em massa
+A validação atual da validação concentra-se no modo de lavagem baseado em massa
 (`flag_wq_model = 0`). A validação usa escalas de parâmetros de construção no estilo SWMM
 para sólidos suspensos totais, mas a fonte da verdade é um balanço de massa analítico
 solução em vez de uma execução numérica SWMM ou um polutógrafo de campo calibrado.

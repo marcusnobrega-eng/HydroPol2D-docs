@@ -646,7 +646,7 @@ Os fluxos de saída são convertidos em um sumidouro de volume e removidos do ar
 
 ### 2.7 Evidências de validação atuais
 
-O solucionador de impulso total faz parte do pacote de validação da Fase 1. As evidências atuais prontas para relatório incluem:
+O solucionador de impulso total faz parte do pacote de validação da validação. As evidências atuais prontas para relatório incluem:
 - escoamento em plano inclinado contra o limite analítico da onda cinemática;
 - Conservação de massa de captação inclinada em V e verificações de simetria bilateral;
 - Perfis analíticos de ruptura de barragens em leito seco de Ritter;

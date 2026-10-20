@@ -92,23 +92,23 @@ Se `flag_reduce_dem` estiver ativado, a elevação das células do rio será red
 
 | Variável | Unidades | Descrição |
 |----------|------|-------------|
-| $\mathrm{topo\_path}$ | - | Caminho para o diretório TopoToolbox |
-| $\mathrm{PHTOKEN0XYZ\_path}$ | - | Caminho para o modelo digital de elevação |
-| $\mathrm{PHTOKEN0XYZ\_path}$ | - | Caminho para o uso da terra/raster de cobertura da terra |
+| $\mathrm{DEM\_path}$ | - | Caminho para o modelo digital de elevação |
+| $\mathrm{LULC\_path}$ | - | Caminho para o raster de uso e cobertura da terra |
 | $\mathrm{SOIL\_path}$ | - | Caminho para o raster de classificação do solo |
 | $\mathrm{Warmup\_Depth\_path}$ | - | Caminho para a condição inicial de profundidade da água de aquecimento |
 | $\mathrm{Initial\_Buildup\_path}$ | - | Caminho para o mapa inicial de acúmulo de poluentes |
 | $\mathrm{Initial\_Soil\_Moisture\_path}$ | - | Caminho para a condição inicial de umidade do solo |
+| $\mathrm{Initial\_SWE\_path}$ | - | Caminho opcional para SWE inicial em milímetros |
+| $\mathrm{Initial\_Snow\_Depth\_path}$ | - | Caminho opcional para profundidade física inicial da neve em milímetros |
 | $\mathrm{Albedo\_path}$ | - | Caminho para raster de albedo |
-| $\mathrm{PHTOKEN0XYZ\_path}$ | - | Caminho para raster do índice de área foliar |
+| $\mathrm{LAI\_path}$ | - | Caminho para raster do índice de área foliar |
 | $\mathrm{RiverWidths\_path}$ | - | Caminho para raster da largura do rio |
 | $\mathrm{RiverDepths\_path}$ | - | Caminho para raster de profundidade do rio |
-| $\mathrm{PHTOKEN0XYZ\_path}$ | - | Caminho para raster da profundidade ao leito rochoso |
+| $\mathrm{DTB\_path}$ | - | Caminho para raster da profundidade ao leito rochoso |
 | $\mathrm{B1\_path}$ | - | Caminho para raster de parâmetros relacionados a poluentes |
 | $\mathrm{B2\_path}$ | - | Caminho para raster de parâmetros relacionados a poluentes |
 | $\mathrm{W1\_path}$ | - | Caminho para a varredura do parâmetro de lavagem de poluentes |
 | $\mathrm{W2\_path}$ | - | Caminho para a varredura do parâmetro de lavagem de poluentes |
-| $\mathrm{hydropol2d\_tools}$ | - | Caminho para a biblioteca de funções HydroPol2D |
 
 ---
 

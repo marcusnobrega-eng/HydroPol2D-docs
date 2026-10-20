@@ -25,7 +25,7 @@ At runtime, HydroPol2D:
 2. uses that value as an index,
 3. assigns the corresponding parameters from the table.
 
-For this reason, raster classes and table indices must match exactly.
+For mapped classes, raster values and table indices must match exactly. When a valid LULC, soil, or snow code is absent from its parameter table, HydroPol2D assigns the area-weighted mean of properties represented by mapped cells and writes the decision to `Input_Class_Code_Audit.csv`. Duplicate indices, non-numeric indices, or a table with no mapped classes remain input errors.
 
 ---
 
@@ -63,6 +63,29 @@ The LULC table defines surface-related properties controlling flow resistance, i
 The values shown above correspond to the current HydroPol2D parameter table and should be revised as needed for the adopted classification scheme and study area.
 
 In the current implementation, `root_depth_m` is the supported way to provide root-depth input to the model. There is no separate root-depth raster path; root depth is assigned per LULC class and then mapped to the grid through the categorical LULC raster.
+
+---
+
+## Snow Parameter Table
+
+The LULC parameter table contains the following snow columns in every `LULC_Index` row. There is no separate snow workbook; this keeps every land-cover-dependent property in one class record.
+
+| Column | Units | Description |
+|---|---|---|
+| `LULC_Index` | — | LULC code to which the row applies. |
+| `Snow_Albedo` | — | Shortwave albedo of the snow surface. |
+| `Snow_Emissivity` | — | Longwave emissivity used in the net-radiation calculation. |
+| `Sublimation_Coefficient_d_1` | day⁻¹ (m s⁻¹)⁻¹ | Coefficient in the timestep-scaled sublimation term. |
+| `Degree_Day_Factor_mm_C_day` | mm °C⁻¹ day⁻¹ | Degree-day melt factor. |
+| `T_Snow_All_C` | °C | Temperature at or below which all precipitation is snow. |
+| `T_Rain_All_C` | °C | Temperature at or above which all precipitation is rain. It must be no lower than `T_Snow_All_C`. |
+| `Rho_Snow_Init_kg_m3` | kg m⁻³ | Fresh-snow density used for zero-snow and single-raster initialization. |
+| `Rho_Snow_Max_kg_m3` | kg m⁻³ | Upper bound on snow density after compaction. |
+| `Compaction_Temperature_kg_m3_C_day` | kg m⁻³ °C⁻¹ day⁻¹ | Temperature-dependent density increase. |
+| `Compaction_SWE_kg_m3_mm_day` | kg m⁻³ mm⁻¹ day⁻¹ | SWE-dependent density increase. |
+| `Compaction_Depth_kg_m3_mm_day` | kg m⁻³ mm⁻¹ day⁻¹ | Snow-depth-dependent density increase. |
+
+The degree-day, sublimation, and compaction terms are rates. HydroPol2D multiplies them by the current routing timestep. Snow requires the internal meteorological forcing mode, so the model can obtain mean temperature, minimum temperature, and wind speed.
 
 ---
 
@@ -133,12 +156,12 @@ This is particularly useful in data-scarce applications.
 
 The following conditions must be satisfied:
 
-- all raster class values must exist in the corresponding table,
+- mapped raster class values must be represented by the corresponding table,
 - class identifiers must not be duplicated,
 - parameter fields must not be left empty,
 - units must be consistent with the model formulation.
 
-Any inconsistency between raster classes and parameter tables will lead to incorrect assignment of physical properties.
+For an unmapped valid class, the model uses the documented area-weighted fallback and writes `Input_Class_Code_Audit.csv`. Review that file before accepting a run. A table without any class shared with its raster cannot define a meaningful fallback and stops preprocessing.
 
 ---
 

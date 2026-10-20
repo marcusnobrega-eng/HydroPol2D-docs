@@ -31,7 +31,7 @@ Estas entradas son opcionales segun el caso de uso, no experimentales por defini
 
 HydroPol2D tambien lee hojas de calculo:
 
-- [Parameter Tables](./parameter-tables) para clases de LULC y suelo;
+- [Parameter Tables](./parameter-tables) para clases de LULC, suelo y nieve;
 - `General_Data.xlsx` para flags, tiempos de simulacion, rutas de archivos y controles de ejecucion;
 - hojas de forzantes o condiciones de contorno para lluvia, evapotranspiracion, inflow, stage o estructuras de control, cuando esas opciones esten activas.
 
@@ -57,7 +57,7 @@ HydroPol2D puede reamostrar y enmascarar muchos rasters opcionales internamente,
 | Terreno y clases principales | `DEM_path`, `LULC_path`, `SOIL_path` |
 | Apoyo de zona vadosa y groundwater | `DTB_path`, `GW_table_path` |
 | Refinamientos de propiedades superficiales | `LAI_path`, `Albedo_path`, `ImperviousFraction_path` |
-| Estados iniciales | `Warmup_Depth_path`, `Initial_Soil_Moisture_path`, `Initial_Buildup_path` |
+| Estados iniciales | `Warmup_Depth_path`, `Initial_Soil_Moisture_path`, `Initial_SWE_path`, `Initial_Snow_Depth_path`, `Initial_Buildup_path` |
 | Geometría del canal | `RiverWidths_path`, `RiverDepths_path` |
 | Rasters de calidad del agua | `B1_path`, `B2_path`, `W1_path`, `W2_path` |
 | Forzantes y archivos de contorno | hojas o calendarios raster de lluvia, ETP, inflow, stage y estructuras de control |

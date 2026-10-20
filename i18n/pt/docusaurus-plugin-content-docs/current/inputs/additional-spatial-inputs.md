@@ -27,6 +27,8 @@ Além dos principais DEM, LULC e rasters de solo, HydroPol2D pode ingerir um con
 |---|---|---|---|
 | Profundidade inicial da água superficial | `Warmup_Depth_path` | Quando `flag_warmup = 1` e um raster de profundidade de aquecimento são fornecidos | Raster é lido como a profundidade inicial da lagoa em metros e convertido internamente em milímetros. |
 | Armazenamento inicial do solo | `Initial_Soil_Moisture_path` | Quando `flag_warmup = 1` e um raster de solo inicial são fornecidos | Apesar do nome legado, o código atual interpreta esse raster como **armazenamento inicial ativo do solo acima do conteúdo de água residual** em milímetros, e não volumétrico bruto $\theta$. |
+| Equivalente inicial de água na neve | `Initial_SWE_path` | Quando a modelagem de neve está ativa e um raster de SWE é fornecido | SWE em milímetros de equivalente de água. Nodata indica que não foi especificada neve inicial. |
+| Profundidade inicial da neve | `Initial_Snow_Depth_path` | Quando a modelagem de neve está ativa e um raster de profundidade de neve é fornecido | Profundidade física da neve em milímetros. Nodata indica que não foi especificada neve inicial. |
 | Acúmulo inicial de poluentes | `Initial_Buildup_path` | Quando a qualidade da água usa um raster de acúmulo inicial | Usado para inicializar estados de massa/acúmulo de poluentes. |
 
 ---
@@ -68,6 +70,12 @@ Isso os torna flexíveis, mas não elimina a necessidade de pré-processamento s
 
 ---
 
+## Estados iniciais de neve
+
+Os parâmetros de neve são colunas da tabela de parâmetros LULC e são atribuídos por `LULC_Index`. Os rasters iniciais são opcionais: sem raster, a célula inicia sem neve; com SWE ou profundidade apenas, o outro estado é calculado com a densidade inicial da classe; com ambos, o par define a densidade e deve ser fisicamente compatível. Valores negativos e pares positivos incompatíveis são rejeitados.
+
+---
+
 ## Geometria do canal de Neal (2012)
 
 O modo de canal subgrade de Neal (2012) usa o DEM grosseiro como elevação da planície. `RiverDepths_path` rebaixa o leito retangular do canal em relação a essa elevação, enquanto `RiverWidths_path` define a largura do canal em cada célula de rio. Os dois rasters devem ser fornecidos juntos.
@@ -82,7 +90,7 @@ Consulte [Bandeiras do modelo](../configuration/flags) para a combinação de ro
 A maneira mais fácil de pensar sobre a superfície de entrada é:
 1. DEM, LULC e SOIL definem o domínio base.
 2. DTB, tabela GW, LAI, albedo e fração impermeável refinam esse domínio base.
-3. O aquecimento, o armazenamento inicial do solo e o acúmulo inicial definem o estado inicial.
+3. O aquecimento, o armazenamento inicial do solo, os estados iniciais de neve e o acúmulo inicial definem o estado inicial.
 4. Rasters WQ suportam módulos especializados opcionais.
 
 Essa é a história de entrada implementada atualmente que os documentos devem seguir.

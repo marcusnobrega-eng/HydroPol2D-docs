@@ -1,37 +1,39 @@
 ---
-title: Visao geral
+title: Visao geral da validacao
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # Visao geral da validacao
 
-A validacao do HydroPol2D esta organizada em benchmarks controlados de Fase 1. O objetivo desta fase e verificar se cada modulo computacional reproduz as equacoes, as atualizacoes de armazenamento, as condicoes de contorno e o comportamento numerico esperados em casos onde a resposta conhecida esta disponivel.
-
-O relatorio tecnico completo esta disponivel aqui:
+O HydroPol2D e avaliado por uma suite de validacao que testa cada modulo computacional em relacao a uma referencia conhecida. A suite combina solucoes analiticas, calculos independentes, balancos exatos de agua e massa, hidrogramas de referencia e simulacoes numericas refinadas. Cada caso define dados de entrada, resposta esperada, metricas, criterios de aceitacao e resultados.
 
 <div style={{margin: '1rem 0 1.5rem 0'}}>
   <a className="button button--primary button--lg" href={useBaseUrl('/reports/validation_report.pdf')}>
-    Baixar o relatorio de validacao da Fase 1
+    Baixar o relatorio de validacao
   </a>
 </div>
 
-## Filosofia de validacao
+## Evidencias
 
-Uma afirmacao de validacao so e feita quando o caso possui solucao analitica, calculo de referencia independente, alvo exato de bookkeeping, hidrográfica de benchmark ou referencia numerica documentada. Casos baseados apenas em comportamento qualitativo sao tratados como diagnosticos.
-
-A Fase 1 nao reivindica calibracao de campo nem validacao observacional em escala de bacia. Casos de campo e exercicios de modelagem inversa constituem niveis diferentes de evidencia e devem ser relatados separadamente.
-
-## Niveis de evidencia
-
-| Nivel de evidencia | Significado |
+| Tipo de evidencia | Uso na validacao do HydroPol2D |
 |---|---|
-| Solucao analitica | Existe uma solucao matematica fechada ou exata. |
-| Referencia independente | Uma implementacao separada calcula o resultado esperado. |
-| Bookkeeping exato | O alvo de validacao e conservacao, forcante prescrita ou volume imposto em contorno. |
-| Hidrografa de benchmark | Uma hidrografa publicada ou digitalizada e usada como comparacao. |
-| Referencia numerica | Uma simulacao numerica refinada ou simplificada e usada como referencia. |
-| Diagnostico | O caso e util para depuracao, mas nao sustenta uma afirmacao formal de validacao. |
+| Solucao analitica | Testa as equacoes em relacao a uma solucao fechada ou exata. |
+| Referencia independente | Compara o modelo com um calculo separado do mesmo processo. |
+| Balanco exato | Testa a conservacao sob forcantes ou condicoes de contorno prescritas. |
+| Hidrograma de referencia | Compara a resposta roteada com um benchmark publicado ou digitalizado. |
+| Referencia numerica | Compara uma representacao mais grosseira ou reduzida com uma simulacao refinada documentada. |
 
-## Escopo atual
+Casos uteis para diagnostico, mas sem uma referencia apropriada, permanecem visiveis como diagnosticos e nao constituem evidencia de aceitacao.
 
-O pacote de Fase 1 cobre interceptacao pelo dossel, neve, infiltracao, evapotranspiracao, groundwater e recarga, roteamento hidrodinamico, comportamento de reservatorios e contornos, ingestao de chuva espacial, qualidade da agua e diagnosticos de instabilidade humana. Consulte a pagina [Human Instability](../theory/human-instability) para os modos implementados.
+## Bacia sintetica em V
+
+Muitos casos hidrologicos e de aguas subterraneas usam a bacia sintetica em V. Ela fornece um DEM, solo, cobertura do solo, IAF, aguas subterraneas e condicoes de contorno comuns, enquanto cada processo e avaliado em relacao a sua propria referencia. Os benchmarks hidrodinamicos dedicados, incluindo a ruptura de barragem de Ritter e a onda nao quebrante, usam geometrias especificas.
+
+## Casos de validacao
+
+- [Modulos hidrologicos](./hydrologic-modules)
+- [Aguas subterraneas e recarga](./groundwater-recharge)
+- [Hidrodinamica e roteamento](./hydrodynamics-routing)
+- [Reservatorios, contornos, qualidade da agua e risco](./ancillary-modules)
+
+A pagina [Estado da validacao](./validation-status) resume as evidencias disponiveis para cada modulo.

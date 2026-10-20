@@ -5,21 +5,21 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # Groundwater and Recharge Validation
 
-The Phase 1 groundwater section tests both local groundwater bookkeeping and lateral groundwater dynamics. The central implementation change is the asynchronous scheduler: vadose drainage, recharge production, and capillary rise are evaluated every surface-model step, while saturated groundwater storage and lateral heads are updated only when the groundwater scheduler is due.
+The validation suite groundwater section tests both local groundwater bookkeeping and lateral groundwater dynamics. The central implementation change is the asynchronous scheduler: vadose drainage, recharge production, and capillary rise are evaluated every surface-model step, while saturated groundwater storage and lateral heads are updated only when the groundwater scheduler is due.
 
 ## What was tested
 
 Four V-tilted groundwater cases were used for local storage and scheduler behavior:
 
-- `P1-GW-ASYNC-001`: constant recharge water-table rise;
-- `P1-GW-ASYNC-002`: asynchronous scheduler equivalence;
-- `P1-GW-CAP-001`: capillary rise drawdown;
-- `P1-GW-MOUND-001`: Boussinesq recharge mound against a fine-timestep numerical reference.
+- `VAL-GW-ASYNC-001`: constant recharge water-table rise;
+- `VAL-GW-ASYNC-002`: asynchronous scheduler equivalence;
+- `VAL-GW-CAP-001`: capillary rise drawdown;
+- `VAL-GW-MOUND-001`: Boussinesq recharge mound against a fine-timestep numerical reference.
 
 Two additional hillslope cases were used to strengthen the lateral-groundwater evidence:
 
-- `P1-GW-HILL-STEADY-001`: steady Dupuit profile;
-- `P1-GW-HILL-TRANSIENT-001`: transient linearized Boussinesq decay.
+- `VAL-GW-HILL-STEADY-001`: steady Dupuit profile;
+- `VAL-GW-HILL-TRANSIENT-001`: transient linearized Boussinesq decay.
 
 ## Local recharge and scheduler behavior
 
@@ -33,21 +33,21 @@ All four local groundwater cases passed.
 
 | Case | Regime | Head RMSE (m) | Max head error (m) | Storage error (%) | Residual (m³) |
 |---|---|---:|---:|---:|---:|
-| `P1-GW-ASYNC-001` | Local recharge | 0.0 | 0.0 | 0.0 | `1.96 × 10^-11` |
-| `P1-GW-ASYNC-002` | Scheduler equivalence | `1.71 × 10^-13` | `1.71 × 10^-13` | `1.67 × 10^-11` | `1.84 × 10^-10` |
-| `P1-GW-CAP-001` | Capillary rise | 0.0 | 0.0 | 0.0 | `-1.45 × 10^-12` |
-| `P1-GW-MOUND-001` | Boussinesq mound | `1.83 × 10^-8` | `9.90 × 10^-8` | `5.23 × 10^-13` | `3.09 × 10^-11` |
+| `VAL-GW-ASYNC-001` | Local recharge | 0.0 | 0.0 | 0.0 | `1.96 × 10^-11` |
+| `VAL-GW-ASYNC-002` | Scheduler equivalence | `1.71 × 10^-13` | `1.71 × 10^-13` | `1.67 × 10^-11` | `1.84 × 10^-10` |
+| `VAL-GW-CAP-001` | Capillary rise | 0.0 | 0.0 | 0.0 | `-1.45 × 10^-12` |
+| `VAL-GW-MOUND-001` | Boussinesq mound | `1.83 × 10^-8` | `9.90 × 10^-8` | `5.23 × 10^-13` | `3.09 × 10^-11` |
 
 <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem'}}>
-  <img src={useBaseUrl('/validation/phase1/groundwater/P1_GW_ASYNC_001_head_recharge.png')} alt="Analytical constant recharge groundwater rise" />
-  <img src={useBaseUrl('/validation/phase1/groundwater/P1_GW_ASYNC_002_equivalence.png')} alt="Groundwater async scheduler equivalence" />
+  <img src={useBaseUrl('/validation/results/groundwater/VAL_GW_ASYNC_001_head_recharge.png')} alt="Analytical constant recharge groundwater rise" />
+  <img src={useBaseUrl('/validation/results/groundwater/VAL_GW_ASYNC_002_equivalence.png')} alt="Groundwater async scheduler equivalence" />
 </div>
 
 <p><em>Recharge scheduler diagnostics. The first case checks analytical water-table rise under constant recharge. The second compares the asynchronous scheduler with legacy per-step groundwater updating.</em></p>
 
 <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem'}}>
-  <img src={useBaseUrl('/validation/phase1/groundwater/P1_GW_CAP_001_capillary.png')} alt="Capillary rise validation" />
-  <img src={useBaseUrl('/validation/phase1/groundwater/P1_GW_MOUND_001_reference.png')} alt="Boussinesq recharge mound validation" />
+  <img src={useBaseUrl('/validation/results/groundwater/VAL_GW_CAP_001_capillary.png')} alt="Capillary rise validation" />
+  <img src={useBaseUrl('/validation/results/groundwater/VAL_GW_MOUND_001_reference.png')} alt="Boussinesq recharge mound validation" />
 </div>
 
 <p><em>Capillary-rise and lateral-flow diagnostics. The mound case is useful numerical-reference evidence, but it is still weaker than an analytical benchmark.</em></p>
@@ -66,14 +66,14 @@ Both analytical hillslope cases passed.
 
 | Case | Benchmark | Head RMSE (m) | Max head error (m) | Flow metric |
 |---|---|---:|---:|---|
-| `P1-GW-HILL-STEADY-001` | Steady Dupuit | `6.04 × 10^-3` | `9.75 × 10^-3` | Drain-discharge error = `3.74 × 10^-4 %` |
-| `P1-GW-HILL-TRANSIENT-001` | Linearized Boussinesq | `1.94 × 10^-5` | `4.46 × 10^-5` | `NSE = 0.99985` |
+| `VAL-GW-HILL-STEADY-001` | Steady Dupuit | `6.04 × 10^-3` | `9.75 × 10^-3` | Drain-discharge error = `3.74 × 10^-4 %` |
+| `VAL-GW-HILL-TRANSIENT-001` | Linearized Boussinesq | `1.94 × 10^-5` | `4.46 × 10^-5` | `NSE = 0.99985` |
 
-<img src={useBaseUrl('/validation/phase1/groundwater/P1_GW_HILL_STEADY_001_profile.png')} alt="Steady Dupuit hillslope groundwater benchmark" />
+<img src={useBaseUrl('/validation/results/groundwater/VAL_GW_HILL_STEADY_001_profile.png')} alt="Steady Dupuit hillslope groundwater benchmark" />
 
 <p><em>Steady Dupuit benchmark. The lower panel shows the absolute profile error against the analytical solution.</em></p>
 
-<img src={useBaseUrl('/validation/phase1/groundwater/P1_GW_HILL_TRANSIENT_001_profiles_hydrograph.png')} alt="Transient linearized Boussinesq hillslope benchmark" />
+<img src={useBaseUrl('/validation/results/groundwater/VAL_GW_HILL_TRANSIENT_001_profiles_hydrograph.png')} alt="Transient linearized Boussinesq hillslope benchmark" />
 
 <p><em>Transient hillslope benchmark. The upper panel compares head profiles during perturbation decay; the lower panel compares modeled and analytical toe flux per unit width.</em></p>
 

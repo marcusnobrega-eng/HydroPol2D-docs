@@ -643,129 +643,31 @@ En la implementación en capas predeterminada, la infiltración aceptada primero
 
 Por lo tanto, la expresión escalar anterior es el resumen conceptual de una actualización en capas y no la única representación interna.---
 
-## 5. Acumulación, derretimiento y sublimación de nieve
+## 5. Acumulación, fusión y sublimación de nieve
 
-Cuando el modelado de nieve está activo, la precipitación se divide en precipitaciones y nevadas, y la evolución de la capa de nieve se rastrea explícitamente a través del equivalente en agua de nieve (SWE), la densidad y la profundidad.
----
+Cuando el modelado de nieve está activo, HydroPol2D sigue el equivalente de agua de nieve (SWE), la densidad y la profundidad física de la nieve en cada celda activa. Los parámetros se leen de la tabla de parámetros LULC y se asignan mediante `LULC_Index`. El forzamiento meteorológico interno proporciona temperatura media del aire, temperatura mínima y velocidad del viento. Por tanto, las simulaciones de nieve requieren `flag_ETP = 1`, `flag_input_ETP_map = 0` y una hoja meteorológica que cubra todo el período simulado.
 
 ### 5.1 Partición lluvia-nieve
 
-La implementación actual divide la precipitación usando una rampa de temperatura lineal entre umbrales fijos de $4\,^{\circ}\mathrm{C}$ y $7\,^{\circ}\mathrm{C}$:
-$$
-f_ {\mathrm{snow}}
-=
-\begin{cases}
-1, & T_{\mathrm{air}} \le 4 \\
-\dfrac{7 - T_{\mathrm{air}}}{7 - 4}, & 4 < T_{\mathrm{air}} < 7 \\
-0, & T_{\mathrm{air}} \ge 7
-\end{cases}
-$$
-Las particiones de nevadas y lluvias son entonces
-$$
-P_{\mathrm{snow}} = P_{\mathrm{gross}} f_{\mathrm{snow}}
-$$
-$$
-P_{\mathrm{rain}} = P_{\mathrm{gross}} - P_{\mathrm{snow}}
-$$
-donde $f_{\mathrm{snow}}$ es la fracción de nieve dependiente de la temperatura $[-]$.
----
+Cada clase LULC define una temperatura de nieve total (`T_Snow_All_C`) y una temperatura de lluvia total (`T_Rain_All_C`), en grados Celsius. Por debajo del primer límite toda la precipitación es nieve; por encima del segundo, toda es lluvia; entre ambos, la fracción de nieve varía linealmente. Los límites deben cumplir `T_Rain_All_C >= T_Snow_All_C`.
 
-### 5.2 Equivalente en agua de nieve
+### 5.2 Balance de SWE y fusión
 
-La evolución del equivalente en agua de nieve es
-$$
-\mathrm{SWE}_t
-=
-\mathrm{SWE}_{t-1}+
-P_{\mathrm{snow}}-
-M___mathrm{snow}}-
-E___mathrm{s}}
-$$
-dónde:
-- $\mathrm{SWE}$ es el equivalente en agua de nieve $[\mathrm{L}]$
-- $E_{\mathrm{s}}$ es sublimación $[\mathrm{L}]$
+La actualización conservativa es `SWE(t) = SWE(t-1) + P_snow - M_snow - E_s`. La fusión combina grados-día y radiación neta positiva, limitada por la SWE disponible. El factor de grados-día, la sublimación y la compactación son tasas y se multiplican por el paso de tiempo actual. Por ello, los resultados son consistentes cuando cambia el paso de enrutamiento.
 
----
+### 5.3 Densidad, profundidad y sublimación
 
-### 5.3 Deshielo
+La densidad es una variable de estado. La nieve nueva usa la densidad inicial de su clase LULC; la nieve antigua y nueva se mezclan por SWE antes de la compactación. La densidad permanece entre los límites inicial y máximo de la clase. La profundidad física se calcula de forma coherente a partir de SWE y densidad. La sublimación usa la velocidad del viento y el gradiente de presión de vapor, y no puede exceder la nieve disponible.
 
-El deshielo se calcula como grados-día más un término de energía radiativa:
-$$
-M___mathrm{snow}}
-=
-\min\!\izquierda(
-\mathrm{SWE}_t,\,
-\max
-\izquierda(
-\mathrm{DDF}\,T_{\mathrm{air}}+
-\frac{(1-\alpha_{\mathrm{snow}})\,Q_{\mathrm{net}}}{334},
-0
-\derecha)
-\derecha)
-$$
-dónde:
-- $\mathrm{DDF}$ es el factor grados-día $[\mathrm{L}\,\Theta^{-1}\,\mathrm{T}^{-1}]$
-- $\alpha_{\mathrm{snow}}$ es el albedo de nieve $[-]$ que puede asumirse como constante o ingresarse como entrada espacial en `General_Data.xlsx`.
-- $Q_{\mathrm{net}}$ es el término neto de radiación de onda corta utilizado por la rutina actual $[\mathrm{E}\,\mathrm{L}^{-2}\,\mathrm{T}^{-1}]$
+### 5.4 Estados iniciales y códigos de clase
 
-Los parámetros de nieve actuales deben editarse en la función `PHTOKEN0XYZ_Preprocessing.m`.
----
+`Initial_SWE_path` e `Initial_Snow_Depth_path` son mapas opcionales. Sin mapas, la celda empieza sin nieve. Con un solo mapa, el otro estado se calcula con la densidad inicial de la clase. Con ambos, el modelo calcula la densidad implícita y rechaza pares positivos incompatibles o valores negativos. Nodata indica que no hay condición inicial especificada.
 
-### 5.4 Densidad y profundidad de la nieve
+Si un código válido de LULC, suelo o nieve no existe en la tabla correspondiente, el modelo usa el promedio ponderado por área de las propiedades de las clases asignadas. `Input_Class_Code_Audit.csv` registra este uso. Los índices duplicados, no numéricos o una tabla sin clases asignadas siguen siendo errores de entrada.
 
-La densidad de la nieve evoluciona a medida que
-$$
-\rho_{\mathrm{snow}}^{\,\mathrm{new}}
-=
-\rho_{\mathrm{snow}}^{\,\mathrm{old}}+
-k_t T_{\mathrm{air}}+
-k_{\mathrm{swe}} \mathrm{SWE}+
-k_D H_ {\mathrm{snow}}
-$$
-sujeto a
-$$
-\rho_{\mathrm{snow}} \le \rho_{\mathrm{max}}
-$$
-La profundidad de la nieve es
-$$
-H_{\mathrm{snow}} = \frac{\mathrm{SWE}}{\rho_{\mathrm{snow}}}
-$$
----
+### 5.5 Actualización del agua superficial
 
-### 5.5 Sublimación
-
-$$
-mi_ {\mathrm{s}}
-=
-\min\!\izquierda(
-\mathrm{SWE}_t,\,
-\max\!\izquierda(
-C_e\,u\,(q_s - q_a)\,\mathrm{SWE}_t,\,
-0
-\derecha)
-\derecha)
-$$
-dónde:
-- $C_e$ es el coeficiente de sublimación $[-]$
-- $u$ es la velocidad del viento $[\mathrm{L}\,\mathrm{T}^{-1}]$, tomada como la velocidad del viento a $2\,\mathrm{m}$ de altura.
-- $q_s$ es la humedad específica de saturación en la superficie de la nieve $[-]$
-- $q_a$ es la humedad específica del aire ambiente $[-]$
-
-En la implementación actual, $q_a$ se estima internamente a partir de los campos de temperatura disponibles en lugar de leerse como un forzamiento de humedad totalmente independiente, y el flujo de sublimación se recorta para permanecer no negativo y no exceder el equivalente de agua de nieve disponible.---
-
-### 5.6 Actualización de aguas superficiales en condiciones de nieve
-
-$$
-d_t = d_p + M_{\mathrm{snow}} + P_{\mathrm{rain}}
-$$
-de lo contrario
-$$
-d_t = d_p + P_{\mathrm{eff}}
-$$
-donde:
-- $d_t$ es la profundidad del agua superficial en el paso de tiempo actual $[\mathrm{L}]$
-- $d_p$ es la profundidad del agua superficial en el paso de tiempo anterior $[\mathrm{L}]$
----
+La lluvia líquida y la fusión se transfieren al agua superficial en el mismo paso: `d_t = d_p + M_snow + P_rain`. Cuando el modelado de nieve está desactivado, la actualización usa la precipitación efectiva habitual.
 
 ## 6. Almacenamiento, recarga y retroalimentación de aguas subterráneas de vadosa
 

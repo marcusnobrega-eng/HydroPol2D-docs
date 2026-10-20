@@ -4,13 +4,21 @@ title: Limitations
 
 # Validation Limitations
 
-The current validation package is a Phase 1 verification and controlled-dynamics
+The current validation package is a the verification and controlled-dynamics
 campaign. It confirms that the model equations, storage ledgers, forcing
 interpretation, routing options, and boundary conditions behave as expected in
 cases with known references.
 
 It is not a substitute for field calibration, uncertainty analysis, or
 site-specific observational validation.
+
+## Voronoi mesh mode
+
+The Voronoi finite-volume pathway has controlled CPU validation, not
+field-scale validation. GPU execution and India-scale performance are gated,
+and unresolved channels are supported only by the local-inertial solver. A
+case that needs kinematic, diffusive, or full-momentum routing must use fully
+resolved 2D channels until a separate channel-coupling validation is added.
 
 ## Evidence Boundaries
 

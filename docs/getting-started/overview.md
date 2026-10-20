@@ -35,7 +35,9 @@ This sequencing is what links the hydrologic, groundwater, routing, and diagnost
 
 For most users, the clearest reading order is:
 
-1. [Configuration Overview](../configuration/overview) for the public controls and flags.
-2. [Mathematical Overview](../theory/overview) for the governing equations and conceptual structure.
-3. [Validation Overview](../validation/overview) for the evidence supporting each module.
-4. [Examples](../Examples/RainfallRunoff) for reproducible case-study workflows.
+1. [Run from Excel](./excel-workflow) for tested regular and Voronoi spreadsheet workflows.
+2. [Configuration Overview](../configuration/overview) for the public controls and flags.
+3. [Ecosystem Architecture](./ecosystem-architecture) for mesh generation, shared contracts, and repository responsibilities.
+4. [Mathematical Overview](../theory/overview) for the governing equations and conceptual structure.
+5. [Validation Overview](../validation/overview) for the evidence supporting each module.
+6. [Examples](../Examples/RainfallRunoff) for reproducible case-study workflows.

@@ -4,7 +4,7 @@ title: Limitações
 
 # Limitações da validação
 
-O pacote atual corresponde à Fase 1 de verificação e análise de dinâmica controlada. Os testes avaliam as equações, o armazenamento, a interpretação das forçantes, as opções de roteamento e as condições de contorno em casos com referências conhecidas.
+O pacote atual corresponde à validação de verificação e análise de dinâmica controlada. Os testes avaliam as equações, o armazenamento, a interpretação das forçantes, as opções de roteamento e as condições de contorno em casos com referências conhecidas.
 
 Esses testes não substituem calibração de campo, análise de incerteza ou validação observacional específica para cada local.
 

@@ -5,48 +5,36 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # Validation Overview
 
-HydroPol2D validation is organized around controlled Phase 1 benchmarks. The purpose of this phase is to verify that each computational module reproduces the intended equations, storage updates, boundary conditions, and numerical behavior under cases where the expected answer is known.
-
-The full technical report is available here:
+HydroPol2D is evaluated with a validation suite that tests each computational module against a known reference. The suite combines analytical solutions, independent calculations, exact water and mass balances, benchmark hydrographs, and refined numerical references. Each case defines its inputs, expected response, metrics, acceptance thresholds, and outputs.
 
 <div style={{margin: '1rem 0 1.5rem 0'}}>
   <a className="button button--primary button--lg" href={useBaseUrl('/reports/validation_report.pdf')}>
-    Download the Phase 1 Validation Report
+    Download the Validation Report
   </a>
 </div>
 
-## Validation philosophy
+## Evidence
 
-A validation claim is made only when the case has an analytical solution, an independent reference calculation, an exact bookkeeping target, a benchmark hydrograph, or a documented numerical reference. Cases based only on qualitative behavior are treated as diagnostics.
-
-Phase 1 does not claim field calibration or watershed-scale observational validation. Field cases and inverse-modeling exercises are separate evidence levels and should be reported separately.
-
-## Evidence levels
-
-| Evidence level | Meaning |
+| Evidence type | Use in HydroPol2D validation |
 |---|---|
-| Analytical solution | Closed-form or exact mathematical solution is available. |
-| Independent reference | A separate implementation computes the expected result. |
-| Exact bookkeeping | The validation target is conservation, prescribed forcing, or imposed boundary volume. |
-| Benchmark hydrograph | A published or digitized benchmark hydrograph is used as the comparison target. |
-| Numerical reference | A refined or simpler trusted numerical run is used as the reference. |
-| Diagnostic | The case is useful for debugging, but it is not a validation claim. |
+| Analytical solution | Tests equations against a closed-form or exact solution. |
+| Independent reference | Compares the model with a separate calculation of the same process. |
+| Exact bookkeeping | Tests conservation under prescribed forcing or boundary conditions. |
+| Benchmark hydrograph | Compares a routed response with a published or digitized benchmark. |
+| Numerical reference | Compares a coarser or reduced representation with a documented, refined simulation. |
 
-## Shared case context
+Cases that are useful for diagnosis but do not provide an appropriate reference remain visible as diagnostics and are not used as acceptance evidence.
 
-Most Phase 1 hydrologic and groundwater cases use the same synthetic V-tilted catchment context. That shared setup provides a consistent DEM, soil, land-cover, LAI, groundwater, and boundary-condition framework while still allowing each module to be tested against an analytical or independent truth source. Specialized hydrodynamic benchmarks such as Ritter dam-break and the non-breaking wave retain their own geometries because their comparisons require dedicated domains.
+## Shared V-tilted catchment
 
-## Detailed case pages
+Many hydrologic and groundwater cases use the synthetic V-tilted catchment. It provides a common DEM, soil, land-cover, LAI, groundwater, and boundary-condition setting while allowing individual processes to be assessed against their own reference. Dedicated hydrodynamic benchmarks, including the Ritter dam-break and non-breaking wave, use geometries designed for those solutions.
 
-The website now expands the Phase 1 package into module-level case pages:
+## Validation cases
 
 - [Hydrologic Modules](./hydrologic-modules)
 - [Groundwater and Recharge](./groundwater-recharge)
 - [Hydrodynamics and Routing](./hydrodynamics-routing)
+- [Voronoi Mesh Validation](./voronoi-mesh)
 - [Reservoirs, Boundaries, Water Quality, and Risk](./ancillary-modules)
 
-Each page states what was tested, what the truth source was, which figures support the result, and what the case does not validate.
-
-## Current scope
-
-The Phase 1 package covers canopy interception, snow, infiltration, evapotranspiration, groundwater and recharge, hydrodynamic routing, reservoir and boundary-condition behavior, spatial rainfall ingestion, water quality, and human-instability diagnostics. See the [Human Instability](../theory/human-instability) theory page for the implemented mode definitions.
+The [Validation Status](./validation-status) page summarizes the evidence available for each module.

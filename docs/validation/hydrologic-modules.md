@@ -5,7 +5,7 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # Hydrologic Module Validation
 
-This page documents the Phase 1 validation cases for canopy interception, snow, infiltration, and evapotranspiration. These cases were designed to answer a narrow question first: does each module reproduce the intended equations and storage bookkeeping under controlled conditions? The answer is then separated from later questions about field parameters, calibration, and watershed performance.
+This page documents validation cases for canopy interception, snow, infiltration, and evapotranspiration. These cases were designed to answer a narrow question first: does each module reproduce the intended equations and storage bookkeeping under controlled conditions? The answer is then separated from later questions about field parameters, calibration, and watershed performance.
 
 ## Shared setup
 
@@ -15,7 +15,7 @@ Most hydrologic cases use the synthetic V-tilted catchment as a shared spatial c
 
 ### What was tested
 
-Case `P1-CANOPY-001` isolates the canopy storage routine before infiltration, runoff, and groundwater are activated. The left hillslope uses `LAI = 0.5`, the channel strip uses `LAI = 0`, and the right hillslope uses `LAI = 2.0`. A representative `20 m × 20 m` cell is used for volume conversion.
+Case `VAL-CANOPY-001` isolates the canopy storage routine before infiltration, runoff, and groundwater are activated. The left hillslope uses `LAI = 0.5`, the channel strip uses `LAI = 0`, and the right hillslope uses `LAI = 2.0`. A representative `20 m × 20 m` cell is used for volume conversion.
 
 ### Reference and method
 
@@ -32,32 +32,36 @@ HydroPol2D matched the independent reference to round-off precision. The benchma
 | Evaporation RMSE (mm) | `7.31 × 10^-18` | `1.0 × 10^-9` |
 | Maximum mass residual (m³) | `2.22 × 10^-17` | `1.0 × 10^-6` |
 
-This case validates the implemented canopy formulas and storage bookkeeping for the tested conditions. It does not validate field canopy interception behavior because Phase 1 does not use observed throughfall or stemflow data.
+This case validates the implemented canopy formulas and storage bookkeeping for the tested conditions. It does not validate field canopy interception behavior because the does not use observed throughfall or stemflow data.
 
 ## Snow module
 
 ### What was tested
 
-Case `P1-SNOW-001` applies prescribed cold, transitional, and warm forcings to representative V-tilted zones. The goal is to test rain-snow partitioning, snow water equivalent (SWE), snow depth, snow density, melt, sublimation, and snowpack mass closure.
+Case `VAL-SNOW-001` tests the current configurable snow pathway. The suite includes cold, mixed, and warm precipitation; two LULC classes with different snow parameters; zero, SWE-only, depth-only, and paired SWE-depth initial states; timestep refinement; spreadsheet-bypass equivalence; and a coupled V-tilted snow-and-runoff run.
 
 ### Reference and method
 
-`Snow_Model_Function.m` was compared with an independent reference that mirrors the active HydroPol2D formulas. The implemented precipitation partition uses the current linear transition between `4 °C` and `7 °C`. Phase 1 therefore validates the implemented formula, not a configurable threshold formulation.
+The controlled tests use prescribed mass-balance calculations for rain-snow partition, degree-day melt, density-depth conversion, and storage. The full V-tilted case uses normal HydroPol2D preprocessing and local-inertial routing. It applies 16,123.82 m³ of precipitation and checks the complete event ledger, finite snow states, and the snow-module residual.
 
 ### Main result
 
-HydroPol2D matched the independent reference to round-off precision across all reported variables.
+All six checks passed. The timestep test gave a maximum spread of `1.36 × 10^-12 mm` between 5, 15, and 60 minute integrations. The coupled V-tilted event closed at `5.82 × 10^-11 m³`, or `3.61 × 10^-13 %` of event precipitation. The snow module itself closed at `3.55 × 10^-16 m³`.
 
-| Metric | Value | Threshold |
+| Check | Result | Acceptance criterion |
 |---|---:|---:|
-| SWE RMSE (mm) | `1.59 × 10^-14` | `1.0 × 10^-8` |
-| Melt RMSE (mm) | `1.27 × 10^-14` | `1.0 × 10^-8` |
-| Snowfall RMSE (mm) | `7.54 × 10^-15` | `1.0 × 10^-8` |
-| Rainfall RMSE (mm) | `4.19 × 10^-16` | `1.0 × 10^-8` |
-| Sublimation RMSE (mm) | `1.86 × 10^-20` | `1.0 × 10^-8` |
-| Maximum mass residual (m³) | `0.0` | `1.0 × 10^-6` |
+| Configurable partition and storage | 0.0 error | exact prescribed calculation |
+| Initial-state and two-class mapping | 0.0 error | exact conversion and expected-error check |
+| 5, 15, and 60 min refinement | `1.36 × 10^-12 mm` | `< 1 × 10^-6 mm` |
+| V-tilted snow-runoff coupling | `6.39 × 10^-15 m³` | `< 1 × 10^-6 m³` |
+| Spreadsheet-bypass equivalence | 0.0 error | exact parameter-map equivalence |
+| Full V-tilted event closure | `3.61 × 10^-13 %` | `< 0.1 %` |
 
-This validates the implemented snow partition, melt, sublimation, density, depth, and SWE bookkeeping formulas for the tested conditions. It does not validate field snowpack behavior.
+<img src={useBaseUrl('/validation/results/hydrologic/snow-validation-dynamics.png')} alt="Snow partition, snow water equivalent, melt, density, and timestep refinement diagnostics" />
+
+<img src={useBaseUrl('/validation/results/hydrologic/snow-full-vtilted.png')} alt="V-tilted coupled snow depth and surface-water depth time series" />
+
+The tested pathway reads snow parameters from the corresponding row of the LULC parameter table. `Initial_SWE_path` and `Initial_Snow_Depth_path` are optional. The [hydrologic model theory](../theory/hydrologic-model#5-snow-accumulation-melt-and-sublimation) defines the initialization rules and the class-code fallback. These cases validate equations, configuration mapping, and coupled bookkeeping. They do not calibrate a snowpack against field observations.
 
 ## Infiltration
 
@@ -83,25 +87,25 @@ All seven independent infiltration cases passed after the soil properties were r
 
 | Case | Regime | Rain (mm) | Infiltration (mm) | Runoff (mm) | Recharge (mm) | Closure (mm) |
 |---|---|---:|---:|---:|---:|---:|
-| `P1-INFIL-VT-000` | No infiltration | 60.0 | 0.0 | 60.0 | 0.0 | 0.0 |
-| `P1-INFIL-VT-001` | Supply limited | 10.0 | 10.0 | 0.0 | 0.0 | 0.0 |
-| `P1-INFIL-VT-002` | Capacity limited | 120.0 | 34.157 | 85.843 | 0.0 | `1.71 × 10^-13` |
-| `P1-INFIL-VT-003` | Storage limited | 180.0 | 72.5 | 107.5 | 0.0 | 0.0 |
-| `P1-INFIL-VT-004` | Layered percolation | 384.0 | 384.0 | 0.0 | 197.614 | `1.23 × 10^-11` |
-| `P1-INFIL-VT-005` | Shallow groundwater | 150.0 | 75.0 | 75.0 | 22.683 | `-2.84 × 10^-14` |
-| `P1-INFIL-VT-006` | Spatial soil contrast | 120.0 | 77.880 | 42.120 | 0.0 | `7.11 × 10^-15` |
+| `VAL-INFIL-VT-000` | No infiltration | 60.0 | 0.0 | 60.0 | 0.0 | 0.0 |
+| `VAL-INFIL-VT-001` | Supply limited | 10.0 | 10.0 | 0.0 | 0.0 | 0.0 |
+| `VAL-INFIL-VT-002` | Capacity limited | 120.0 | 34.157 | 85.843 | 0.0 | `1.71 × 10^-13` |
+| `VAL-INFIL-VT-003` | Storage limited | 180.0 | 72.5 | 107.5 | 0.0 | 0.0 |
+| `VAL-INFIL-VT-004` | Layered percolation | 384.0 | 384.0 | 0.0 | 197.614 | `1.23 × 10^-11` |
+| `VAL-INFIL-VT-005` | Shallow groundwater | 150.0 | 75.0 | 75.0 | 22.683 | `-2.84 × 10^-14` |
+| `VAL-INFIL-VT-006` | Spatial soil contrast | 120.0 | 77.880 | 42.120 | 0.0 | `7.11 × 10^-15` |
 
 The main interpretation is process-level, not just numerical. The supply-limited case infiltrated the full rainfall input. The capacity-limited case generated excess once rainfall exceeded hydraulic intake capacity. The storage-limited case filled the vadose store and then produced saturation-excess runoff. The layered-percolation case delayed recharge instead of sending water directly to groundwater.
 
-<img src={useBaseUrl('/validation/phase1/hydrologic/VTilted_Infiltration_Hydrograph_Overview.png')} alt="V-tilted infiltration hydrograph overview" />
+<img src={useBaseUrl('/validation/results/hydrologic/VTilted_Infiltration_Hydrograph_Overview.png')} alt="V-tilted infiltration hydrograph overview" />
 
 <p><em>Hydrograph-style infiltration diagnostics. Black lines are rainfall, blue lines are runoff or surface excess, and green lines are recharge.</em></p>
 
-<img src={useBaseUrl('/validation/phase1/hydrologic/VTilted_Infiltration_Rate_Overview.png')} alt="V-tilted infiltration rate overview" />
+<img src={useBaseUrl('/validation/results/hydrologic/VTilted_Infiltration_Rate_Overview.png')} alt="V-tilted infiltration rate overview" />
 
 <p><em>Accepted infiltration rates for the same cases. The figures are reported in mm/h to show how each regime responds through time.</em></p>
 
-This validates the implemented infiltration bookkeeping and layered-soil dynamics for the tested Phase 1 regimes. It does not validate field infiltration parameters, macropore flow, preferential flow, or a calibrated catchment hydrograph.
+This validates the implemented infiltration bookkeeping and layered-soil dynamics for the tested validation regimes. It does not validate field infiltration parameters, macropore flow, preferential flow, or a calibrated catchment hydrograph.
 
 ## Evapotranspiration
 
@@ -127,16 +131,16 @@ All seven cases passed. The reference ET case produced identical mean potential 
 
 | Case | Regime | Mean ETP (mm/day) | Soil ET (mm sum) | Surface E (mm sum) | Residual (m³) |
 |---|---|---:|---:|---:|---:|
-| `P1-ET-VT-000` | Potential ET formula | 5.7669 | -- | -- | 0.0 |
-| `P1-ET-VT-001` | Open-water limit | -- | 0.0 | 27.0 | `-4.44 × 10^-14` |
-| `P1-ET-VT-002` | Soil demand limited | -- | 36.0 | 0.0 | `9.24 × 10^-14` |
-| `P1-ET-VT-003` | Soil storage limited | -- | 27.0 | 0.0 | `-4.44 × 10^-14` |
-| `P1-ET-VT-004` | Partial root access | -- | 45.0 | 0.0 | 0.0 |
-| `P1-ET-VT-005` | Internal ETP mode | -- | 18.0 | 12.0 | `3.55 × 10^-15` |
-| `P1-ET-VT-006` | Masks and dry cells | -- | 12.0 | 0.0 | `4.44 × 10^-15` |
+| `VAL-ET-VT-000` | Potential ET formula | 5.7669 | -- | -- | 0.0 |
+| `VAL-ET-VT-001` | Open-water limit | -- | 0.0 | 27.0 | `-4.44 × 10^-14` |
+| `VAL-ET-VT-002` | Soil demand limited | -- | 36.0 | 0.0 | `9.24 × 10^-14` |
+| `VAL-ET-VT-003` | Soil storage limited | -- | 27.0 | 0.0 | `-4.44 × 10^-14` |
+| `VAL-ET-VT-004` | Partial root access | -- | 45.0 | 0.0 | 0.0 |
+| `VAL-ET-VT-005` | Internal ETP mode | -- | 18.0 | 12.0 | `3.55 × 10^-15` |
+| `VAL-ET-VT-006` | Masks and dry cells | -- | 12.0 | 0.0 | `4.44 × 10^-15` |
 
-<img src={useBaseUrl('/validation/phase1/hydrologic/VTilted_ET_Overview.png')} alt="V-tilted evapotranspiration validation overview" />
+<img src={useBaseUrl('/validation/results/hydrologic/VTilted_ET_Overview.png')} alt="V-tilted evapotranspiration validation overview" />
 
 <p><em>Potential ET, actual soil ET, open-water evaporation, storage before and after ET, and absolute validation errors for the V-tilted ET cases.</em></p>
 
-These tests validate the implemented ET formula pathway and the actual ET extraction bookkeeping for controlled Phase 1 regimes. They do not validate field-scale ET, crop coefficients, or seasonal water-balance calibration.
+These tests validate the implemented ET formula pathway and the actual ET extraction bookkeeping for controlled regimes. They do not validate field-scale ET, crop coefficients, or seasonal water-balance calibration.

@@ -39,7 +39,7 @@ HydroPol2D é controlado por meio de sinalizadores binários e categóricos defi
 | $\mathrm{groundwater\_courant}$ | Fator de segurança usado no limite explícito do intervalo de tempo das águas subterrâneas. |
 | $\mathrm{flag\_capillary\_rise}$ | Permite a ascensão capilar em camadas de águas subterrâneas rasas para o armazenamento vadoso. |
 | $\mathrm{flag\_baseflow}$ | Ativa o roteamento lateral de águas subterrâneas 2D Boussinesq. |
-| $\mathrm{flag\_snow\_modeling}$ | Ativa o acúmulo de neve, derretimento e sublimação. |
+| $\mathrm{flag\_snow\_modeling}$ | Ativa acúmulo, derretimento, sublimação, densidade e profundidade de neve por LULC. Requer forçante meteorológica interna: `flag_ETP = 1` e `flag_input_ETP_map = 0`. |
 | $\mathrm{flag\_waterquality}$ | Ativa o transporte com qualidade da água. |
 | $\mathrm{flag\_wq\_model}$ | Seleciona o modelo de acúmulo/lavagem de poluentes. |
 | $\mathrm{flag\_human\_instability}$ | Ativa diagnósticos de instabilidade humana. Os modos implementados documentados publicamente são `1` e `3`; o modo `2` não está implementado. |
@@ -65,10 +65,12 @@ HydroPol2D é controlado por meio de sinalizadores binários e categóricos defi
 | $\mathrm{flag\_full\_momentum}$ | Ativa o solucionador de impulso total para águas rasas. Use como uma alternativa às outras famílias de roteamento principais, e não em combinação com elas. |
 | $\mathrm{flag\_diffusive}$ | Ativa o roteamento difusivo D4 impulsionado pela inclinação da superfície da água. |
 | $\mathrm{flag\_kinematic}$ | Ativa o roteamento cinemático D4 orientado pela inclinação do leito e pela profundidade do doador. |
-| $\mathrm{flag\_PHTOKEN0XYZ}$ | Ativa o roteamento do Cellular Automata. |
+| $\mathrm{flag\_CA}$ | Ativa o roteamento do Cellular Automata. |
 | $\mathrm{flag\_D8}$ | Ativa um caminho de roteamento D8 secundário. Isto deve ser tratado como um escopo limitado, em vez de uma família de teorias paralelas completas. |
-| $\mathrm{flag\_subgrid}$ | Ativa a representação retangular de canal de Neal (2012) quando usada com o roteamento inercial local e `flag_overbanks = 1`. |
-| $\mathrm{flag\_overbanks}$ | Separa a capacidade de transporte do canal e da planície e aplica a transição de armazenamento na altura das margens no modo de Neal (2012). |
+| $\mathrm{flag\_neal\_channel}$ | Ativa a representação retangular de canal embutido de Neal (2012) em grade estruturada. Requer roteamento inercial local. |
+| $\mathrm{flag\_structured\_lookup\_subgrid}$ | Ativa tabelas dependentes do nível para células e faces em grade estruturada. Este modo permanece condicionado à paridade MATLAB-Python. |
+| $\mathrm{flag\_voronoi\_subgrid}$ | Ativa as tabelas de células e faces do HydroBathyDEM em uma malha Voronoi. |
+| $\mathrm{flag\_voronoi}$ | Seleciona a topologia de malha Voronoi. É independente de `flag_voronoi_subgrid`, que seleciona a representação hidráulica. |
 | $\mathrm{flag\_numerical\_scheme}$ | Seleciona a variante do esquema inercial local: `1` Bates, `2` contra o vento, `3` centralizado. Aplica-se à família inercial, não ao roteamento de impulso total, difusivo, cinemático ou CA. |
 | $\mathrm{flag\_outlet\_type}$ | Tratamento de saída: fluxo normal `1`, fluxo crítico `2`. |
 | $\mathrm{flag\_adaptive\_timestepping}$ | Seleciona controle de passo de tempo adaptativo. |
@@ -82,8 +84,10 @@ O modo de canal subgrade aceito segue [Neal et al. (2012)](https://doi.org/10.10
 | Bandeira | Valor necessário |
 |---|---:|
 | `flag_inertial` | `1` |
-| `flag_subgrid` | `1` |
-| `flag_overbanks` | `1` |
+| `flag_neal_channel` | `1` |
+| `flag_structured_lookup_subgrid` | `0` |
+| `flag_voronoi_subgrid` | `0` |
+| `flag_voronoi` | `0` |
 | `flag_full_momentum` | `0` |
 | `flag_diffusive` | `0` |
 | `flag_kinematic` | `0` |
@@ -121,9 +125,9 @@ O solver calcula separadamente as vazões do canal e da planície em cada face o
 | $\mathrm{flag\_resample}$ | Ativa a reamostragem raster para uma resolução alvo. |
 | $\mathrm{flag\_smoothening}$ | Aplica suavização DEM. |
 | $\mathrm{flag\_trunk}$ | Suaviza apenas o tronco principal do rio. |
-| $\mathrm{flag\_fill\_PHTOKEN0XYZ}$ | Preenche os coletores DEM para obter consistência hidrológica. |
+| $\mathrm{flag\_fill\_DEM}$ | Preenche as depressões do DEM para obter consistência hidrológica. |
 | $\mathrm{flag\_smooth\_cells}$ | Aplica suavização de terreno em nível de célula. |
-| $\mathrm{flag\_reduce\_PHTOKEN0XYZ}$ | Reduz a elevação do DEM nas células do rio para levar em conta a batimetria do canal. |
+| $\mathrm{flag\_reduce\_DEM}$ | Reduz a elevação do DEM nas células do rio para levar em conta a batimetria do canal. |
 
 ---
 
@@ -140,7 +144,12 @@ O solver calcula separadamente as vazões do canal e da planície em cada face o
 
 ## Notas
 
-- Somente uma família de roteamento principal deve estar ativa por vez: `flag_full_momentum`, `flag_inertial`, `flag_diffusive`, `flag_kinematic` ou `flag_PHTOKEN0XYZ`.
+- Somente uma família de roteamento principal deve estar ativa por vez: `flag_full_momentum`, `flag_inertial`, `flag_diffusive`, `flag_kinematic` ou `flag_CA`.
+- Selecione no máximo uma formulação subgrid: canal Neal, lookup estruturado ou lookup Voronoi.
+- O modo de canal de Neal (2012) requer roteamento inercial local e `flag_neal_channel = 1`.
+- `flag_voronoi = 1` seleciona a topologia; `flag_voronoi_subgrid = 1` também ativa a hidráulica lookup Voronoi.
+- `flag_subgrid` e `flag_overbanks` antigos são aceitos apenas pela camada de migração e geram aviso explícito.
 - `flag_D8` deve ser tratado como escopo secundário/limitado, e não como outra família de roteamento pronta para relatório.
 - A programação assíncrona das águas subterrâneas e a ascensão capilar são comportamentos de configuração pública, e não detalhes internos ocultos.
+- Os parâmetros de neve são definidos por classe na tabela LULC. `Initial_SWE_path` e `Initial_Snow_Depth_path` são rasters iniciais opcionais.
 - O modo de instabilidade humana `2` não está implementado e não deve ser apresentado como um método público disponível.

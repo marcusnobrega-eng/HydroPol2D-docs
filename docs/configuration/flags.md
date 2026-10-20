@@ -40,7 +40,7 @@ HydroPol2D is controlled through binary and categorical flags defined in `Genera
 | $\mathrm{groundwater\_courant}$ | Safety factor used in the explicit groundwater timestep cap. |
 | $\mathrm{flag\_capillary\_rise}$ | Enables layered capillary rise from shallow groundwater into vadose storage. |
 | $\mathrm{flag\_baseflow}$ | Activates 2D Boussinesq lateral groundwater routing. |
-| $\mathrm{flag\_snow\_modeling}$ | Activates snow accumulation, melt, and sublimation. |
+| $\mathrm{flag\_snow\_modeling}$ | Activates per-LULC snow accumulation, melt, sublimation, density, and depth. Requires internal meteorological forcing: `flag_ETP = 1` and `flag_input_ETP_map = 0`. |
 | $\mathrm{flag\_waterquality}$ | Activates water-quality transport. |
 | $\mathrm{flag\_wq\_model}$ | Selects the pollutant build-up/washoff model. |
 | $\mathrm{flag\_human\_instability}$ | Activates human-instability diagnostics. Publicly documented implemented modes are `1` and `3`; mode `2` is not implemented. |
@@ -68,8 +68,10 @@ HydroPol2D is controlled through binary and categorical flags defined in `Genera
 | $\mathrm{flag\_kinematic}$ | Activates kinematic D4 routing driven by bed slope and donor depth. |
 | $\mathrm{flag\_CA}$ | Activates Cellular Automata routing. |
 | $\mathrm{flag\_D8}$ | Activates a secondary D8 routing pathway. This should be treated as limited-scope rather than a full parallel theory family. |
-| $\mathrm{flag\_subgrid}$ | Activates the Neal (2012) rectangular channel representation when used with local-inertial routing and `flag_overbanks = 1`. |
-| $\mathrm{flag\_overbanks}$ | Separates channel and floodplain conveyance and applies the bankfull storage transition in Neal (2012) mode. |
+| $\mathrm{flag\_neal\_channel}$ | Activates the Neal (2012) rectangular embedded-channel representation on a structured grid. Requires local-inertial routing. |
+| $\mathrm{flag\_structured\_lookup\_subgrid}$ | Activates level-dependent cell and face lookup tables on a structured grid. This mode remains gated until MATLAB-Python parity is complete. |
+| $\mathrm{flag\_voronoi\_subgrid}$ | Activates HydroBathyDEM level-dependent cell and face tables on a Voronoi mesh. |
+| $\mathrm{flag\_voronoi}$ | Selects Voronoi mesh topology. It is independent from `flag_voronoi_subgrid`, which selects a hydraulic representation. |
 | $\mathrm{flag\_numerical\_scheme}$ | Selects the local inertial scheme variant: `1` Bates, `2` upwind, `3` centered. Applies to the inertial family, not to full momentum, diffusive, kinematic, or CA routing. |
 | $\mathrm{flag\_outlet\_type}$ | Outlet treatment: `1` normal flow, `2` critical flow. |
 | $\mathrm{flag\_adaptive\_timestepping}$ | Selects adaptive time-step control. |
@@ -83,8 +85,10 @@ The supported channel-subgrid mode follows [Neal et al. (2012)](https://doi.org/
 | Flag | Required value |
 |---|---:|
 | `flag_inertial` | `1` |
-| `flag_subgrid` | `1` |
-| `flag_overbanks` | `1` |
+| `flag_neal_channel` | `1` |
+| `flag_structured_lookup_subgrid` | `0` |
+| `flag_voronoi_subgrid` | `0` |
+| `flag_voronoi` | `0` |
 | `flag_full_momentum` | `0` |
 | `flag_diffusive` | `0` |
 | `flag_kinematic` | `0` |
@@ -142,7 +146,11 @@ The solver computes channel and floodplain discharge separately on each orthogon
 ## Notes
 
 - Only one major routing family should be active at a time: `flag_full_momentum`, `flag_inertial`, `flag_diffusive`, `flag_kinematic`, or `flag_CA`.
-- The Neal (2012) channel-subgrid mode requires local-inertial routing, `flag_subgrid = 1`, and `flag_overbanks = 1`.
+- Select at most one subgrid formulation: Neal channel, structured lookup, or Voronoi lookup.
+- The Neal (2012) channel mode requires local-inertial routing and `flag_neal_channel = 1`.
+- `flag_voronoi = 1` selects mesh topology; `flag_voronoi_subgrid = 1` additionally enables Voronoi lookup hydraulics.
+- Legacy `flag_subgrid` and `flag_overbanks` inputs are accepted only by the migration layer and produce an explicit warning.
 - `flag_D8` should be treated as secondary/limited-scope rather than as another report-ready routing family.
 - Groundwater async scheduling and capillary rise are public configuration behaviors, not hidden internal details.
+- Snow parameters are entered in the LULC parameter table. `Initial_SWE_path` and `Initial_Snow_Depth_path` are optional initial-state rasters.
 - Human-instability mode `2` is not implemented and should not be presented as an available public method.

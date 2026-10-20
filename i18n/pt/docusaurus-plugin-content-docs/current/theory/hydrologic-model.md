@@ -645,127 +645,29 @@ A expressão escalar acima é, portanto, o resumo conceitual de uma atualizaçã
 
 ## 5. Acúmulo, derretimento e sublimação de neve
 
-Quando a modelagem de neve está ativa, a precipitação é dividida em precipitação e queda de neve, e a evolução da camada de neve é ​​explicitamente rastreada por meio do equivalente de água da neve (SWE), densidade e profundidade.
----
+Quando a modelagem de neve está ativa, o HydroPol2D rastreia o equivalente de água da neve (SWE), a densidade e a profundidade física da neve em cada célula ativa. Os parâmetros são lidos da tabela de parâmetros LULC e atribuídos pelo `LULC_Index`. A forçante meteorológica interna fornece temperatura média do ar, temperatura mínima e velocidade do vento. Portanto, simulações de neve exigem `flag_ETP = 1`, `flag_input_ETP_map = 0` e uma planilha meteorológica que cubra todo o período simulado.
 
 ### 5.1 Particionamento chuva-neve
 
-A implementação atual particiona a precipitação usando uma rampa de temperatura linear entre limites fixos de $4\,^{\circ}\mathrm{C}$ e $7\,^{\circ}\mathrm{C}$:
-$$
-f_{\mathrm{snow}}
-=
-\begin{cases}
-1, & T_{\mathrm{air}} \le 4 \\
-\dfrac{7 - T_{\mathrm{air}}}{7 - 4}, & 4 < T_{\mathrm{air}} < 7 \\
-0, & T_{\mathrm{air}} \ge 7
-\end{cases}
-$$
-As partições de queda de neve e chuva são então
-$$
-P_{\mathrm{snow}} = P_{\mathrm{gross}} f_{\mathrm{snow}}
-$$
-$$
-P_{\mathrm{rain}} = P_{\mathrm{gross}} - P_{\mathrm{snow}}
-$$
-onde $f_{\mathrm{snow}}$ é a fração de neve dependente da temperatura $[-]$.
----
+Cada classe LULC define uma temperatura de neve completa (`T_Snow_All_C`) e uma temperatura de chuva completa (`T_Rain_All_C`), em graus Celsius. Abaixo do primeiro limite toda a precipitação é neve; acima do segundo, toda é chuva; entre os dois limites, a fração de neve varia linearmente. Os limites devem satisfazer `T_Rain_All_C >= T_Snow_All_C`.
 
-### 5.2 Equivalente de neve e água
+### 5.2 Balanço de SWE e derretimento
 
-A evolução do equivalente água da neve é
-$$
-\mathrm{SWE}_t
-=
-\mathrm{SWE}_{t-1}+
-P_{\mathrm{snow}}-
-M_{\mathrm{snow}}-
-E_{\mathrm{s}}
-$$
-onde:
-- $\mathrm{SWE}$ é equivalente a água da neve $[\mathrm{L}]$
-- $E_{\mathrm{s}}$ é sublimação $[\mathrm{L}]$
+A atualização conservativa é `SWE(t) = SWE(t-1) + P_snow - M_snow - E_s`. O derretimento combina graus-dia e radiação líquida positiva, limitado pela SWE disponível. O fator graus-dia, a sublimação e a compactação são taxas e são multiplicados pelo passo de tempo atual. Assim, os resultados permanecem consistentes quando o passo de roteamento muda.
 
----
+### 5.3 Densidade, profundidade e sublimação
 
-### 5.3 Derretimento da neve
+A densidade é uma variável de estado. Neve nova usa a densidade inicial da sua classe LULC; neve antiga e nova são misturadas pela SWE antes da compactação. A densidade permanece entre os limites inicial e máximo da classe. A profundidade física é calculada de forma consistente a partir de SWE e densidade. A sublimação usa velocidade do vento e gradiente de pressão de vapor, e não pode exceder a neve disponível.
 
-O derretimento da neve é ​​​​calculado como um grau-dia mais o termo de energia radiativa:
-$$
-M_{\mathrm{snow}}
-=
-\min\!\left(
-\mathrm{SWE}_t,\,
-\max
-\left(
-\mathrm{DDF}\,T_{\mathrm{air}}+
-\frac{(1-\alpha_{\mathrm{snow}})\,Q_{\mathrm{net}}}{334},
-0
-\right)
-\right)
-$$
-onde:
-- $\mathrm{DDF}$ é o fator graus-dia $[\mathrm{L}\,\Theta^{-1}\,\mathrm{T}^{-1}]$
-- $\alpha_{\mathrm{snow}}$ é o albedo da neve $[-]$ que pode ser assumido como constante ou inserido como entrada espacial no `General_Data.xlsx`.
-- $Q_{\mathrm{net}}$ é o termo líquido de radiação de ondas curtas usado pela rotina atual $[\mathrm{E}\,\mathrm{L}^{-2}\,\mathrm{T}^{-1}]$
+### 5.4 Estados iniciais e códigos de classe
 
-Os parâmetros de neve atuais devem ser editados na função `PHTOKEN0XYZ_Preprocessing.m`.
----
+`Initial_SWE_path` e `Initial_Snow_Depth_path` são mapas opcionais. Sem mapas, a célula começa sem neve. Com apenas um mapa, o outro estado é calculado com a densidade inicial da classe. Com ambos, o modelo calcula a densidade implícita e rejeita pares positivos incompatíveis ou valores negativos. Nodata indica que não há condição inicial especificada.
 
-### 5.4 Densidade e profundidade da neve
+Se um código válido de LULC, solo ou neve não existir na tabela correspondente, o modelo usa a média ponderada pela área das propriedades das classes mapeadas. O arquivo `Input_Class_Code_Audit.csv` registra esse uso. Índices duplicados, não numéricos ou uma tabela sem classes mapeadas continuam sendo erros de entrada.
 
-A densidade da neve evolui conforme
-$$
-\rho_{\mathrm{snow}}^{\,\mathrm{new}}
-=
-\rho_{\mathrm{snow}}^{\,\mathrm{old}}+
-k_t T_{\mathrm{air}}+
-k_{\mathrm{swe}} \mathrm{SWE}+
-k_D H_{\mathrm{snow}}
-$$
-sujeito a
-$$
-\rho_{\mathrm{snow}} \le \rho_{\mathrm{max}}
-$$
-A profundidade da neve é
-$$
-H_{\mathrm{snow}} = \frac{\mathrm{SWE}}{\rho_{\mathrm{snow}}}
-$$
----
+### 5.5 Atualização da água superficial
 
-### 5.5 Sublimação
-
-$$
-E_{\mathrm{s}}
-=
-\min\!\left(
-\mathrm{SWE}_t,\,
-\max\!\left(
-C_e\,u\,(q_s - q_a)\,\mathrm{SWE}_t,\,
-0
-\right)
-\right)
-$$
-onde:
-- $C_e$ é o coeficiente de sublimação $[-]$
-- $u$ é a velocidade do vento $[\mathrm{L}\,\mathrm{T}^{-1}]$, considerada como a velocidade do vento na altura de $2\,\mathrm{m}$.
-- $q_s$ é a umidade específica de saturação na superfície da neve $[-]$
-- $q_a$ é a umidade específica do ar ambiente $[-]$
-
-Na implementação atual, $q_a$ é estimado internamente a partir dos campos de temperatura disponíveis, em vez de lido como uma forçante de umidade totalmente independente, e o fluxo de sublimação é cortado para permanecer não negativo e não exceder o equivalente de água da neve disponível.---
-
-### 5.6 Atualização das águas superficiais sob condições de neve
-
-$$
-d_t = d_p + M_{\mathrm{snow}} + P_{\mathrm{rain}}
-$$
-de outra forma
-$$
-d_t = d_p + P_{\mathrm{eff}}
-$$
-onde:
-- $d_t$ é a profundidade da água superficial no intervalo de tempo atual $[\mathrm{L}]$
-- $d_p$ é a profundidade da água superficial na etapa de tempo anterior $[\mathrm{L}]$
----
+A chuva líquida e o derretimento são transferidos para a água superficial no mesmo passo: `d_t = d_p + M_snow + P_rain`. Quando a modelagem de neve está desativada, a atualização usa a precipitação efetiva habitual.
 
 ## 6. Armazenamento Vadose, recarga e feedback das águas subterrâneas
 

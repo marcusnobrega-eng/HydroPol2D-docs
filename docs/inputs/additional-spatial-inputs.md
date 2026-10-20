@@ -28,6 +28,8 @@ Beyond the core DEM, LULC, and soil rasters, HydroPol2D can ingest a wider set o
 |---|---|---|---|
 | Initial surface water depth | `Warmup_Depth_path` | When `flag_warmup = 1` and a warmup-depth raster is provided | Raster is read as initial ponded depth in meters and converted internally to millimeters. |
 | Initial soil storage | `Initial_Soil_Moisture_path` | When `flag_warmup = 1` and an initial soil raster is provided | Despite the legacy name, the current code interprets this raster as **initial active soil storage above residual water content** in millimeters, not raw volumetric $\theta$. |
+| Initial snow water equivalent | `Initial_SWE_path` | When snow modeling is active and a SWE raster is provided | SWE in millimeters of water equivalent. Nodata means no initial snow is specified at that cell. |
+| Initial snow depth | `Initial_Snow_Depth_path` | When snow modeling is active and a snow-depth raster is provided | Physical snow depth in millimeters. Nodata means no initial snow is specified at that cell. |
 | Initial pollutant buildup | `Initial_Buildup_path` | When water quality uses an initial buildup raster | Used to initialize pollutant mass/buildup states. |
 
 ---
@@ -42,6 +44,19 @@ If `GW_table_path` is supplied, HydroPol2D uses that raster as the initial groun
 - and locally backfilled only where the raster has missing values.
 
 If no groundwater-table raster is provided, the model falls back to a simple default initial head slightly above bedrock. This means `GW_table_path` is a true optional initial-condition input, not a required groundwater raster.
+
+---
+
+## Initial Snow Inputs
+
+Snow parameters are columns of the LULC parameter table and are assigned by `LULC_Index`. Initial snow rasters are optional:
+
+1. with neither raster, each cell begins with zero SWE and zero snow depth;
+2. with SWE only, snow depth is derived from the LULC-specific fresh-snow density;
+3. with snow depth only, SWE is derived from that density;
+4. with both rasters, the model derives density from the pair and checks it against the class-specific density limit.
+
+Negative SWE or depth is rejected. A positive value in one raster and zero in the other is inconsistent and is rejected. The [parameter-table page](./parameter-tables#snow-parameter-table) lists the snow parameters and units.
 
 ---
 
@@ -91,7 +106,7 @@ The easiest way to think about the input surface is:
 
 1. DEM, LULC, and SOIL define the base domain.
 2. DTB, GW table, LAI, albedo, and impervious fraction refine that base domain.
-3. Warmup, initial soil storage, and initial buildup set the starting state.
+3. Warmup, initial soil storage, initial snow, and initial buildup set the starting state.
 4. Water-quality rasters support optional specialized modules.
 
 That is the current implemented input story the docs should follow.

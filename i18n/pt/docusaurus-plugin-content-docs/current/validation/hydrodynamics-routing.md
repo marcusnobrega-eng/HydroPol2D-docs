@@ -5,7 +5,7 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # Validação da hidrodinâmica e do roteamento
 
-A validação hidrodinâmica da Fase 1 foi organizada por família de roteamento. A sequência avaliou o modelo de momento completo, os métodos inercial local e autômatos celulares e, por fim, os modelos cinemático e difusivo corrigidos. Os testes verificam hidrogramas, conservação, simetria, condições de contorno e o comportamento esperado de cada conjunto de equações.
+A validação hidrodinâmica da validação foi organizada por família de roteamento. A sequência avaliou o modelo de momento completo, os métodos inercial local e autômatos celulares e, por fim, os modelos cinemático e difusivo corrigidos. Os testes verificam hidrogramas, conservação, simetria, condições de contorno e o comportamento esperado de cada conjunto de equações.
 
 ## Hidrodinâmica com momento completo
 
@@ -21,38 +21,38 @@ Foram usados cinco casos: hidrograma em plano inclinado, simetria e conservaçã
 
 O plano inclinado reproduziu o limite de onda cinemática. A bacia em V conservou massa até a precisão numérica e preservou a simetria bilateral. O caso de Ritter verificou um escoamento descontínuo, e a onda sem ruptura avaliou uma perturbação móvel suave.
 
-<img src={useBaseUrl('/validation/phase1/hydrodynamics/P1_HYDRO_FM_PLANE_001.png')} alt="Validação do momento completo no plano inclinado" />
+<img src={useBaseUrl('/validation/results/hydrodynamics/VAL_HYDRO_FM_PLANE_001.png')} alt="Validação do momento completo no plano inclinado" />
 
-<img src={useBaseUrl('/validation/phase1/hydrodynamics/P1_HYDRO_FM_VTILT_001.png')} alt="Validação do momento completo na bacia em V" />
+<img src={useBaseUrl('/validation/results/hydrodynamics/VAL_HYDRO_FM_VTILT_001.png')} alt="Validação do momento completo na bacia em V" />
 
-<img src={useBaseUrl('/validation/phase1/hydrodynamics/P1_HYDRO_FM_RITTER_001.png')} alt="Validação de Ritter com momento completo" />
+<img src={useBaseUrl('/validation/results/hydrodynamics/VAL_HYDRO_FM_RITTER_001.png')} alt="Validação de Ritter com momento completo" />
 
-<img src={useBaseUrl('/validation/phase1/hydrodynamics/P1_HYDRO_FM_NBW_001_PROFILES.png')} alt="Perfis da onda sem ruptura com momento completo" />
+<img src={useBaseUrl('/validation/results/hydrodynamics/VAL_HYDRO_FM_NBW_001_PROFILES.png')} alt="Perfis da onda sem ruptura com momento completo" />
 
 ## Modelo inercial local e autômatos celulares
 
-O modelo inercial local aproxima as equações de águas rasas. O método de autômatos celulares redistribui escoamento e armazenamento, mas não é um solver de momento. O modelo inercial local passou os testes de plano inclinado, bacia em V e contorno com nível prescrito. A comparação de Ritter permanece diagnóstica. Os autômatos celulares passaram os testes de conservação, simetria e contabilidade nas condições de contorno.
+O modelo inercial local aproxima as equações de águas rasas. O método de autômatos celulares redistribui escoamento e armazenamento, mas não é um solver de momento. O modelo inercial local passou os testes de plano inclinado, bacia em V e contorno com nível prescrito. Ritter é um diagnóstico limitado pelo método, pois a formulação não contém todos os termos de momento. Os autômatos celulares passaram os testes de conservação, simetria e contabilidade nas condições de contorno; Ritter não é um benchmark de aceitação para esse método.
 
 | Método | Caso | RMSE | L2 relativo | NSE | Erro de massa (%) | Estado |
 |---|---|---:|---:|---:|---:|---|
 | Inercial local | Plano | 0,0169 | 0,0200 | 0,9984 | `7,47 × 10^-12` | passou |
 | Inercial local | Bacia em V | 0,0000 | -- | -- | `3,66 × 10^-12` | passou |
-| Inercial local | Ritter | 0,1823 | 0,3838 | 0,9552 | `5,05 × 10^-14` | diagnóstico não aprovado |
+| Inercial local | Ritter | 0,1823 | 0,3838 | 0,9552 | `5,05 × 10^-14` | diagnóstico limitado pelo método |
 | Autômatos celulares | Plano | 0,0172 | 0,0204 | 0,9983 | `7,69 × 10^-12` | passou |
 | Autômatos celulares | Bacia em V | 0,0000 | -- | -- | `4,04 × 10^-12` | passou |
-| Autômatos celulares | Ritter | 0,1592 | 0,2957 | 0,9875 | `7,58 × 10^-14` | diagnóstico |
+| Autômatos celulares | Ritter | 0,1592 | 0,2957 | 0,9875 | `7,58 × 10^-14` | não aplicável à aceitação de Ritter |
 
 <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem'}}>
-  <img src={useBaseUrl('/validation/phase1/hydrodynamics/P1_HYDRO_LI_PLANE_001.png')} alt="Modelo inercial local no plano inclinado" />
-  <img src={useBaseUrl('/validation/phase1/hydrodynamics/P1_HYDRO_CA_PLANE_001.png')} alt="Autômatos celulares no plano inclinado" />
+  <img src={useBaseUrl('/validation/results/hydrodynamics/VAL_HYDRO_LI_PLANE_001.png')} alt="Modelo inercial local no plano inclinado" />
+  <img src={useBaseUrl('/validation/results/hydrodynamics/VAL_HYDRO_CA_PLANE_001.png')} alt="Autômatos celulares no plano inclinado" />
 </div>
 
 <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem'}}>
-  <img src={useBaseUrl('/validation/phase1/hydrodynamics/P1_HYDRO_LI_RITTER_001.png')} alt="Diagnóstico de Ritter para o modelo inercial local" />
-  <img src={useBaseUrl('/validation/phase1/hydrodynamics/P1_HYDRO_CA_RITTER_001.png')} alt="Diagnóstico de Ritter para autômatos celulares" />
+  <img src={useBaseUrl('/validation/results/hydrodynamics/VAL_HYDRO_LI_RITTER_001.png')} alt="Diagnóstico de Ritter para o modelo inercial local" />
+  <img src={useBaseUrl('/validation/results/hydrodynamics/VAL_HYDRO_CA_RITTER_001.png')} alt="Diagnóstico de Ritter para autômatos celulares" />
 </div>
 
-O resultado de Ritter para o modelo inercial local identifica um limite do método. Ele não constitui validação para ruptura de barragem em leito seco.
+Apenas o solver de momento completo é avaliado pelos critérios de aceitação de Ritter. Os métodos reduzidos são avaliados pelos seus benchmarks de escoamento gradual, conservação, simetria e condições de contorno.
 
 ## Hidrograma canônico da bacia em V
 
@@ -68,31 +68,31 @@ Os cinco métodos reproduziram o formato do hidrograma entre `0 min` e `180 min`
 | Cinemático | 0,249 | 0,9817 | 0,020 | 3,23 | -0,0181 |
 | Difusivo | 0,255 | 0,9809 | 0,063 | 3,20 | -0,0181 |
 
-<img src={useBaseUrl('/validation/phase1/hydrodynamics/P1_HYDRO_VTILT_ROUTING_HYDROGRAPH.png')} alt="Hidrograma canônico da bacia em V" />
+<img src={useBaseUrl('/validation/results/hydrodynamics/VAL_HYDRO_VTILT_ROUTING_HYDROGRAPH.png')} alt="Hidrograma canônico da bacia em V" />
 
-<img src={useBaseUrl('/validation/phase1/hydrodynamics/P1_HYDRO_VTILT_ROUTING_VOLUME.png')} alt="Volume acumulado na saída da bacia em V" />
+<img src={useBaseUrl('/validation/results/hydrodynamics/VAL_HYDRO_VTILT_ROUTING_VOLUME.png')} alt="Volume acumulado na saída da bacia em V" />
 
 ## Roteamento cinemático e difusivo corrigido
 
-Os modelos cinemático e difusivo usam um núcleo conservativo comum para os fluxos nas faces D4. Ambos passaram os testes de plano inclinado, conservação na bacia em V e contorno com nível prescrito. O caso difusivo de Ritter não passou, como esperado para uma aproximação de onda difusiva aplicada a uma descontinuidade sobre leito seco.
+Os modelos cinemático e difusivo usam um núcleo conservativo comum para os fluxos nas faces D4. Ambos passaram os testes de plano inclinado, conservação na bacia em V e contorno com nível prescrito. Seus perfis de Ritter permanecem visíveis para comparação, mas uma ruptura de barragem em leito seco não é um benchmark de aceitação para métodos de momento reduzido.
 
 | Método | Caso | RMSE | L2 relativo | NSE | Erro de massa (%) | Estado |
 |---|---|---:|---:|---:|---:|---|
 | Cinemático | Plano | 0,0156 | 0,0184 | 0,9986 | `7,66 × 10^-12` | passou |
 | Cinemático | Bacia em V | 0,0000 | -- | -- | `4,18 × 10^-12` | passou |
-| Cinemático | Ritter | 0,2408 | 0,5069 | 0,9245 | 0,0000 | diagnóstico |
+| Cinemático | Ritter | 0,2408 | 0,5069 | 0,9245 | 0,0000 | não aplicável à aceitação de Ritter |
 | Difusivo | Plano | 0,0172 | 0,0203 | 0,9984 | `7,75 × 10^-12` | passou |
 | Difusivo | Bacia em V | 0,0000 | -- | -- | `3,73 × 10^-12` | passou |
-| Difusivo | Ritter | 0,5670 | 1,1151 | -0,0803 | `1,53 × 10^-12` | diagnóstico não aprovado |
+| Difusivo | Ritter | 0,5670 | 1,1151 | -0,0803 | `1,53 × 10^-12` | não aplicável à aceitação de Ritter |
 
 <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem'}}>
-  <img src={useBaseUrl('/validation/phase1/hydrodynamics/P1_HYDRO_KIN_PLANE_001.png')} alt="Validação do modelo cinemático corrigido" />
-  <img src={useBaseUrl('/validation/phase1/hydrodynamics/P1_HYDRO_DIFF_PLANE_001.png')} alt="Validação do modelo difusivo corrigido" />
+  <img src={useBaseUrl('/validation/results/hydrodynamics/VAL_HYDRO_KIN_PLANE_001.png')} alt="Validação do modelo cinemático corrigido" />
+  <img src={useBaseUrl('/validation/results/hydrodynamics/VAL_HYDRO_DIFF_PLANE_001.png')} alt="Validação do modelo difusivo corrigido" />
 </div>
 
 ## Interpretação admitida pelos testes
 
-A Fase 1 sustenta a implementação atual de momento completo nos testes analíticos e de balanço listados acima. Ela também sustenta os métodos inercial local, autômatos celulares, cinemático e difusivo nos casos controlados apresentados. Os resultados de Ritter não devem ser interpretados como validação dos modelos inercial local e difusivo para ruptura de barragem em leito seco.
+A validação sustenta a implementação atual de momento completo nos testes analíticos e de balanço listados acima. Ela também sustenta os métodos inercial local, autômatos celulares, cinemático e difusivo nos casos controlados apresentados. Apenas o momento completo é avaliado contra a solução de Ritter.
 
 ## Modelo subgrade de Neal (2012)
 

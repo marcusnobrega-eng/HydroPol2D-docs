@@ -39,7 +39,7 @@ HydroPol2D se controla mediante indicadores binarios y categóricos definidos en
 | $\mathrm{groundwater\_courant}$ | Factor de seguridad utilizado en el límite temporal explícito del agua subterránea. |
 | $\mathrm{flag\_capillary\_rise}$ | Permite el ascenso capilar en capas desde aguas subterráneas poco profundas hasta el almacenamiento vadoso. |
 | $\mathrm{flag\_baseflow}$ | Activa el enrutamiento lateral de aguas subterráneas 2D Boussinesq. |
-| $\mathrm{flag\_snow\_modeling}$ | Activa la acumulación, el derretimiento y la sublimación de la nieve. |
+| $\mathrm{flag\_snow\_modeling}$ | Activa acumulación, fusión, sublimación, densidad y profundidad de nieve por LULC. Requiere forzamiento meteorológico interno: `flag_ETP = 1` y `flag_input_ETP_map = 0`. |
 | $\mathrm{flag\_waterquality}$ | Activa el transporte de calidad del agua. |
 | $\mathrm{flag\_wq\_model}$ | Selecciona el modelo de acumulación/lavado de contaminantes. |
 | $\mathrm{flag\_human\_instability}$ | Activa el diagnóstico de inestabilidad humana. Los modos implementados documentados públicamente son `1` y `3`; El modo `2` no está implementado. |
@@ -65,10 +65,12 @@ HydroPol2D se controla mediante indicadores binarios y categóricos definidos en
 | $\mathrm{flag\_full\_momentum}$ | Activa el solucionador de aguas poco profundas de impulso total. Úselo como alternativa a las otras familias de enrutamiento principales, no en combinación con ellas. |
 | $\mathrm{flag\_diffusive}$ | Activa el enrutamiento difusivo D4 impulsado por la pendiente de la superficie del agua. |
 | $\mathrm{flag\_kinematic}$ | Activa el enrutamiento cinemático D4 impulsado por la pendiente del lecho y la profundidad del donante. |
-| $\mathrm{flag\_PHTOKEN0XYZ}$ | Activa el enrutamiento de Cellular Automata. |
+| $\mathrm{flag\_CA}$ | Activa el enrutamiento de Cellular Automata. |
 | $\mathrm{flag\_D8}$ | Activa una ruta de enrutamiento D8 secundaria. Esto debería tratarse como de alcance limitado y no como una familia de teorías paralelas completas. |
-| $\mathrm{flag\_subgrid}$ | Activa la representación rectangular de canal de Neal (2012) cuando se usa con el enrutamiento inercial local y `flag_overbanks = 1`. |
-| $\mathrm{flag\_overbanks}$ | Separa la capacidad de transporte del canal y de la llanura y aplica la transición de almacenamiento en la altura de las márgenes en el modo de Neal (2012). |
+| $\mathrm{flag\_neal\_channel}$ | Activa la representación rectangular de canal incorporado de Neal (2012) en una malla estructurada. Requiere enrutamiento inercial local. |
+| $\mathrm{flag\_structured\_lookup\_subgrid}$ | Activa tablas dependientes del nivel para celdas y caras en una malla estructurada. Este modo permanece condicionado a la paridad MATLAB-Python. |
+| $\mathrm{flag\_voronoi\_subgrid}$ | Activa las tablas de celdas y caras de HydroBathyDEM en una malla Voronoi. |
+| $\mathrm{flag\_voronoi}$ | Selecciona la topología de malla Voronoi. Es independiente de `flag_voronoi_subgrid`, que selecciona la representación hidráulica. |
 | $\mathrm{flag\_numerical\_scheme}$ | Selecciona la variante del esquema inercial local: `1` Bates, `2` ceñida, `3` centrado. Se aplica a la familia inercial, no al enrutamiento de impulso total, difusivo, cinemático o CA. |
 | $\mathrm{flag\_outlet\_type}$ | Tratamiento de salida: `1` flujo normal, `2` flujo crítico. |
 | $\mathrm{flag\_adaptive\_timestepping}$ | Selecciona el control de paso de tiempo adaptativo. |
@@ -82,8 +84,10 @@ El modo de canal submalla admitido sigue a [Neal et al. (2012)](https://doi.org/
 | Bandera | Valor requerido |
 |---|---:|
 | `flag_inertial` | `1` |
-| `flag_subgrid` | `1` |
-| `flag_overbanks` | `1` |
+| `flag_neal_channel` | `1` |
+| `flag_structured_lookup_subgrid` | `0` |
+| `flag_voronoi_subgrid` | `0` |
+| `flag_voronoi` | `0` |
 | `flag_full_momentum` | `0` |
 | `flag_diffusive` | `0` |
 | `flag_kinematic` | `0` |
@@ -121,9 +125,9 @@ El solucionador calcula por separado los caudales del canal y de la llanura en c
 | $\mathrm{flag\_resample}$ | Activa el remuestreo de ráster a una resolución objetivo. |
 | $\mathrm{flag\_smoothening}$ | Aplica el suavizado DEM. |
 | $\mathrm{flag\_trunk}$ | Solo se alisa el tronco principal del río. |
-| $\mathrm{flag\_fill\_PHTOKEN0XYZ}$ | Llena los fregaderos DEM para lograr una consistencia hidrológica. |
+| $\mathrm{flag\_fill\_DEM}$ | Rellena las depresiones del DEM para lograr consistencia hidrológica. |
 | $\mathrm{flag\_smooth\_cells}$ | Aplica suavizado del terreno a nivel de celda. |
-| $\mathrm{flag\_reduce\_PHTOKEN0XYZ}$ | Reduce la elevación de DEM en las celdas del río para tener en cuenta la batimetría del canal. |
+| $\mathrm{flag\_reduce\_DEM}$ | Reduce la elevación del DEM en las celdas del río para tener en cuenta la batimetría del canal. |
 
 ---
 
@@ -140,7 +144,12 @@ El solucionador calcula por separado los caudales del canal y de la llanura en c
 
 ## Notas
 
-- Sólo una familia de enrutamiento principal debe estar activa a la vez: `flag_full_momentum`, `flag_inertial`, `flag_diffusive`, `flag_kinematic` o `flag_PHTOKEN0XYZ`.
+- Sólo una familia de enrutamiento principal debe estar activa a la vez: `flag_full_momentum`, `flag_inertial`, `flag_diffusive`, `flag_kinematic` o `flag_CA`.
+- Seleccione como máximo una formulación submalla: canal Neal, lookup estructurado o lookup Voronoi.
+- El modo de canal de Neal (2012) requiere enrutamiento inercial local y `flag_neal_channel = 1`.
+- `flag_voronoi = 1` selecciona la topología; `flag_voronoi_subgrid = 1` activa además la hidráulica lookup Voronoi.
+- Los antiguos `flag_subgrid` y `flag_overbanks` se aceptan sólo en la capa de migración y generan una advertencia explícita.
 - `flag_D8` debe tratarse como secundario/de alcance limitado en lugar de otra familia de enrutamiento lista para generar informes.
 - La programación asíncrona del agua subterránea y el ascenso capilar son comportamientos de configuración públicos, no detalles internos ocultos.
+- Los parámetros de nieve se definen por clase en la tabla LULC. `Initial_SWE_path` e `Initial_Snow_Depth_path` son rásteres iniciales opcionales.
 - El modo de inestabilidad humana `2` no está implementado y no debe presentarse como un método público disponible.

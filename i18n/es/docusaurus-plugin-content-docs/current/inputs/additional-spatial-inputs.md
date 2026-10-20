@@ -27,6 +27,8 @@ Más allá de los rásteres principales DEM, LULC y de suelo, HydroPol2D puede i
 |---|---|---|---|
 | Profundidad inicial del agua superficial | `Warmup_Depth_path` | Cuando se proporciona `flag_warmup = 1` y un ráster de profundidad de calentamiento | El ráster se lee como profundidad inicial del estanque en metros y se convierte internamente a milímetros. |
 | Almacenamiento inicial del suelo | `Initial_Soil_Moisture_path` | Cuando se proporciona `flag_warmup = 1` y un ráster de suelo inicial | A pesar del nombre heredado, el código actual interpreta este ráster como **almacenamiento activo inicial del suelo por encima del contenido de agua residual** en milímetros, no como $\theta$ volumétrico bruto. |
+| Equivalente inicial de agua de nieve | `Initial_SWE_path` | Cuando el modelado de nieve está activo y se proporciona un ráster SWE | SWE en milímetros de equivalente de agua. Nodata indica que no se especificó nieve inicial. |
+| Profundidad inicial de nieve | `Initial_Snow_Depth_path` | Cuando el modelado de nieve está activo y se proporciona un ráster de profundidad de nieve | Profundidad física de nieve en milímetros. Nodata indica que no se especificó nieve inicial. |
 | Acumulación inicial de contaminantes | `Initial_Buildup_path` | Cuando la calidad del agua utiliza un ráster de acumulación inicial | Se utiliza para inicializar estados de masa/acumulación de contaminantes. |
 
 ---
@@ -68,6 +70,12 @@ Eso los hace flexibles, pero no elimina la necesidad de un preprocesamiento sens
 
 ---
 
+## Estados iniciales de nieve
+
+Los parámetros de nieve son columnas de la tabla de parámetros LULC y se asignan por `LULC_Index`. Los rásteres iniciales son opcionales: sin ráster, la celda inicia sin nieve; con solo SWE o profundidad, el otro estado se calcula con la densidad inicial de la clase; con ambos, el par define la densidad y debe ser físicamente compatible. Se rechazan valores negativos y pares positivos incompatibles.
+
+---
+
 ## Geometría del canal de Neal (2012)
 
 El modo de canal submalla de Neal (2012) usa el DEM grueso como elevación de la llanura. `RiverDepths_path` rebaja el lecho rectangular del canal respecto de esa elevación, mientras que `RiverWidths_path` define el ancho del canal en cada celda de río. Los dos rásteres deben suministrarse juntos.
@@ -82,7 +90,7 @@ Consulte [Banderas del modelo](../configuration/flags) para la combinación de e
 La forma más sencilla de pensar en la superficie de entrada es:
 1. DEM, LULC y SOIL definen el dominio base.
 2. DTB, tabla GW, LAI, albedo y fracción impermeable refinan ese dominio base.
-3. El calentamiento, el almacenamiento inicial del suelo y la acumulación inicial establecen el estado inicial.
+3. El calentamiento, el almacenamiento inicial del suelo, los estados iniciales de nieve y la acumulación inicial establecen el estado inicial.
 4. Los rásteres WQ admiten módulos especializados opcionales.
 
 Esa es la historia de entrada implementada actualmente que los documentos deben seguir.

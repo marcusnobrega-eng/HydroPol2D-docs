@@ -27,7 +27,7 @@ where:
 
 The model is fully **mass conservative** and dynamically coupled to flow routing.
 
-The current Phase 1 validation focuses on the mass-based wash-off mode
+The current validation focuses on the mass-based wash-off mode
 (`flag_wq_model = 0`). The validation uses SWMM-style buildup parameter scales
 for total suspended solids, but the truth source is an analytical mass-balance
 solution rather than a SWMM numerical run or a calibrated field pollutograph.

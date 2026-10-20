@@ -813,159 +813,126 @@ The scalar expression above is therefore the conceptual summary of a layered upd
 
 ## 5. Snow Accumulation, Melt, and Sublimation
 
-When snow modeling is active, precipitation is partitioned into rainfall and snowfall, and snowpack evolution is explicitly tracked through snow water equivalent (SWE), density, and depth.
+When snow modeling is active, HydroPol2D tracks snow water equivalent (SWE), snow density, and physical snow depth in every active grid cell. Snow parameters are read from the LULC parameter table and mapped to the grid from `LULC_Index`. The internal meteorological forcing pathway provides mean air temperature, minimum air temperature, and wind speed. Snow simulations therefore require `flag_ETP = 1`, `flag_input_ETP_map = 0`, and a meteorological workbook that covers the simulation period.
 
 ---
 
-### 5.1 Rain–snow partitioning
+### 5.1 Rain-snow partitioning
 
-The current implementation partitions precipitation using a linear temperature ramp between fixed thresholds of $4\,^{\circ}\mathrm{C}$ and $7\,^{\circ}\mathrm{C}$:
+Each LULC class supplies an all-snow threshold $T_{\mathrm{snow}}$ and an all-rain threshold $T_{\mathrm{rain}}$, both in $^{\circ}\mathrm{C}$. The snow fraction is
 
 $$
 f_{\mathrm{snow}}
 =
 \begin{cases}
-1, & T_{\mathrm{air}} \le 4 \\
-\dfrac{7 - T_{\mathrm{air}}}{7 - 4}, & 4 < T_{\mathrm{air}} < 7 \\
-0, & T_{\mathrm{air}} \ge 7
+1, & T_{\mathrm{air}} \le T_{\mathrm{snow}} \\
+\dfrac{T_{\mathrm{rain}}-T_{\mathrm{air}}}{T_{\mathrm{rain}}-T_{\mathrm{snow}}}, & T_{\mathrm{snow}} < T_{\mathrm{air}} < T_{\mathrm{rain}} \\
+0, & T_{\mathrm{air}} \ge T_{\mathrm{rain}}.
 \end{cases}
 $$
 
-The snowfall and rainfall partitions are then
+The thresholds must satisfy $T_{\mathrm{rain}} \ge T_{\mathrm{snow}}$. Equal thresholds give a step partition at that temperature. The resulting snowfall and rainfall are
 
 $$
-P_{\mathrm{snow}} = P_{\mathrm{gross}} f_{\mathrm{snow}}
+P_{\mathrm{snow}}=P_{\mathrm{gross}}f_{\mathrm{snow}}
 $$
 
 $$
-P_{\mathrm{rain}} = P_{\mathrm{gross}} - P_{\mathrm{snow}}
+P_{\mathrm{rain}}=P_{\mathrm{gross}}-P_{\mathrm{snow}}
 $$
 
-where $f_{\mathrm{snow}}$ is the temperature-dependent snow fraction $[-]$.
+where $f_{\mathrm{snow}}$ is the temperature-dependent snow fraction.
 
 ---
 
 ### 5.2 Snow water equivalent
 
-The evolution of snow water equivalent is
+The SWE balance is
 
 $$
-\mathrm{SWE}_t
-=
-\mathrm{SWE}_{t-1}
-+
-P_{\mathrm{snow}}
--
-M_{\mathrm{snow}}
--
-E_{\mathrm{s}}
+\mathrm{SWE}_t=\mathrm{SWE}_{t-1}+P_{\mathrm{snow}}-M_{\mathrm{snow}}-E_{\mathrm{s}}
 $$
 
-where:
-
-- $\mathrm{SWE}$ is snow water equivalent $[\mathrm{L}]$
-- $E_{\mathrm{s}}$ is sublimation $[\mathrm{L}]$
+where all terms are in millimeters of water equivalent and $E_{\mathrm{s}}$ is sublimation.
 
 ---
 
-### 5.3 Snowmelt
+### 5.3 Snowmelt and timestep scaling
 
-Snowmelt is computed as a degree-day plus radiative-energy term:
+Snowmelt is the sum of degree-day and positive net-radiation terms. For a routing step of $\Delta t_s$ seconds and $\Delta t_d=\Delta t_s/86400$ days,
 
 $$
 M_{\mathrm{snow}}
 =
-\min\!\left(
-\mathrm{SWE}_t,\,
-\max
-\left(
-\mathrm{DDF}\,T_{\mathrm{air}}
-+
-\frac{(1-\alpha_{\mathrm{snow}})\,Q_{\mathrm{net}}}{334},
-0
-\right)
-\right)
+\min\!\left[
+\mathrm{SWE}_{\mathrm{after\ snowfall}},
+\max\!\left(
+\mathrm{DDF}\max(T_{\mathrm{air}},0)\Delta t_d+
+\frac{\max(Q_{\mathrm{net}},0)\Delta t_s}{L_f},
+0\right)\right]
 $$
 
-where:
-
-- $\mathrm{DDF}$ is degree-day factor $[\mathrm{L}\,\Theta^{-1}\,\mathrm{T}^{-1}]$
-- $\alpha_{\mathrm{snow}}$ is snow albedo $[-]$ that can be either assumed as constant or entered as spatial input in the `General_Data.xlsx`.
-- $Q_{\mathrm{net}}$ is the net shortwave-radiation term used by the current routine $[\mathrm{E}\,\mathrm{L}^{-2}\,\mathrm{T}^{-1}]$
-
-The current snow parameters must be edited in the function `HydroPol2D_Preprocessing.m`.
+Here, $\mathrm{DDF}$ is the LULC-specific degree-day factor $[\mathrm{mm\,^{\circ}C^{-1}\,day^{-1}}]$, $Q_{\mathrm{net}}$ is the internally calculated net-radiation flux $[\mathrm{W\,m^{-2}}]$, and $L_f=3.34\times10^5\ \mathrm{J\,kg^{-1}}$ is the latent heat of fusion. A flux of $1\ \mathrm{kg\,m^{-2}}$ gives $1\ \mathrm{mm}$ of water equivalent. Melt cannot exceed available SWE.
 
 ---
 
 ### 5.4 Snow density and depth
 
-Snow density evolves as
+Fresh snow uses the LULC-specific initial density $\rho_{\mathrm{init}}$. Existing and new snow are mixed by SWE before compaction. Density then evolves as
 
 $$
-\rho_{\mathrm{snow}}^{\,\mathrm{new}}
-=
-\rho_{\mathrm{snow}}^{\,\mathrm{old}}
-+
-k_t T_{\mathrm{air}}
-+
-k_{\mathrm{swe}} \mathrm{SWE}
-+
-k_D H_{\mathrm{snow}}
+\rho_{\mathrm{snow}}^{\,\mathrm{new}}=
+\rho_{\mathrm{snow}}^{\,\mathrm{mixed}}+
+\Delta t_d\left[
+k_t\max(T_{\mathrm{air}},0)+
+k_{\mathrm{swe}}\mathrm{SWE}+
+k_DH_{\mathrm{snow}}\right]
 $$
 
-subject to
+with $\rho_{\mathrm{init}}\le\rho_{\mathrm{snow}}\le\rho_{\mathrm{max}}$. Snow depth is
 
 $$
-\rho_{\mathrm{snow}} \le \rho_{\mathrm{max}}
-$$
-
-Snow depth is
-
-$$
-H_{\mathrm{snow}} = \frac{\mathrm{SWE}}{\rho_{\mathrm{snow}}}
+H_{\mathrm{snow}}=\frac{1000\,\mathrm{SWE}}{\rho_{\mathrm{snow}}}
 $$
 
 ---
+
+The factor 1000 converts water-equivalent depth to physical snow depth when SWE is in millimeters and density is in $\mathrm{kg\,m^{-3}}$.
 
 ### 5.5 Sublimation
 
 $$
 E_{\mathrm{s}}
 =
-\min\!\left(
-\mathrm{SWE}_t,\,
+\min\!\left[
+\mathrm{SWE}_{\mathrm{after\ melt}},
 \max\!\left(
-C_e\,u\,(q_s - q_a)\,\mathrm{SWE}_t,\,
+C_eu(q_s-q_a)\mathrm{SWE}_{\mathrm{after\ melt}}\Delta t_d,
 0
-\right)
-\right)
+\right)\right]
 $$
 
-where:
-
-- $C_e$ is sublimation coefficient $[-]$
-- $u$ is wind speed $[\mathrm{L}\,\mathrm{T}^{-1}]$, taken as the wind speed at $2\,\mathrm{m}$ height.
-- $q_s$ is saturation specific humidity at the snow surface $[-]$
-- $q_a$ is ambient air specific humidity $[-]$
-
-In the current implementation, $q_a$ is estimated internally from the available temperature fields rather than read as a fully independent humidity forcing, and the sublimation flux is clipped to remain nonnegative and not exceed the available snow water equivalent.
+Here, $C_e$ is the LULC-specific sublimation coefficient, $u$ is wind speed $[\mathrm{m\,s^{-1}}]$, and $q_s$ and $q_a$ are saturation and ambient specific humidity. The current implementation estimates $q_a$ from the available temperature fields. Sublimation is nonnegative and cannot exceed post-melt SWE.
 ---
 
-### 5.6 Surface-water update under snow conditions
+### 5.6 Initial snow states and class-code fallback
+
+`Initial_SWE_path` and `Initial_Snow_Depth_path` are optional rasters. With neither raster, the model initializes zero SWE and zero snow depth, and retains the LULC-specific fresh-snow density. With one raster, the other state is derived from that density. With both rasters, the model derives density from SWE and depth and rejects positive pairs outside the configured density range. Raster nodata means that no initial snow was specified for that cell.
+
+If the LULC raster contains a valid code that is absent from the LULC, soil, or snow table, HydroPol2D assigns the area-weighted mean of properties from mapped cells. The model writes `Input_Class_Code_Audit.csv`, which lists raster codes, mapped table indices, fallback area, and the properties applied. Duplicate or non-numeric table indices, or a table with no mapped classes, remain input errors.
+
+### 5.7 Surface-water update under snow conditions
 
 $$
-d_t = d_p + M_{\mathrm{snow}} + P_{\mathrm{rain}}
+d_t=d_p+M_{\mathrm{snow}}+P_{\mathrm{rain}}
 $$
 
-otherwise
+If snow modeling is off,
 
 $$
-d_t = d_p + P_{\mathrm{eff}}
+d_t=d_p+P_{\mathrm{eff}},
 $$
-where:
-
-- $d_t$ is surface water depth at the current time step $[\mathrm{L}]$
-- $d_p$ is surface water depth at the previous time step $[\mathrm{L}]$
+where $d_t$ and $d_p$ are current and previous surface-water depth.
 ---
 
 ## 6. Vadose Storage, Recharge, and Groundwater Feedback

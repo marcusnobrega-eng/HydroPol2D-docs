@@ -29,9 +29,9 @@ Se aplica un caudal constante de $5\ \mathrm{m^3\,s^{-1}}$ a un tramo inicialmen
 
 La malla gruesa ordinaria considera que todo el ancho de `30 m` contiene agua en movimiento. Por ello, almacena demasiada agua y retrasa el hidrograma. El canal embebido de `10 m` produce un nivel y un tiempo de propagación más próximos a la referencia explícita.
 
-<img src={useBaseUrl('/validation/phase1/subgrid-neal/simple-channel-hydrograph-stage.png')} alt="Caudal de salida y nivel interno en las simulaciones fina, gruesa ordinaria y con canal de Neal (2012)" />
+<img src={useBaseUrl('/validation/results/subgrid-neal/simple-channel-hydrograph-stage.png')} alt="Caudal de salida y nivel interno en las simulaciones fina, gruesa ordinaria y con canal de Neal (2012)" />
 
-<img src={useBaseUrl('/validation/phase1/subgrid-neal/simple-channel-profile.png')} alt="Perfiles longitudinales de la superficie del agua en las simulaciones fina, gruesa ordinaria y con canal de Neal (2012)" />
+<img src={useBaseUrl('/validation/results/subgrid-neal/simple-channel-profile.png')} alt="Perfiles longitudinales de la superficie del agua en las simulaciones fina, gruesa ordinaria y con canal de Neal (2012)" />
 
 ## Canal compuesto
 
@@ -48,9 +48,9 @@ La prueba permanente aplica $100\ \mathrm{m^3\,s^{-1}}$. La prueba transitoria a
 
 La simulación de Neal (2012) reduce los errores de caudal y almacenamiento con ambos forzamientos. La comparación transitoria muestra que la mejora se mantiene durante el ascenso, el pico y la recesión del hidrograma.
 
-<img src={useBaseUrl('/validation/phase1/subgrid-neal/composite-constant-hydrographs.png')} alt="Hidrogramas con caudal constante para las simulaciones explícita, gruesa ordinaria y con canal de Neal (2012)" />
+<img src={useBaseUrl('/validation/results/subgrid-neal/composite-constant-hydrographs.png')} alt="Hidrogramas con caudal constante para las simulaciones explícita, gruesa ordinaria y con canal de Neal (2012)" />
 
-<img src={useBaseUrl('/validation/phase1/subgrid-neal/composite-nash-hydrographs.png')} alt="Hidrograma de entrada de Nash e hidrogramas simulados en la salida y en la sección interna" />
+<img src={useBaseUrl('/validation/results/subgrid-neal/composite-nash-hydrographs.png')} alt="Hidrograma de entrada de Nash e hidrogramas simulados en la salida y en la sección interna" />
 
 ## Flujo escalonado sobre las márgenes
 
@@ -62,7 +62,7 @@ El tercer caso evalúa la transición entre el canal y la llanura de inundación
 
 La referencia explícita usa celdas de `5 m`. Las simulaciones ordinaria y Neal (2012) usan celdas de `100 m`. Un hidrograma de Nash alcanza $200\ \mathrm{m^3\,s^{-1}}$ a los `45 min`, por encima de los caudales analíticos de activación de $31,4\ \mathrm{m^3\,s^{-1}}$ para las banquetas y $110,8\ \mathrm{m^3\,s^{-1}}$ para la llanura externa.
 
-<img src={useBaseUrl('/validation/phase1/subgrid-neal/staged-geometry-rating.png')} alt="Geometría escalonada del canal y curva analítica de caudal uniforme" />
+<img src={useBaseUrl('/validation/results/subgrid-neal/staged-geometry-rating.png')} alt="Geometría escalonada del canal y curva analítica de caudal uniforme" />
 
 | Métrica | Ordinario, 100 m | Neal (2012), 100 m |
 |---|---:|---:|
@@ -75,11 +75,11 @@ La referencia explícita usa celdas de `5 m`. Las simulaciones ordinaria y Neal 
 
 El modelo de Neal (2012) reproduce la activación de las banquetas a los `21 min`, el mismo instante que la referencia explícita. La llanura externa se activa a los `35 min`, frente a `34 min` en la referencia. El hidrograma, la profundidad y la extensión máxima de inundación son más próximos a la referencia que los resultados de la malla ordinaria de `100 m`.
 
-<img src={useBaseUrl('/validation/phase1/subgrid-neal/staged-hydrographs.png')} alt="Hidrogramas en la salida y en la sección interna del canal escalonado" />
+<img src={useBaseUrl('/validation/results/subgrid-neal/staged-hydrographs.png')} alt="Hidrogramas en la salida y en la sección interna del canal escalonado" />
 
-<img src={useBaseUrl('/validation/phase1/subgrid-neal/staged-depth-activation.png')} alt="Profundidades en el canal, las banquetas y la llanura externa a lo largo del tiempo" />
+<img src={useBaseUrl('/validation/results/subgrid-neal/staged-depth-activation.png')} alt="Profundidades en el canal, las banquetas y la llanura externa a lo largo del tiempo" />
 
-<img src={useBaseUrl('/validation/phase1/subgrid-neal/staged-maximum-depth.png')} alt="Mapas de profundidad máxima para las simulaciones explícita, gruesa ordinaria y de Neal (2012)" />
+<img src={useBaseUrl('/validation/results/subgrid-neal/staged-maximum-depth.png')} alt="Mapas de profundidad máxima para las simulaciones explícita, gruesa ordinaria y de Neal (2012)" />
 
 Todos los casos conservados cierran el balance de agua hasta la precisión numérica. La prueba escalonada también identifica una limitación. Las banquetas del modelo de Neal (2012) se secan a los `126 min`, frente a `196 min` en la referencia explícita, y la llanura externa se seca a los `152 min`, frente a `237 min`. Una celda gruesa de Neal (2012) tiene un solo nivel representativo de agua. Por tanto, el agua residual sobre las banquetas y la llanura no puede drenar de forma independiente del canal embebido.
 

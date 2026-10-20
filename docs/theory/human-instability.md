@@ -12,7 +12,7 @@ HydroPol2D includes an implemented human-instability module that uses routed sur
 | `2` | Not implemented | Placeholder only. Do not document or use as an active public option. |
 | `3` | Implemented | Geometry-based instability classifier with slide, topple, and drowning/drawing thresholds. |
 
-The current validation status for these modes is tracked in the [Phase 1 validation status](../validation/phase1-status).
+The current validation status for these modes is tracked in the [validation status](../validation/validation-status).
 
 ---
 
@@ -200,5 +200,5 @@ The current public story for human instability should stay aligned with the code
 - mode `1` is implemented and documented as a force-balance ratio,
 - mode `3` is implemented and documented as a geometry-based classifier,
 - mode `2` is not implemented,
-- validation claims should remain tied to the controlled evidence summarized on the [Phase 1 validation status](../validation/phase1-status),
+- validation claims should remain tied to the controlled evidence summarized on the [validation status](../validation/validation-status),
 - and the human-instability module should be described as a coupled hazard diagnostic driven by HydroPol2D depths and velocities.

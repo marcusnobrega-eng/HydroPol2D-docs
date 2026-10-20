@@ -20,7 +20,7 @@ En tiempo de ejecución, HydroPol2D:
 2. utiliza ese valor como índice,
 3. asigna los parámetros correspondientes de la tabla.
 
-Por este motivo, las clases ráster y los índices de las tablas deben coincidir exactamente.
+Para las clases asignadas, los valores ráster y los índices de tabla deben coincidir. Cuando un código válido de LULC, suelo o nieve no aparece en la tabla, HydroPol2D aplica el promedio ponderado por área de las propiedades de las clases asignadas y registra la decisión en `Input_Class_Code_Audit.csv`. Los índices duplicados, no numéricos o una tabla sin clases asignadas siguen siendo errores de entrada.
 ---
 
 ## Tabla de parámetros LULC
@@ -257,6 +257,29 @@ Están acostumbrados a:
 - Modificar la dinámica inercial local en células específicas.
 
 Su parametrización correcta es esencial para una simulación estable y físicamente significativa de sistemas hidráulicos diseñados.
+---
+
+## Tabla de parámetros de nieve
+
+La tabla de parámetros LULC contiene las siguientes columnas de nieve en cada fila de `LULC_Index`. No existe un libro separado para nieve; todas las propiedades dependientes de la cobertura del suelo permanecen en el mismo registro de clase.
+
+| Columna | Unidades | Descripción |
+|---|---|---|
+| `LULC_Index` | — | Código LULC de la fila. |
+| `Snow_Albedo` | — | Albedo de onda corta de la superficie de nieve. |
+| `Snow_Emissivity` | — | Emisividad de onda larga usada en el balance de radiación. |
+| `Sublimation_Coefficient_d_1` | día⁻¹ (m s⁻¹)⁻¹ | Coeficiente del término de sublimación. |
+| `Degree_Day_Factor_mm_C_day` | mm °C⁻¹ día⁻¹ | Factor de fusión por grados-día. |
+| `T_Snow_All_C` | °C | Temperatura a la cual toda la precipitación es nieve. |
+| `T_Rain_All_C` | °C | Temperatura a la cual toda la precipitación es lluvia; no puede ser menor que `T_Snow_All_C`. |
+| `Rho_Snow_Init_kg_m3` | kg m⁻³ | Densidad de nieve nueva usada en la inicialización. |
+| `Rho_Snow_Max_kg_m3` | kg m⁻³ | Límite superior de densidad tras compactación. |
+| `Compaction_Temperature_kg_m3_C_day` | kg m⁻³ °C⁻¹ día⁻¹ | Aumento de densidad dependiente de la temperatura. |
+| `Compaction_SWE_kg_m3_mm_day` | kg m⁻³ mm⁻¹ día⁻¹ | Aumento de densidad dependiente de SWE. |
+| `Compaction_Depth_kg_m3_mm_day` | kg m⁻³ mm⁻¹ día⁻¹ | Aumento de densidad dependiente de la profundidad. |
+
+Los factores de grados-día, sublimación y compactación son tasas y el modelo los multiplica por el paso de tiempo actual. La nieve requiere el forzamiento meteorológico interno, para obtener temperatura media, temperatura mínima y viento.
+
 ---
 
 ## Filosofía del diseño

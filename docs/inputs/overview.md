@@ -57,7 +57,7 @@ HydroPol2D can resample and mask many optional rasters internally, but reproduci
 | Core terrain and classes | `DEM_path`, `LULC_path`, `SOIL_path` |
 | Vadose / groundwater support | `DTB_path`, `GW_table_path` |
 | Surface-property refinements | `LAI_path`, `Albedo_path`, `ImperviousFraction_path` |
-| Initial states | `Warmup_Depth_path`, `Initial_Soil_Moisture_path`, `Initial_Buildup_path` |
+| Initial states | `Warmup_Depth_path`, `Initial_Soil_Moisture_path`, `Initial_SWE_path`, `Initial_Snow_Depth_path`, `Initial_Buildup_path` |
 | Channel geometry | `RiverWidths_path`, `RiverDepths_path` |
 | Water-quality rasters | `B1_path`, `B2_path`, `W1_path`, `W2_path` |
 | Forcing and boundary files | rainfall, ETP, inflow, stage, control-structure spreadsheets or raster schedules |

@@ -11,7 +11,7 @@ HydroPol2D incluye un módulo de inestabilidad humana implementado que utiliza l
 | `2` | No implementado | Sólo marcador de posición. No documentar ni utilizar como opción pública activa. |
 | `3` | Implementado | Clasificador de inestabilidad basado en geometría con umbrales de deslizamiento, caída y ahogamiento/dibujo. |
 
-El estado de validación actual para estos modos se rastrea en el [Estado de validación de fase 1] (../validation/phase1-status).
+El estado de validación actual para estos modos se rastrea en el [Estado de validación de validación] (../validation/validation-status).
 ---
 
 ## 1. Entradas y Acoplamiento
@@ -158,5 +158,5 @@ La historia pública actual sobre la inestabilidad humana debería mantenerse al
 - El modo `1` se implementa y documenta como una relación fuerza-equilibrio,
 - el modo `3` está implementado y documentado como un clasificador basado en geometría,
 - el modo `2` no está implementado,
-- las afirmaciones de validación deben permanecer vinculadas a la evidencia controlada resumida en el [estado de validación de la fase 1] (../validation/phase1-status),
+- las afirmaciones de validación deben permanecer vinculadas a la evidencia controlada resumida en el [estado de validación de la validación] (../validation/validation-status),
 - y el módulo de inestabilidad humana debe describirse como un diagnóstico de peligro acoplado impulsado por profundidades y velocidades HydroPol2D.
