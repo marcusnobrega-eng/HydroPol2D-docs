@@ -60,12 +60,40 @@ In the layered scheme the soil depth of the default scheme is used only as this 
 ## 3. Column Structure
 
 <p align="center">
-  <img src={useBaseUrl('/img/theory/layered-column.svg')} width="720" alt="Layered soil-over-regolith column: three soil slots, regolith slots that double in thickness, one water table, the column base at the capped depth to bedrock, and the deep linear reservoir below" />
+  <img src={useBaseUrl('/img/theory/layered-column.svg')} width="720" alt="Layered soil-over-regolith column: a tree whose roots reach the root depth, three soil slots, regolith slots that double in thickness, one water table with recharge, capillary rise and lateral flow, the column base at the capped depth to bedrock, and the deep linear reservoir in the bedrock below" />
 </p>
 
 <p align="center">
-  <em>Figure 1. The layered column of one cell (not to scale). The water table splits the slot it is in.</em>
+  <em>Figure 1. The layered column of one cell (not to scale). The water table splits the slot it is in. The symbols are defined in the table below.</em>
 </p>
+
+**Symbols in Figure 1**
+
+| Symbol | Meaning | Units |
+|---|---|---|
+| $h$ | Water-table head, one per cell | m |
+| $\theta$ | Water content of the unsaturated part of a slot | m³/m³ |
+| $\theta_s$ | Saturated water content | m³/m³ |
+| $\theta_r$ | Residual water content | m³/m³ |
+| $\theta_{fc}$ | Water content at field capacity, $\theta(\psi = -3.3\ \mathrm{m})$ by default | m³/m³ |
+| $S_y$ | Specific yield (drainable porosity), $\theta_s - \theta_{fc}$ | — |
+| $S_e$ | Effective saturation, $(\theta - \theta_r)/(\theta_s - \theta_r)$ | — |
+| $K_v$ | Vertical saturated hydraulic conductivity of a slot | m/s |
+| $K_r(S_e)$ | Mualem–van Genuchten relative conductivity | — |
+| $K(\theta)$ | Unsaturated conductivity of a slot, $K_v\,K_r(S_e)$ | m/s |
+| $q$ | Darcy flux between the lowest unsaturated slot and the water table; positive down (recharge), negative up (capillary rise) | m/s |
+| $\psi$ | Matric head of the lowest unsaturated slot; $\psi = 0$ at the water table | m |
+| $\Delta z$ | Half the unsaturated thickness of that slot | m |
+| $T$ | Transmissivity for lateral flow | m²/s |
+| $K_h$ | Horizontal saturated conductivity of a slot, including its lateral multiplier | m/s |
+| $b$ | Saturated thickness of a slot | m |
+| $z_{\mathrm{surf}}$ | Ground-surface elevation | m |
+| $D_{\mathrm{DTB}}$ | Depth to bedrock | m |
+| 50 m | Default cap on the column depth, `max_depth_m` | m |
+| $f_d$ | Fraction of the recharge sent to the deep aquifer, `deep_recharge_fraction` | — |
+| $Q$ | Outflow of a deep reservoir | m³/s |
+| $S$ | Storage of a deep reservoir | m³ |
+| $\tau$ | Response time of the deep reservoirs, `deep_aquifer_response_time_days` | days |
 
 | Slot | Depth range | Parameters |
 |---|---|---|
