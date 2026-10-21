@@ -12,6 +12,22 @@ This structure separates spatial information from parameter definition and makes
 
 ---
 
+## Where the Tables Live {#where-the-tables-live}
+
+In MATLAB Excel mode the class tables are tabs of the case workbook `HydroPol2D_Inputs.xlsx`. Each tab is a cell-for-cell copy of the workbook it replaces, because the model reads some columns by position. Keep the rows and the column order; add a class as a new row.
+
+| Tab | Was | Read when |
+|---|---|---|
+| Soil classes | `SOIL_parameters.xlsx` | always |
+| Land use classes | `LULC_parameters.xlsx` | always (read from row 2 by position) |
+| Human instability | `human_risk.xlsx` | `flag_human_instability = 1` or `3` |
+| Mesh | `Voronoi_Settings.xlsx` | `flag_voronoi = 1` |
+| Control structures | `BC_Control_structure.xlsx` | `flag_reservoir = 1` |
+
+In the older layout the same tables are the separate workbooks of the second column, in the folder of `General_Data.xlsx`. The model reads the tab when the case workbook has it, and the older workbook otherwise. HydroPol2D-Python reads the same class properties from the Case Builder contract.
+
+---
+
 ## General Structure
 
 Each parameter table contains:
@@ -138,15 +154,14 @@ The values shown above correspond to the current HydroPol2D soil parameter table
 
 ## DTB Assignment Through the Soil Table
 
-If a DTB raster is not available, DTB values can be assigned directly in the soil table.
+The `DTB (m)` column gives a depth to bedrock per soil class. When it is read depends on the subsurface scheme:
 
-In this case:
+| Scheme | Role of `DTB (m)` |
+|---|---|
+| [Layered subsurface](../theory/layered-subsurface) | Bottom of the column where `DTB_path` and `subsurface_depth_to_bedrock_m` are both empty (MATLAB since 2026-10-20; HydroPol2D-Python reads its soil table the same way) |
+| Default groundwater scheme (MATLAB) | Not read. `DTB_path` is required; without groundwater an empty `DTB_path` gives a 1 m soil depth |
 
-- each soil class is associated with a representative DTB value,
-- the DTB field is constructed implicitly from the soil map,
-- storage depth remains consistent with the adopted soil classification.
-
-This is particularly useful in data-scarce applications.
+Each soil class then carries a representative depth, and the column bottom follows the soil map. This is useful in data-scarce applications.
 
 
 
@@ -235,7 +250,7 @@ This means that the local inertial solver is locally modified by the control str
 
 ### Input Table Structure
 
-Internal boundary conditions are defined through a dedicated spreadsheet.
+Internal boundary conditions are defined in the Control structures tab of the case workbook (`BC_Control_structure.xlsx` in the older layout), read when `flag_reservoir = 1`. Each row is one structure. The outflow is $Q = k_1 (h - h_{0,1})^{k_2}$ to the cell $(x_{d,1}, y_{d,1})$ and $Q = k_3 (h - h_{0,2})^{k_4}$ to the cell $(x_{d,2}, y_{d,2})$, with coordinates in the DEM projection.
 
 #### Table structure
 

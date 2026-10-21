@@ -31,9 +31,11 @@ These inputs are optional by workflow, not experimental by default. They should 
 
 HydroPol2D also reads spreadsheet-based inputs:
 
-- [Parameter Tables](./parameter-tables) for LULC and soil classes;
-- `General_Data.xlsx` for flags, timing, file paths, and runtime controls;
-- forcing or boundary-condition spreadsheets for rainfall, evapotranspiration, inflow, stage, or control structures when those options are active.
+- the MATLAB case workbook `HydroPol2D_Inputs.xlsx`, whose settings tabs hold the switches, timing, file paths and runtime controls ([Case Workbook Settings](../configuration/general_data));
+- its class-table tabs for land-use and soil classes, human instability, the mesh and control structures ([Parameter Tables](./parameter-tables));
+- its series tabs for rainfall, climate stations, inflow and stage when those options are active ([Optional Forcing](./optional-forcing)).
+
+Older cases keep these in `General_Data.xlsx` and separate workbooks; both layouts still run.
 
 ## Forcing inputs
 

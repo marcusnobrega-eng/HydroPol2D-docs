@@ -51,7 +51,7 @@ Each depth is read from the first source found:
 | Depth | Sources, first found wins |
 |---|---|
 | Soil base | soil-base raster, then the scalar `soil_base_depth_m` (default 2 m) |
-| Depth to bedrock | DTB raster, then the scalar `depth_to_bedrock_m`, then the default-scheme soil depth (with a warning) |
+| Depth to bedrock | DTB raster, then the scalar `depth_to_bedrock_m`, then the soil depth of each soil class (with a warning) |
 
 In the layered scheme the soil depth of the default scheme is used only as this last fallback. The [Depth to Bedrock](../inputs/dtb) page describes the global data sources for both depths.
 
@@ -75,7 +75,7 @@ In the layered scheme the soil depth of the default scheme is used only as this 
 | $\theta$ | Water content of the unsaturated part of a slot | m³/m³ |
 | $\theta_s$ | Saturated water content | m³/m³ |
 | $\theta_r$ | Residual water content | m³/m³ |
-| $\theta_{fc}$ | Water content at field capacity, $\theta(\psi = -3.3\ \mathrm{m})$ by default | m³/m³ |
+| $\theta_{fc}$ | Water content at field capacity, $\theta(\psi = -3.3\ \mathrm{m})$ by default; also the level up to which capillary rise refills a slot | m³/m³ |
 | $S_y$ | Specific yield (drainable porosity), $\theta_s - \theta_{fc}$ | — |
 | $S_e$ | Effective saturation, $(\theta - \theta_r)/(\theta_s - \theta_r)$ | — |
 | $K_v$ | Vertical saturated hydraulic conductivity of a slot | m/s |
@@ -169,22 +169,46 @@ q = K(\theta_k)\left(\frac{\psi_k}{\Delta z} + 1\right),
 \qquad \Delta z = \tfrac{1}{2}u_k
 $$
 
-where $\psi_k$ is the matric head of the slot and $\psi = 0$ at the table. A downward flux is recharge, limited by the slot's water. An upward flux is capillary rise, limited by the slot's free space and by the drainable water below the table.
+where $\psi_k$ is the matric head of the slot and $\psi = 0$ at the table. A downward flux is recharge, limited by the slot's water. An upward flux is capillary rise, limited by the drainable water below the table and by the refill rule below.
 
-**Implicit flux (default).** Over a thin unsaturated gap above a shallow table, the explicit flux is stiff: at long steps it overshoots and flips sign. By default HydroPol2D takes the flux at the end of the step with one linearised backward-Euler step per cell, without iteration. Moving $q\,\Delta t$ drains the slot by $q\,\Delta t$ and raises the table by $q\,\Delta t / S_y$, so
+**Capillary refill rule.** Capillary rise refills the lowest unsaturated slot only up to field capacity, the water content $\theta_{fc}$ that a falling table leaves behind (where a regolith $S_y$ is given, $\theta_s - S_y$). This is the HBV approach (Lindström et al., 1997). The upward flux therefore stops once
 
 $$
-q = \frac{q_0}{1 + \Delta t\,\max\!\left(\dfrac{\partial q}{\partial W} - \dfrac{1}{S_y}\dfrac{\partial q}{\partial h},\ 0\right)}
+\theta_k \ge \theta_{fc}
 $$
 
-where $q_0$ is the explicit flux. Only the damping part of the derivative is kept. CLM5 also solves its water-table flux implicitly. At short steps the two forms agree.
+and it never wets the soil above a shallow table toward saturation. The rule holds in HydroPol2D-Python (since `fe81252`) and in the MATLAB model (since `051b52b`), on the structured grid and on the mesh.
 
-| Test: table 15 cm deep, wet sandy soil, 1-h steps, against a 36-s reference | Sign flips | Error |
+Before this rule, capillary rise filled the slot toward hydrostatic equilibrium while a falling table left field capacity behind, so water circulated up and down near a shallow table. In the calibration twin valley:
+
+| Measure | Before | After |
 |---|---:|---:|
-| Explicit flux | 2 | 53 % |
-| Implicit flux | 0 | below 0.1 % |
+| Water cycling between soil and table, column alone | 9.3 × 10⁻³ m³/s | 0 |
+| Cells flipping flux sign every step, column alone | 38 | 0 |
+| Gross capillary rise, full model | 0.016 m³/s | 0 |
+| Stream flow | unchanged | unchanged |
 
-The switch is `implicit_water_table_flux` (default `true`). The implicit flux is implemented in HydroPol2D-Python only. The MATLAB model keeps the explicit flux, so that its parity fixtures still match. The MATLAB port is planned.
+The trade-off is that the model has no capillary fringe. To represent one, lower `capillary_field_capacity_head_m`: $\theta_{fc}$ and $S_y$ then change together.
+
+**Implicit flux (default).** Over a thin unsaturated gap above a shallow table, the explicit flux is stiff: at long steps it overshoots and flips sign. By default HydroPol2D takes the flux at the end of the step with one linearised backward-Euler step per cell, without iteration:
+
+$$
+q = \frac{q_0}{1 + \Delta t\,\max\!\left(\dfrac{\partial q}{\partial W} - \dfrac{1}{S_y^{*}}\dfrac{\partial q}{\partial h},\ 0\right)}
+$$
+
+where $q_0$ is the explicit flux and $W$ is the water of the slot. The derivative with respect to the head follows the move of the table that the flux causes: a rise keeps the gap's water content, and a fall exposes $\theta_{fc}$. $S_y^{*}$ is the storage cost of that move ($\theta_s - \theta_k$ of the gap when water goes down). Only the damping part of the derivative is kept. A saturated gap ($\theta_k = \theta_s$) drains at $K_{sat}$ without damping. CLM5 also solves its water-table flux implicitly. At short steps the two forms agree.
+
+| Test: sand, $\theta = 0.41$, table 30 cm deep (nearly saturated gap), 1-h steps, against a 1-s run | Result |
+|---|---|
+| Implicit flux | the table stays within 2 mm of the 1-s run |
+| Explicit flux | drains about 20 times too much water |
+
+| Model | Switch | Derivatives |
+|---|---|---|
+| HydroPol2D-Python | `implicit_water_table_flux` (default `true`) | `jax.jvp` |
+| HydroPol2D (MATLAB) | `flag_implicit_water_table_flux` (default `1`; `HYDROPOL_IMPLICIT_WATER_TABLE_FLUX` overrides it) | fourth-order central differences |
+
+The two models agree to about $10^{-9}$, and their parity tests use a tolerance of $10^{-8}$.
 
 ### 4.5 Lateral flow
 
@@ -304,7 +328,7 @@ vertical:
 
 A `static.regolith_<name>_path` raster wins wherever it is finite. The scalar fills the rest.
 
-HydroPol2D (MATLAB): `flag_layered_subsurface` and `flag_feddes` in the `Flags` sheet, and the "Layered Subsurface", "Feddes Root-Water Stress" and "Lateral Conductivity Multipliers" blocks of `General_Data`. See [General Data](../configuration/general_data) and [Flags](../configuration/flags).
+HydroPol2D (MATLAB): the Soil and groundwater tab of the case workbook holds every setting above, block by block, with its switch at the top of the block (`flag_layered_subsurface`, `flag_feddes`, `flag_implicit_water_table_flux`). See [Case Workbook Settings](../configuration/general_data#tab-soil-and-groundwater) and [Model Flags](../configuration/flags).
 
 ---
 
@@ -313,9 +337,9 @@ HydroPol2D (MATLAB): `flag_layered_subsurface` and `flag_feddes` in the `Flags` 
 - **No perched lateral flow.** A saturated soil slot over unsaturated regolith does not flow laterally.
 - **No regolith class table.** Regolith parameters are scalars or rasters.
 - **No per-slot raster outputs.**
-- **Circulation at the water table.** The field-capacity fall rule and the slot-mean Darcy flux together make water cycle up and down near a shallow table. The net exchange is near zero, but the cycling inflates the gross capillary rise and recharge in the water ledger. This is open and not yet fixed.
+- **No capillary fringe.** Capillary rise refills a slot only up to field capacity (Section 4.4). Lowering `capillary_field_capacity_head_m` represents a fringe, with a smaller $S_y$.
 - **Compiled city loop.** The compiled HydroPol2D-Python city loop does not yet run the layered scheme with lateral groundwater flow.
-- **Implicit flux in Python only.** The MATLAB model still uses the explicit water-table flux.
+- **Two ways to take the implicit derivatives.** Python uses `jax.jvp` and MATLAB uses central differences. They agree to about $10^{-9}$.
 
 ---
 
@@ -326,3 +350,4 @@ HydroPol2D (MATLAB): `flag_layered_subsurface` and `flag_feddes` in the `Flags` 
 - Niswonger, R. G., Prudic, D. E., and Regan, R. S. (2006). Documentation of the Unsaturated-Zone Flow (UZF1) Package for modeling unsaturated flow between the land surface and the water table with MODFLOW-2005. USGS Techniques and Methods 6-A19. [pubs.usgs.gov/tm/2006/tm6a19](https://pubs.usgs.gov/tm/2006/tm6a19/)
 - Lv, M., et al. (2021). A comprehensive review of specific yield in land surface and groundwater studies. *Journal of Advances in Modeling Earth Systems*, 13, e2020MS002270. [doi:10.1029/2020MS002270](https://doi.org/10.1029/2020MS002270)
 - Feddes, R. A., Kowalik, P. J., and Zaradny, H. (1978). *Simulation of Field Water Use and Crop Yield*. Pudoc, Wageningen.
+- Lindström, G., Johansson, B., Persson, M., Gardelin, M., and Bergström, S. (1997). Development and test of the distributed HBV-96 hydrological model. *Journal of Hydrology*, 201, 272–288. [doi:10.1016/S0022-1694(97)00041-3](https://doi.org/10.1016/S0022-1694(97)00041-3)

@@ -4,312 +4,109 @@ title: Optional Forcing
 
 # Optional Forcing
 
-HydroPol2D supports multiple types of meteorological and hydrological forcing beyond basic rainfall input.
-
-All forcing configurations are defined through the `General_Data.xlsx` file, which controls:
-
-- the type of forcing used,
-- the activation of model components,
-- and the associated input datasets.
-
-The model can operate under different forcing strategies depending on data availability and simulation objectives.
+HydroPol2D supports several kinds of meteorological and hydrological forcing beyond a single rainfall series. In the MATLAB case workbook `HydroPol2D_Inputs.xlsx`, the switches sit on the Rain and ET, Design storm, Soil and groundwater and Surface flow tabs, the time series on five series tabs, and the lists of map files on the Rain and ET tab.
 
 ---
 
-## Overview
+## Where Each Forcing Is Set {#where-each-forcing-is-set}
 
-HydroPol2D supports the following forcing options:
+| Forcing | Switch (tab) | Data |
+|---|---|---|
+| Uniform rainfall series | `flag_rainfall` (Rain and ET), with no other rainfall source | Rain series tab |
+| Rain gauges, interpolated | `flag_spatial_rainfall` (Rain and ET) | Rain gauges tab |
+| Rainfall maps | `flag_input_rainfall_map` (Rain and ET) | Rainfall maps list (Rain and ET tab) |
+| Satellite rainfall | `flag_satellite_rainfall`, `flag_real_time_satellite_rainfall` (Rain and ET) | Prepared by the satellite workflow |
+| Design storm | `flag_alternated_blocks` or `flag_huff` (Design storm) | Hyetograph and IDF settings on the same tab |
+| Penman–Monteith evapotranspiration | `flag_ETP` (Soil and groundwater), with no ET maps | Climate stations tab |
+| Evaporation and transpiration maps | `flag_input_ETP_map` (Rain and ET) | Transpiration maps and Evaporation maps lists (Rain and ET tab) |
+| Inflow hydrographs | `flag_inflow` (Surface flow) | Inflow hydrographs tab |
+| Stage hydrographs | `flag_stage_hydrograph` (Surface flow) | Stage hydrographs tab |
 
-- Meteorological forcing for evapotranspiration (Penman–Monteith)
-- Direct evaporation ($E$) and transpiration ($T$) inputs
-- Spatial rainfall forcing (raster-based or gauge-interpolated)
-- Synthetic design storms (Huff and Alternating Block)
-- External inflow hydrographs
-- Stage boundary conditions
-
-Each forcing type is activated and configured through `General_Data.xlsx`.
-
----
-
-## Meteorological Forcing (Penman–Monteith)
-
-HydroPol2D computes evapotranspiration using a Penman–Monteith formulation when meteorological forcing is provided.
-
-### Input source
-
-Meteorological data are provided through:
-
-- `ETP_input_data.xlsx`
+Use one rainfall source at a time. A series that the case's switches do not read can stay as an empty template with its headers. Every switch and setting is listed on [Case Workbook Settings](../configuration/general_data).
 
 ---
 
-### Spatial interpolation
+## Rainfall {#rainfall}
 
-Meteorological variables are distributed spatially using:
+### Uniform series {#uniform-series}
 
-- inverse distance weighting (IDW)
+The Rain series tab holds one gauge: rainfall intensity (mm/h) over time. The rain is applied uniformly over the domain. The tab is read when rainfall is on and no design storm, map, satellite or spatial rainfall is chosen.
 
-This ensures that atmospheric forcing is consistent across the domain based on available measurement points.
+The times are interval ends. In the V-tilted example, 10.8 mm/h at 90 min and 0 mm/h at 180 min mean rain at 10.8 mm/h from 0 to 90 min and none from 90 to 180 min.
 
----
+### Rain gauges {#rain-gauges}
 
-### Required variables
+The Rain gauges tab holds several gauges, interpolated to every cell by inverse distance weighting. It is read when `flag_spatial_rainfall = 1` and no rainfall maps are given. Each gauge is one column: its index, name and coordinates (m, in the DEM projection), then its intensity (mm/h) at each time (min) of column B.
 
-Typical inputs include:
+### Rainfall maps {#rainfall-maps}
 
-- air temperature  
-- radiation (net or solar)  
-- relative humidity  
-- wind speed  
+The Rainfall maps list on the Rain and ET tab has one row per map: the time in minutes since the start date and the path of a GeoTIFF in mm/h. It is read when `flag_input_rainfall_map = 1` or a satellite rainfall switch is 1.
 
 ---
 
-### Role in the model
+## Design Storms {#design-storms}
 
-Meteorological forcing is used to compute evapotranspiration, which removes water from:
+The Design storm tab generates a synthetic hyetograph instead of reading a rainfall series:
 
-- surface storage  
-- soil moisture  
+| Setting | Key | Unit |
+|---|---|---|
+| Alternated blocks or Huff curves | `flag_alternated_blocks`, `flag_huff` | 0 / 1 |
+| Return period | `RP` | years |
+| Storm duration | `Rainfall Duration` | min |
+| Hyetograph time step | `dt_design` | min |
+| IDF coefficients | `K`, `a`, `b`, `c` | see below |
 
-This approach is recommended when full atmospheric forcing is available.
+The intensity follows the local IDF relation
 
----
+$$
+i = \frac{K\,\mathrm{RP}^{a}}{(b + t_d)^{c}}
+$$
 
-## Direct Evaporation and Transpiration Inputs
-
-HydroPol2D allows direct specification of evaporation and transpiration.
-
-### Inputs
-
-- evaporation ($E$) raster or time series  
-- transpiration ($T$) raster or time series  
-
-Units:
-
-- $\mathrm{mm\,h^{-1}}$
+where $i$ is the intensity (mm/h), $\mathrm{RP}$ the return period (years) and $t_d$ the duration (min). $K$ must be consistent with these units; $a$ and $c$ are dimensionless and $b$ is in minutes. Use coefficients fitted for the study location.
 
 ---
 
-### Role in the model
+## Evapotranspiration {#evapotranspiration}
 
-These fluxes are applied directly to:
+### Penman–Monteith from climate stations {#penman-monteith-from-climate-stations}
 
-- surface water storage  
-- soil moisture  
+With `flag_ETP = 1` and no ET maps, HydroPol2D computes evapotranspiration with Penman–Monteith from daily weather at one or more stations, interpolated to the grid by inverse distance weighting. On the Climate stations tab, row 2 names each station block (index, easting and northing in m), row 3 heads its columns, and each row from row 4 is one day. Typical variables are air temperature, radiation, relative humidity and wind speed.
 
-This approach bypasses the need for meteorological forcing.
+### Evaporation and transpiration maps {#evaporation-and-transpiration-maps}
 
----
+With `flag_input_ETP_map = 1`, the model reads two lists on the Rain and ET tab, Transpiration maps and Evaporation maps. Each row is the time in days since the start date and the path of a GeoTIFF in mm/day. Both lists must have the same times. The fluxes are applied directly to surface water and soil moisture, so no meteorological forcing is needed.
 
-## Rainfall Forcing
-
-HydroPol2D supports multiple rainfall input configurations.
-
----
-
-### 1. Concentrated rainfall (uniform)
-
-Defined through:
-
-- `Rainfall_Intensity_Data.xlsx`
+:::warning[Fixed on 2026-10-20]
+In `General_Data.xlsx` the rainfall, transpiration and evaporation lists share one header row. Before 2026-10-20, the transpiration list read the rainfall list's `Time [min]` column (with no day-to-minute conversion), and the evaporation list read the transpiration paths. Runs with `flag_input_ETP_map = 1` made before that date used wrong ET times and evaporation maps. Rerun those cases. Each list now stops at its first empty row, and its columns are searched only under its own title, in both layouts.
+:::
 
 ---
 
-#### Description
+## Boundary Hydrographs {#boundary-hydrographs}
 
-- rainfall is applied uniformly over the domain  
-- defined as a time series  
+### Inflow hydrographs {#inflow-hydrographs}
 
-Units:
+The Inflow hydrographs tab, read when `flag_inflow = 1`, holds up to 50 gauges. Each gauge is a block of five columns: time (min), flow (m³/s), and the easting and northing (m) of each cell the flow enters, one cell per row. The flow is spread over those cells. Keep all 50 blocks, even empty ones.
 
-- $\mathrm{mm\,h^{-1}}$
+Inflow hydrographs represent upstream boundaries, river inflow, and dam-break or controlled releases.
 
----
+### Stage hydrographs {#stage-hydrographs}
 
-### 2. Gauged rainfall (spatial interpolation)
+The Stage hydrographs tab, read when `flag_stage_hydrograph = 1`, has the same layout: time (min), water depth (m), and the easting and northing (m) of each boundary cell. All cells of a boundary receive the same imposed depth. Keep all 50 blocks, even empty ones.
 
-Defined through:
-
-- `Rainfall_Spatial_Input.xlsx`
+Stage hydrographs represent downstream control, backwater and other hydraulic constraints.
 
 ---
 
-#### Spatial interpolation
+## Practical Considerations {#practical-considerations}
 
-Rainfall fields are computed using:
-
-- inverse distance weighting (IDW)
-
-Gauge measurements are interpolated to all grid cells based on their spatial location.
-
----
-
-#### Description
-
-- multiple gauges can be specified  
-- rainfall varies spatially and temporally  
-- suitable for observed precipitation datasets  
-
-Units:
-
-- $\mathrm{mm\,h^{-1}}$
+- Keep all forcing in the same time reference as `date_begin` and `date_end`.
+- Check the units of each series: rainfall in mm/h, ET maps in mm/day, inflow in m³/s, stage in m.
+- Do not mix rainfall sources, and check that gauges and boundary cells are placed in the DEM projection.
+- Use a forcing interval that resolves the peaks you need, given the model time step.
 
 ---
 
-### 3. Raster-based rainfall
+## Older Layout {#older-layout}
 
-Rainfall can also be provided as:
-
-- time-varying raster stacks  
-
-Units:
-
-- $\mathrm{mm\,h^{-1}}$
-
----
-
-### Role in the model
-
-Rainfall drives:
-
-- infiltration  
-- runoff generation  
-- surface flow routing  
-
----
-
-## Design Storms
-
-HydroPol2D includes built-in synthetic storm generation.
-
-### Methods available
-
-- Huff distributions  
-- Alternating Block method  
-
----
-
-### Configuration
-
-Defined through `General_Data.xlsx`, including:
-
-- total rainfall depth  
-- storm duration  
-- temporal distribution  
-
-The model generates the rainfall hyetograph internally.
-
----
-
-## External Inflow Hydrographs
-
-External inflow is defined through:
-
-- `Inflow_Hydrograph.xlsx`
-
----
-
-### Role in the model
-
-Used for:
-
-- upstream boundary conditions  
-- river inflow  
-- dam-break or controlled inflow scenarios  
-
----
-
-### Implementation
-
-- multiple gauges can be defined  
-- each gauge is associated with spatial coordinates  
-- inflow is distributed across all cells associated with each gauge  
-
-Units:
-
-- $\mathrm{m^3\,s^{-1}}$
-
----
-
-## Stage Boundary Conditions
-
-Stage boundary conditions are defined through:
-
-- `Stage_Hydrograph.xlsx`
-
----
-
-### Role in the model
-
-Used for:
-
-- downstream control  
-- backwater effects  
-- hydraulic constraints  
-
----
-
-### Implementation
-
-- stage is prescribed as water depth or elevation  
-- all cells associated with the boundary receive the same imposed value  
-
-Units:
-
-- $\mathrm{m}$
-
----
-
-## Control Through `General_Data.xlsx`
-
-The `General_Data.xlsx` file defines:
-
-- which forcing components are active  
-- which datasets are used  
-- temporal resolution  
-- unit consistency  
-
-It acts as the central interface between user-defined inputs and the model.
-
----
-
-## Interaction Between Forcing Components
-
-The forcing inputs interact as follows:
-
-- rainfall introduces water into the system  
-- evapotranspiration removes water from storage  
-- meteorological variables control energy-driven fluxes  
-- inflow hydrographs add external discharge  
-- stage boundaries constrain hydraulic response  
-
-These interactions define the system dynamics.
-
----
-
-## Practical Considerations
-
-- ensure temporal consistency across all forcing inputs  
-- verify units before simulation  
-- avoid mixing incompatible time resolutions  
-- confirm correct spatial placement of gauges  
-- ensure interpolation inputs are well distributed spatially  
-- match forcing resolution with the model time step  
-
----
-
-## Summary
-
-Optional forcing in HydroPol2D enables flexible simulation setups ranging from simple rainfall-driven scenarios to fully coupled meteorological-hydrological systems.
-
-All forcing configurations are managed through `General_Data.xlsx`, allowing users to:
-
-- switch between forcing strategies  
-- integrate external datasets  
-- and define synthetic events  
-
-The selected forcing approach should reflect:
-
-- the objective of the simulation  
-- data availability  
-- and the required level of physical representation  
+In cases that use `General_Data.xlsx`, each series is its own workbook in the same folder: `Rainfall_Intensity_Data.xlsx` (Rain series), `Rainfall_Spatial_Input.xlsx` (Rain gauges), `ETP_input_data.xlsx` (Climate stations), `Inflow_Hydrograph.xlsx` and `Stage_Hydrograph.xlsx`. The map lists are the Satellite or Radar Rainfall, Satellite transpiration and Satellite evaporation tables of `General_Data`. The case workbook keeps the same cell layout, so the model reads both layouts the same way.

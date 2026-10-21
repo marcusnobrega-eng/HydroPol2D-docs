@@ -20,10 +20,12 @@ The <a href={useBaseUrl('/reports/validation_report.pdf')}>validation report</a>
 | Infiltration | Validated | Analytical and layered-soil cases on V-tilted and column-style domains. |
 | Evapotranspiration | Validated | Independent reference ET calculations and extraction-limit checks. |
 | Groundwater and recharge | Validated | Recharge-rise, scheduler, capillary-rise, and analytical hillslope benchmarks. |
-| Layered subsurface (optional) | Controlled tests and Python-MATLAB parity | Column kernel and step parity, full-model V-tilted runs, Voronoi mesh mass closure, implicit-flux stiffness test (Python). No field case. |
+| Layered subsurface (optional) | Controlled tests and Python-MATLAB parity | Column kernel and step parity (implicit flux in both models), full-model V-tilted runs, Voronoi mesh mass closure, implicit-flux and capillary-refill tests. No field case. |
 | Feddes root-water stress (optional) | Controlled consistency tests | Default and layered Feddes ET agree for the same state; Feddes never exceeds unstressed uptake. |
 | Deep aquifer starting state (optional) | Fixture parity | $S_0 = q_0 A \tau$ checked in Python and MATLAB against a shared fixture. |
-| Layered recession calibration | Twin experiment only | Known multipliers recovered at 0, 5 and 10 % noise on a synthetic valley. No field test. |
+| Layered recession calibration | Twin experiment only | Known multipliers recovered at 0, 5 and 10 % noise on a synthetic valley, as the only acceptable pair. No field test. |
+| Gauge discharge cross-sections (MATLAB) | Controlled checks | Cross-section discharge on the V-tilted case, both routing face conventions; 3 of 3 checks. |
+| Single case workbook (MATLAB) | Equivalence check | The V-tilted case gives identical results from `HydroPol2D_Inputs.xlsx` and from the older `General_Data.xlsx` layout; 3 of 3 checks. |
 | Full-momentum hydrodynamics | Validated | Tilted-plane, V-tilted, Ritter dam-break, non-breaking wave, and boundary-condition benchmarks. |
 | Local-inertial hydrodynamics | Validated | Tilted-plane, V-tilted, stage-boundary, and conservation tests. |
 | Cellular automata routing | Validated | V-tilted, plane, and boundary-condition checks. |
@@ -37,6 +39,16 @@ The <a href={useBaseUrl('/reports/validation_report.pdf')}>validation report</a>
 | Water quality | Validated | SWMM-style buildup scale and analytical mass-based wash-off solutions. |
 | Human risk and instability | Validated | Independent threshold and force-balance classification references. |
 
-Latest full test-suite results: HydroPol2D-Python, 911 tests passed (2026-10-17); Case Builder, 181 tests passed (2026-10-19).
+Latest full test-suite results:
+
+| Suite | Result | Date |
+|---|---|---|
+| HydroPol2D-Python | 937 passed, 0 failed, 2 opt-in tests skipped | 2026-10-19 |
+| Case Builder | 181 passed | 2026-10-19 |
+| MATLAB groundwater release checks | 17 of 17 | 2026-10-20 |
+| MATLAB gauge and single-workbook checks | 3 of 3 each | 2026-10-20 |
+| MATLAB validation release | 22 of 23 directly; the canopy-interception check is scored by its Python comparison script and passes when that script runs | 2026-10-20 |
+
+Changes to the model that affect results are listed in the [Changelog](./changelog).
 
 The routing cases are interpreted against the governing equations they solve. The Ritter dry-bed dam-break is an acceptance benchmark for full momentum; reduced routing methods are assessed with gradual-flow, conservation, symmetry, and boundary-condition cases.

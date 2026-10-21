@@ -85,38 +85,37 @@ The [layered subsurface](../theory/layered-subsurface) was added in October 2026
 
 HydroPol2D-Python tests the layered column, Feddes stress and the deep starting state directly (`tests/test_subsurface_column.py`, `test_subsurface_geometry.py`, `test_subsurface_lateral.py`, `test_subsurface_mesh.py`, `test_subsurface_run.py`, `test_feddes.py`, `test_deep_aquifer_initial_state.py`).
 
-The key numerical test compares the explicit and implicit water-table flux:
+Two numerical tests carry the most weight:
 
-| Case | Flux | Sign flips | Water moved over 24 h vs a 36-s reference |
-|---|---|---:|---:|
-| Sandy soil, wet, table 15 cm deep, 1-h steps | Explicit | 2 | 53 % too much |
-| Same | Implicit (default) | 0 | within 0.1 % |
+| Test | Case | Result |
+|---|---|---|
+| Implicit vs explicit flux | Sand, $\theta = 0.41$, table 30 cm deep (nearly saturated gap), 1-h steps against a 1-s run | Implicit: the table stays within 2 mm of the 1-s run. Explicit: about 20 times too much water drains. |
+| Capillary refill rule | Twin valley, column alone and full model | Water cycling between soil and table 9.3 × 10⁻³ → 0 m³/s; cells flipping sign every step 38 → 0; gross capillary rise 0.016 → 0 m³/s; stream flow unchanged |
 
-At a 0.01-s step the two forms agree to $1.5 \times 10^{-5}$.
+A further test checks that capillary rise stops at field capacity.
 
 ### Python-to-MATLAB parity
 
-The MATLAB port is checked against fixtures exported from HydroPol2D-Python (`Validation/Groundwater/Layered` in the MATLAB repository). The fixtures use the explicit water-table flux, because the implicit flux is not yet ported.
+The MATLAB port is checked against fixtures exported from HydroPol2D-Python (`Validation/Groundwater/Layered` in the MATLAB repository). Since 2026-10-20 both models have the implicit water-table flux; the kernel fixtures carry implicit and explicit outputs, and the step fixtures use the model default (implicit). MATLAB takes the implicit derivatives by central differences and Python by `jax.jvp`, so the implicit-flux checks use a tolerance of $10^{-8}$.
 
-| Script | What it checks | Recorded result |
+| Script | What it checks | Recorded result (2026-10-20) |
 |---|---|---|
-| `run_layered_kernel_parity.m` | Every column kernel: geometry, MMF table update, drainage, Darcy flux, Feddes, shared-table bisection, lateral advance | 193 checks, worst $2.8 \times 10^{-16}$ |
-| `run_layered_step_parity.m` | The full layered vertical step on a 2 × 2 V-tilted grid, 4 scenarios, 312 steps | 3,120 checks, worst $2.1 \times 10^{-17}$ |
-| `run_layered_vtilted_case.m` | Full-model V-tilted runs: `local`, `lateral`, `feddes`, `legacy`, `deep`, `deep_legacy`, `deep_empty` | Run from a copy of `Examples/VTilted_Excel`; `lateral` volume error $-1.7 \times 10^{-10}$ m³ |
+| `run_layered_kernel_parity.m` | Every column kernel: geometry, MMF table update, drainage, Darcy flux (explicit and implicit), Feddes, shared-table bisection, lateral advance | 211 checks, worst $2.6 \times 10^{-9}$ |
+| `run_layered_step_parity.m` | The full layered vertical step on a 2 × 2 V-tilted grid, 4 scenarios, 312 steps | 3 120 checks, worst $4.9 \times 10^{-11}$ |
+| `run_layered_vtilted_case.m` | Full-model V-tilted runs: `local`, `lateral`, `feddes`, `legacy`, `deep`, `deep_legacy`, `deep_empty`, and since 2026-10-20 `no_dtb` (column bottom from the soil table), `explicit_flux` and `soil_rasters` | Run from a copy of `Examples/VTilted_Excel`; `lateral` volume error $-1.7 \times 10^{-10}$ m³ |
 | `run_feddes_legacy_consistency.m` | Feddes in the default three-layer ET equals layered Feddes ET for the same state; Feddes never takes more than the unstressed rule | consistency check |
 | `run_layered_mesh_case.m` | 20 m V-tilted Voronoi mesh with 2 HRUs: default, layered, layered + Feddes | every step closes mass within $10^{-8}$ of the rain volume |
 
-`run_deep_aquifer_initial_state_validation.m` checks the deep starting state $S_0 = q_0 A \tau$ against a fixture shared with HydroPol2D-Python. `Validation/Groundwater/run_groundwater_release_checks.m` runs all of these.
+`run_deep_aquifer_initial_state_validation.m` checks the deep starting state $S_0 = q_0 A \tau$ against a fixture shared with HydroPol2D-Python. `Validation/Groundwater/run_groundwater_release_checks.m` runs all of these: 17 of 17 passed on 2026-10-20.
 
 ### Calibration twin experiment
 
-A twin experiment recovered known soil and regolith conductivity multipliers from a synthetic 30-day recession with 0, 5 and 10 % noise. The setup, results and limits are on the [Groundwater Recession Calibration](../calibration/groundwater-recession#5-twin-experiments) page.
+A twin experiment recovered known soil and regolith conductivity multipliers from a synthetic 30-day recession with 0, 5 and 10 % noise; with the capillary refill rule, the truth was the only acceptable pair at every noise level. The setup, results and limits are on the [Groundwater Recession Calibration](../calibration/groundwater-recession#5-twin-experiments) page.
 
 ### What the layered evidence does not cover
 
-- The implicit water-table flux is tested in Python only.
 - No field case: the tests use synthetic V-tilted domains.
-- The open issues listed under [Known Limits](../theory/layered-subsurface#9-known-limits), including the circulation at the water table, are not resolved by these tests.
+- The open issues listed under [Known Limits](../theory/layered-subsurface#9-known-limits), such as perched lateral flow and the missing capillary fringe, are not resolved by these tests.
 
 ## What this validation supports
 

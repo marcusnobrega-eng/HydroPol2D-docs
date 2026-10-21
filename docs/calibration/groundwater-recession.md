@@ -121,7 +121,9 @@ A twin experiment tests identifiability before real data are used:
 
 The tools are in `hydropol2d.calibration.recession_twin` (`run_recession_twin_experiment`, `write_recession_twin_report`).
 
-### 5.1 Result on a fast-draining valley (2026-10-19)
+### 5.1 Result on a fast-draining valley {#51-result-on-a-fast-draining-valley}
+
+This run (2026-10-20) uses the current physics, including the capillary refill rule of the [layered subsurface](../theory/layered-subsurface#44-darcy-flux-at-the-water-table).
 
 | Setting | Value |
 |---|---|
@@ -132,13 +134,15 @@ The tools are in `hydropol2d.calibration.recession_twin` (`run_recession_twin_ex
 | Truth | soil 3, regolith 0.3 |
 | Recession | 30 days |
 
-| Noise | Best candidate | Accepted soil multiplier | Accepted regolith multiplier |
-|---|---|---|---|
-| 0 % | soil 3, regolith 0.3 | 3 | 0.3 |
-| 5 % | soil 3, regolith 0.3 | 3 | 0.3 |
-| 10 % | soil 3, regolith 0.3 | 3 to 10 | 0.3 |
+| Noise | Best candidate | Acceptable candidates | Objective, best | Objective, next best |
+|---|---|---:|---:|---:|
+| 0 % | soil 3, regolith 0.3 | 1 | 0.033 | 0.123 |
+| 5 % | soil 3, regolith 0.3 | 1 | 0.065 | 0.117 |
+| 10 % | soil 3, regolith 0.3 | 1 | 0.106 | 0.131 |
 
-The truth was recovered at all three noise levels. The regolith multiplier was recovered exactly. At 10 % noise the soil multiplier was accepted from 3 to 10. The nine routed candidates took 55 min on a laptop with 2 workers. All three rows score the same nine routed candidates; only the noise added to the target differs.
+The truth was recovered at all three noise levels, and it was the only acceptable pair at every level. The nine routed candidates took 68 min on a laptop with 2 workers. All three rows score the same nine routed candidates; only the noise added to the target differs.
+
+In the first run, before the capillary refill rule (2026-10-19), the truth was also the best candidate, but at 10 % noise the soil multiplier was accepted anywhere from 3 to 10.
 
 <p align="center">
   <img src={useBaseUrl('/img/calibration/layered-twin-experiment.png')} width="900" alt="Left: target recession with 5 percent noise, true recession and best candidate on a log axis over 30 days. Right: objective over the 3 by 3 grid of soil and regolith multipliers, with the best candidate at the truth" />
@@ -150,7 +154,7 @@ The truth was recovered at all three noise levels. The regolith multiplier was r
 
 ### 5.2 What limits the test
 
-- **Rerun noise.** Rerunning the same parameters gives a day-to-day spread of ±2.7 %, from a two-interval wobble in the small channel. Differences between candidates below about this size are within run-to-run noise.
+- **Rerun noise.** In the 2026-10-19 run, rerunning the same parameters gave a day-to-day spread of ±2.7 %, from a two-interval wobble in the small channel. Differences between candidates below about this size are within run-to-run noise.
 - **The default twin valley is too slow.** With 500 m hillslopes and soil $S_y$ about 0.29, it drains over years. Its recession fell by only 9 % in 20 days, too flat to separate the candidates. For recessions of weeks, use shorter hillslopes and a lower $S_y$, as in Section 5.1.
 - **A twin test is not a field test.** It shows that the method can recover parameters on a synthetic valley with the same model structure. Real records add regulation, evapotranspiration and measurement error.
 

@@ -64,6 +64,7 @@ const sidebars = {
         },
         'validation/ancillary-modules',
         'validation/limitations',
+        'validation/changelog',
       ],
     },
     {

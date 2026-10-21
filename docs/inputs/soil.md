@@ -92,7 +92,7 @@ The horizontal conductivity of the soil slots is `ksat` × `soil_lateral_anisotr
 
 Regolith parameters are scalars or rasters. A raster wins wherever it is finite; the scalar fills the rest.
 
-| Parameter | Units | Default | MATLAB raster (`General_Data`) | Python raster |
+| Parameter | Units | Default | MATLAB raster (Soil and groundwater tab) | Python raster |
 |---|---|---|---|---|
 | `regolith_theta_s` | m³/m³ | 0.35 | `RegolithThetaS_path` | `static.regolith_theta_s_path` |
 | `regolith_theta_r` | m³/m³ | 0.05 | `RegolithThetaR_path` | `static.regolith_theta_r_path` |
@@ -105,6 +105,20 @@ Regolith parameters are scalars or rasters. A raster wins wherever it is finite;
 A given regolith $S_y$ must lie in $(0,\ \theta_s - \theta_r]$. The horizontal conductivity of the regolith slots is multiplied by `regolith_lateral_conductivity_multiplier` (default 1).
 
 There is no regolith class table yet. Regolith properties are scalars or rasters only.
+
+### Soil-property maps {#soil-property-maps}
+
+Soil properties can also come from rasters. Finite cells override the soil-class value; nodata keeps it. In MATLAB Excel mode the maps are the "Soil-property maps" block of the Input maps tab (since 2026-10-20; in bypass mode they are the Case Builder's maps).
+
+| Map | Overrides |
+|---|---|
+| `ThetaS_path`, `ThetaR_path` | $\theta_s$, $\theta_r$ |
+| `AlphaVG_path`, `NVG_path` | van Genuchten $\alpha$ and $n$ |
+| `KsatNearSurface_path`, `KsatRootZone_path`, `KsatTransmission_path` | $K_{sat}$ of the three soil layers |
+| `GroundwaterKsat_path` | `kgsat` |
+| `SpecificYield_path` | `Sy` (default groundwater scheme only) |
+
+A path that is not a file raises a warning.
 
 ### Root-water-uptake heads
 

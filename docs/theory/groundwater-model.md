@@ -753,7 +753,7 @@ Pick a start date in a recession. The baseflow filter lags a rising hydrograph, 
 | Mean recharge | `vertical.deep_aquifer_mean_recharge_mm_year` | `deep_aquifer_mean_recharge_mm_year` |
 | Initial-state file | `static.deep_aquifer_initial_state_path` | `DeepAquiferInitialState_path` |
 
-In MATLAB the starting-state values are in the "Deep Aquifer Initial State" block of `General_Data` (see [General Data](../configuration/general_data)). The Case Builder writes the subbasin and channel-weight rasters from the conditioned D8 terrain.
+In MATLAB the starting-state values are in the "Deep aquifer: starting storage" block of the Soil and groundwater tab (see [Case Workbook Settings](../configuration/general_data#tab-soil-and-groundwater)). The Case Builder writes the subbasin and channel-weight rasters from the conditioned D8 terrain.
 
 ---
 

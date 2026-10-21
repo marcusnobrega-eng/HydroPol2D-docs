@@ -63,9 +63,7 @@ This approach is appropriate when:
 If a DTB map is not available, a soil depth per soil class can stand in for it.
 
 - **HydroPol2D-Python** can take the soil depth from its soil table, from a soil-depth raster, or from the scalar `vertical.soil_depth_m`.
-- **HydroPol2D (MATLAB)** does not currently read the `DTB (m)` column of `SOIL_parameters.xlsx`. With `DTB_path` empty, the soil depth is 1 m.
-
-Whether the MATLAB `DTB (m)` column should be read or removed is an open decision.
+- **HydroPol2D (MATLAB)**, with the layered subsurface, takes the `DTB (m)` column of the Soil classes tab as the last fallback for the column bottom (since 2026-10-20). The default groundwater scheme requires `DTB_path` and does not read that column; without groundwater, an empty `DTB_path` gives a 1 m soil depth.
 
 ---
 
@@ -111,7 +109,7 @@ With the [layered subsurface](../theory/layered-subsurface) (Python `vertical.su
 | Depth | What it marks | Input |
 |---|---|---|
 | Soil base | Where soil properties end and regolith begins | `SoilBaseDepth_path` raster, else `subsurface_soil_base_depth_m` (default 2 m) |
-| Depth to bedrock | Where the aquifer ends | `DTB_path` raster, else `subsurface_depth_to_bedrock_m`, else the default-scheme soil depth (with a warning) |
+| Depth to bedrock | Where the aquifer ends | `DTB_path` raster, else `subsurface_depth_to_bedrock_m`, else the soil depth of each soil class (`DTB (m)` in MATLAB), with a warning |
 
 The aquifer base is the ground minus $\min(\mathrm{DTB},\ D_{\max})$, with $D_{\max}$ = `subsurface_max_depth_m` (default 50 m). Cells with DTB deeper than the cap stop at the cap.
 
@@ -119,7 +117,7 @@ Between the soil base and the column base, the model places regolith slots on a 
 
 In Python the same keys are `vertical.subsurface.soil_base_depth_m`, `depth_to_bedrock_m`, `max_depth_m` and `deep_layers`, and the rasters are `static.soil_base_depth_path` and `static.depth_to_bedrock_path`.
 
-Whether `DTB_path` should be required in MATLAB Excel mode when the layered scheme is on is an open decision. Today the fallback to the default soil depth applies, with a warning.
+`DTB_path` is optional in layered mode. In MATLAB the column bottom falls back to `subsurface_depth_to_bedrock_m`, then to the `DTB (m)` of each soil class, with a warning; before 2026-10-20 a missing `DTB_path` silently meant 1 m. The default groundwater scheme still requires `DTB_path`.
 
 ### Global sources used by the Case Builder
 

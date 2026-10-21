@@ -27,9 +27,8 @@ synthetic V-tilted domains, not field validation. Open limits:
 
 - no lateral flow of perched water above unsaturated regolith;
 - no regolith class table and no per-slot raster outputs;
-- water cycles up and down near a shallow table, which inflates the gross
-  capillary rise and recharge in the ledger while the net stays near zero;
-- the implicit water-table flux is tested in Python only;
+- no capillary fringe: capillary rise refills the soil above the table only
+  up to field capacity;
 - the compiled Python city loop does not yet run the layered scheme with
   lateral groundwater flow.
 

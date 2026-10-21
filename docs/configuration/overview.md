@@ -4,7 +4,7 @@ title: Overview
 
 # Model Configuration
 
-HydroPol2D is configured primarily through `General_Data.xlsx`. That spreadsheet selects the process stack, the routing family, the groundwater timing controls, the input files, and the optional diagnostics.
+In MATLAB Excel mode, a HydroPol2D case is one workbook, `HydroPol2D_Inputs.xlsx`. Its settings tabs select the process stack, the routing family, the groundwater controls, the input files and the optional diagnostics; its other tabs hold the class tables and time series. Older cases with `General_Data.xlsx` and separate workbooks still run (see [Run from Excel](../getting-started/excel-workflow#older-layout)). HydroPol2D-Python reads the same settings from its case YAML.
 
 Configuration pages and theory pages serve different roles:
 
@@ -26,6 +26,9 @@ The public configuration story should match the implemented model:
 | Hydrologic core | `flag_infiltration`, ET/rainfall/snow controls, soil/LULC tables | Default + validated |
 | Layered groundwater recharge and async scheduler | `flag_groundwater_modeling`, `flag_groundwater_async`, `groundwater_target_dt_min`, `groundwater_min_dt_min`, `groundwater_max_head_change_m`, `groundwater_courant` | Default + validated |
 | Capillary rise | `flag_capillary_rise` | Optional + validated in controlled benchmarks |
+| Layered subsurface | `flag_layered_subsurface`, `flag_implicit_water_table_flux` | Optional + controlled tests and Python-MATLAB parity |
+| Feddes root-water stress | `flag_feddes` | Optional + consistency tests |
+| Deep aquifer | `flag_deep_aquifer` | Optional + starting-state fixture tests |
 | Local inertial routing | `flag_inertial`, `flag_numerical_scheme` | Default + validated |
 | Full-momentum routing | `flag_full_momentum` | Optional + validated in controlled benchmarks |
 | Diffusive routing | `flag_diffusive` | Optional + validated in controlled benchmarks |
@@ -37,7 +40,7 @@ The public configuration story should match the implemented model:
 
 ### 1. Simulation and forcing control
 
-`General_Data.xlsx` defines simulation timing, rainfall and meteorological forcing, inflow and stage boundaries, output cadence, and runtime options such as adaptive time stepping or GPU execution.
+The Run control, Rain and ET, Design storm and Surface flow tabs define simulation timing, rainfall and meteorological forcing, inflow and stage boundaries, output cadence, and runtime options such as adaptive time stepping or GPU execution. Every setting is listed on [Case Workbook Settings](./general_data).
 
 ### 2. Routing-family selection
 
