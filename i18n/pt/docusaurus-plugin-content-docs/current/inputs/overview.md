@@ -31,9 +31,11 @@ Essas entradas são opcionais por caso de uso, não experimentais por definiçã
 
 O HydroPol2D também lê planilhas:
 
-- [Parameter Tables](./parameter-tables) para classes de LULC, solo e neve;
-- `General_Data.xlsx` para flags, tempo de simulação, caminhos de arquivos e controles de execução;
-- planilhas de forçantes ou condições de contorno para chuva, evapotranspiração, inflow, stage ou estruturas de controle, quando essas opções estiverem ativas.
+- a planilha do caso MATLAB, `HydroPol2D_Inputs.xlsx`, cujas abas de configurações guardam as chaves, o tempo de simulação, os caminhos de arquivos e os controles de execução ([Configurações da Planilha do Caso](../configuration/general_data));
+- as suas abas de tabelas de classes, para as classes de uso da terra e de solo, a instabilidade humana, a malha e as estruturas de controle ([Tabelas de parâmetros](./parameter-tables));
+- as suas abas de séries, para chuva, estações climatológicas, vazão de entrada e nível, quando essas opções estiverem ativas ([Forçantes Opcionais](./optional-forcing)).
+
+Os casos antigos guardam essas informações em `General_Data.xlsx` e em planilhas separadas, e os dois formatos continuam rodando.
 
 ## Entradas de forçantes
 

@@ -51,7 +51,7 @@ Cada profundidad se lee de la primera fuente disponible.
 | Profundidad | Fuentes (se usa la primera encontrada) |
 |---|---|
 | Base del suelo | ráster de base del suelo, luego el escalar `soil_base_depth_m` (2 m por defecto) |
-| Profundidad hasta el lecho de roca | ráster de DTB, luego el escalar `depth_to_bedrock_m`, luego la profundidad del suelo del esquema predeterminado (con una advertencia) |
+| Profundidad hasta el lecho de roca | ráster de DTB, luego el escalar `depth_to_bedrock_m`, luego la profundidad del suelo de cada clase de suelo (con una advertencia) |
 
 En el esquema en capas, la profundidad del suelo del esquema predeterminado solo se usa como este último recurso. La página [Profundidad hasta el lecho de roca](../inputs/dtb) describe las fuentes de datos globales para ambas profundidades.
 
@@ -75,7 +75,7 @@ En el esquema en capas, la profundidad del suelo del esquema predeterminado solo
 | $\theta$ | Contenido de agua de la parte no saturada de una capa | m³/m³ |
 | $\theta_s$ | Contenido de agua a saturación | m³/m³ |
 | $\theta_r$ | Contenido de agua residual | m³/m³ |
-| $\theta_{fc}$ | Contenido de agua a capacidad de campo, $\theta(\psi = -3.3\ \mathrm{m})$ por defecto | m³/m³ |
+| $\theta_{fc}$ | Contenido de agua a capacidad de campo, $\theta(\psi = -3.3\ \mathrm{m})$ por defecto; también es el nivel hasta el que el ascenso capilar rellena una capa | m³/m³ |
 | $S_y$ | Rendimiento específico (porosidad drenable), $\theta_s - \theta_{fc}$ | - |
 | $S_e$ | Saturación efectiva, $(\theta - \theta_r)/(\theta_s - \theta_r)$ | - |
 | $K_v$ | Conductividad hidráulica saturada vertical de una capa | m/s |
@@ -169,22 +169,46 @@ q = K(\theta_k)\left(\frac{\psi_k}{\Delta z} + 1\right),
 \qquad \Delta z = \tfrac{1}{2}u_k
 $$
 
-donde $\psi_k$ es la carga matricial de la capa, con $\psi = 0$ en el nivel freático, $K(\theta_k)$ es la conductividad no saturada de la capa y $u_k$ es su espesor no saturado. Un flujo hacia abajo es recarga, limitada por el agua de la capa. Un flujo hacia arriba es ascenso capilar, limitado por el espacio libre de la capa y por el agua drenable por debajo del nivel freático.
+donde $\psi_k$ es la carga matricial de la capa, con $\psi = 0$ en el nivel freático, $K(\theta_k)$ es la conductividad no saturada de la capa y $u_k$ es su espesor no saturado. Un flujo hacia abajo es recarga, limitada por el agua de la capa. Un flujo hacia arriba es ascenso capilar, limitado por el agua drenable por debajo del nivel freático y por la regla de rellenado que se describe a continuación.
 
-**Flujo implícito (predeterminado).** Sobre una franja no saturada delgada por encima de un nivel freático somero, el flujo explícito es rígido. Con pasos largos, el flujo se excede y cambia de signo. Por defecto, HydroPol2D evalúa el flujo al final del paso con un paso de Euler implícito (backward Euler) linealizado por celda, sin iteración. Mover $q\,\Delta t$ drena la capa en $q\,\Delta t$ y eleva el nivel freático en $q\,\Delta t / S_y$, por lo que
+**Regla de rellenado capilar.** El ascenso capilar rellena la capa no saturada más baja solo hasta la capacidad de campo, es decir, hasta el contenido de agua $\theta_{fc}$ que deja un nivel freático en descenso (donde se da un $S_y$ del regolito, $\theta_s - S_y$). Este es el enfoque de HBV (Lindström et al., 1997). Por lo tanto, el flujo ascendente se detiene cuando
 
 $$
-q = \frac{q_0}{1 + \Delta t\,\max\!\left(\dfrac{\partial q}{\partial W} - \dfrac{1}{S_y}\dfrac{\partial q}{\partial h},\ 0\right)}
+\theta_k \ge \theta_{fc}
 $$
 
-donde $q_0$ es el flujo explícito. Solo se conserva la parte amortiguadora de la derivada. CLM5 también resuelve su flujo en el nivel freático de forma implícita. Con pasos cortos, ambas formas coinciden.
+y nunca humedece el suelo por encima de un nivel freático somero hasta la saturación. La regla se aplica en HydroPol2D-Python (desde `fe81252`) y en el modelo MATLAB (desde `051b52b`), tanto en la malla estructurada como en la malla no estructurada.
 
-| Prueba: nivel freático a 15 cm de profundidad, suelo arenoso húmedo, pasos de 1 h, frente a una referencia de 36 s | Cambios de signo | Error |
+Antes de esta regla, el ascenso capilar llenaba la capa hacia el equilibrio hidrostático, mientras que un nivel freático en descenso dejaba el suelo a capacidad de campo. Así, el agua circulaba hacia arriba y hacia abajo cerca de un nivel freático somero. La tabla siguiente muestra el efecto en el valle gemelo de la calibración.
+
+| Medida | Antes | Después |
 |---|---:|---:|
-| Flujo explícito | 2 | 53 % |
-| Flujo implícito | 0 | menor que 0.1 % |
+| Agua que circula entre el suelo y el nivel freático, solo la columna | 9.3 × 10⁻³ m³/s | 0 |
+| Celdas que cambian el signo del flujo en cada paso, solo la columna | 38 | 0 |
+| Ascenso capilar bruto, modelo completo | 0.016 m³/s | 0 |
+| Caudal del cauce | sin cambio | sin cambio |
 
-La opción es `implicit_water_table_flux` (`true` por defecto). El flujo implícito está implementado solo en HydroPol2D-Python. El modelo MATLAB mantiene el flujo explícito para que sus fixtures de paridad sigan coincidiendo. La adaptación a MATLAB está planificada.
+La contrapartida es que el modelo no tiene franja capilar. Para representarla, se reduce `capillary_field_capacity_head_m`. En ese caso, $\theta_{fc}$ y $S_y$ cambian juntos.
+
+**Flujo implícito (predeterminado).** Sobre una franja no saturada delgada por encima de un nivel freático somero, el flujo explícito es rígido. Con pasos largos, el flujo se excede y cambia de signo. Por defecto, HydroPol2D evalúa el flujo al final del paso con un paso de Euler implícito (backward Euler) linealizado por celda, sin iteración.
+
+$$
+q = \frac{q_0}{1 + \Delta t\,\max\!\left(\dfrac{\partial q}{\partial W} - \dfrac{1}{S_y^{*}}\dfrac{\partial q}{\partial h},\ 0\right)}
+$$
+
+donde $q_0$ es el flujo explícito y $W$ es el agua de la capa. La derivada respecto de la carga sigue el movimiento del nivel freático que causa el flujo. Un ascenso conserva el contenido de agua de la franja, y un descenso expone $\theta_{fc}$. $S_y^{*}$ es el costo de almacenamiento de ese movimiento ($\theta_s - \theta_k$ de la franja cuando el agua baja). Solo se conserva la parte amortiguadora de la derivada. Una franja saturada ($\theta_k = \theta_s$) drena a $K_{sat}$ sin amortiguamiento. CLM5 también resuelve su flujo en el nivel freático de forma implícita. Con pasos cortos, ambas formas coinciden.
+
+| Prueba: arena, $\theta = 0.41$, nivel freático a 30 cm de profundidad (franja casi saturada), pasos de 1 h, frente a una simulación con pasos de 1 s | Resultado |
+|---|---|
+| Flujo implícito | el nivel freático se mantiene a menos de 2 mm de la simulación de 1 s |
+| Flujo explícito | drena cerca de 20 veces más agua de la debida |
+
+| Modelo | Interruptor | Derivadas |
+|---|---|---|
+| HydroPol2D-Python | `implicit_water_table_flux` (`true` por defecto) | `jax.jvp` |
+| HydroPol2D (MATLAB) | `flag_implicit_water_table_flux` (`1` por defecto; `HYDROPOL_IMPLICIT_WATER_TABLE_FLUX` lo sobrescribe) | diferencias centrales de cuarto orden |
+
+Los dos modelos coinciden hasta cerca de $10^{-9}$, y sus pruebas de paridad usan una tolerancia de $10^{-8}$.
 
 ### 4.5 Flujo lateral {#45-lateral-flow}
 
@@ -304,7 +328,7 @@ vertical:
 
 Un ráster `static.regolith_<name>_path` tiene prioridad donde es finito. El escalar completa el resto.
 
-**HydroPol2D (MATLAB).** Se usan `flag_layered_subsurface` y `flag_feddes` en la hoja `Flags`, y los bloques "Layered Subsurface", "Feddes Root-Water Stress" y "Lateral Conductivity Multipliers" de `General_Data`. Ver [Parámetros de configuración](../configuration/general_data) y [Banderas del modelo](../configuration/flags).
+**HydroPol2D (MATLAB).** La pestaña Soil and groundwater del libro del caso contiene todos los parámetros anteriores, bloque por bloque, con su interruptor al inicio del bloque (`flag_layered_subsurface`, `flag_feddes`, `flag_implicit_water_table_flux`). Ver [Parámetros del libro del caso](../configuration/general_data#tab-soil-and-groundwater) y [Banderas del modelo](../configuration/flags).
 
 ---
 
@@ -313,9 +337,9 @@ Un ráster `static.regolith_<name>_path` tiene prioridad donde es finito. El esc
 - **Sin flujo lateral de agua colgada.** Una capa de suelo saturada sobre regolito no saturado no genera flujo lateral.
 - **Sin tabla de clases de regolito.** Los parámetros del regolito son escalares o rásteres.
 - **Sin salidas ráster por capa.**
-- **Circulación en el nivel freático.** La regla de descenso a capacidad de campo y el flujo de Darcy basado en la media de la capa, en conjunto, hacen que el agua circule hacia arriba y hacia abajo cerca de un nivel freático somero. El intercambio neto es cercano a cero, pero la circulación infla el ascenso capilar bruto y la recarga bruta en el balance hídrico. Este problema está abierto y aún no se ha corregido.
+- **Sin franja capilar.** El ascenso capilar rellena una capa solo hasta la capacidad de campo (sección 4.4). Reducir `capillary_field_capacity_head_m` representa una franja capilar, con un $S_y$ menor.
 - **Bucle compilado de ciudad.** El bucle compilado de ciudad de HydroPol2D-Python todavía no ejecuta el esquema en capas con flujo lateral de agua subterránea.
-- **Flujo implícito solo en Python.** El modelo MATLAB todavía usa el flujo explícito en el nivel freático.
+- **Dos formas de calcular las derivadas implícitas.** Python usa `jax.jvp` y MATLAB usa diferencias centrales. Coinciden hasta cerca de $10^{-9}$.
 
 ---
 
@@ -326,3 +350,4 @@ Un ráster `static.regolith_<name>_path` tiene prioridad donde es finito. El esc
 - Niswonger, R. G., Prudic, D. E., and Regan, R. S. (2006). Documentation of the Unsaturated-Zone Flow (UZF1) Package for modeling unsaturated flow between the land surface and the water table with MODFLOW-2005. USGS Techniques and Methods 6-A19. [pubs.usgs.gov/tm/2006/tm6a19](https://pubs.usgs.gov/tm/2006/tm6a19/)
 - Lv, M., et al. (2021). A comprehensive review of specific yield in land surface and groundwater studies. *Journal of Advances in Modeling Earth Systems*, 13, e2020MS002270. [doi:10.1029/2020MS002270](https://doi.org/10.1029/2020MS002270)
 - Feddes, R. A., Kowalik, P. J., and Zaradny, H. (1978). *Simulation of Field Water Use and Crop Yield*. Pudoc, Wageningen.
+- Lindström, G., Johansson, B., Persson, M., Gardelin, M., and Bergström, S. (1997). Development and test of the distributed HBV-96 hydrological model. *Journal of Hydrology*, 201, 272–288. [doi:10.1016/S0022-1694(97)00041-3](https://doi.org/10.1016/S0022-1694(97)00041-3)

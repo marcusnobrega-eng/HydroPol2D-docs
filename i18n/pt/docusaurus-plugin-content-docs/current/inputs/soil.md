@@ -85,7 +85,7 @@ A condutividade horizontal das camadas de solo é `ksat` × `soil_lateral_anisot
 
 Os parâmetros do regolito são escalares ou rasters. Um raster prevalece onde for finito, e o escalar preenche o restante.
 
-| Parâmetro | Unidades | Padrão | Raster MATLAB (`General_Data`) | Raster Python |
+| Parâmetro | Unidades | Padrão | Raster MATLAB (aba Soil and groundwater) | Raster Python |
 |---|---|---|---|---|
 | `regolith_theta_s` | m³/m³ | 0.35 | `RegolithThetaS_path` | `static.regolith_theta_s_path` |
 | `regolith_theta_r` | m³/m³ | 0.05 | `RegolithThetaR_path` | `static.regolith_theta_r_path` |
@@ -98,6 +98,20 @@ Os parâmetros do regolito são escalares ou rasters. Um raster prevalece onde f
 Um $S_y$ do regolito informado deve estar em $(0,\ \theta_s - \theta_r]$. A condutividade horizontal das camadas de regolito é multiplicada por `regolith_lateral_conductivity_multiplier` (padrão 1).
 
 Ainda não existe tabela de classes de regolito. As propriedades do regolito são apenas escalares ou rasters.
+
+### Mapas de propriedades do solo {#soil-property-maps}
+
+As propriedades do solo também podem vir de rasters. As células finitas substituem o valor da classe de solo, e o nodata mantém esse valor. No modo Excel do MATLAB, os mapas formam o bloco "Soil-property maps" da aba Input maps (desde 2026-10-20). No modo bypass, são os mapas do Case Builder.
+
+| Mapa | Substitui |
+|---|---|
+| `ThetaS_path`, `ThetaR_path` | $\theta_s$, $\theta_r$ |
+| `AlphaVG_path`, `NVG_path` | $\alpha$ e $n$ de van Genuchten |
+| `KsatNearSurface_path`, `KsatRootZone_path`, `KsatTransmission_path` | $K_{sat}$ das três camadas de solo |
+| `GroundwaterKsat_path` | `kgsat` |
+| `SpecificYield_path` | `Sy` (apenas no esquema padrão de águas subterrâneas) |
+
+Um caminho que não aponta para um arquivo gera um aviso.
 
 ### Cargas da absorção de água pelas raízes {#root-water-uptake-heads}
 

@@ -14,8 +14,7 @@ A subsuperfície em camadas tem testes controlados e paridade Python-MATLAB em d
 
 - não há fluxo lateral de água suspensa sobre regolito não saturado;
 - não há tabela de classes de regolito nem saídas raster por camada;
-- a água circula para cima e para baixo perto de um lençol freático raso, o que infla a ascensão capilar e a recarga brutas no balanço enquanto a troca líquida fica perto de zero;
-- o fluxo implícito no lençol freático foi testado apenas em Python;
+- não há franja capilar, porque a ascensão capilar repõe a água do solo acima do lençol apenas até a capacidade de campo;
 - o laço compilado do Python para cidades ainda não roda o esquema em camadas com fluxo lateral de águas subterrâneas.
 
 A calibração por recessão foi testada com um experimento gêmeo em um vale sintético, e não com poços observados ou com um hidrograma de campo.

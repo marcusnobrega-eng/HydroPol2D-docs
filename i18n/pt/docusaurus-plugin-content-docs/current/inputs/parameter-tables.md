@@ -10,6 +10,22 @@ Essa estrutura separa as informações espaciais da definição dos parâmetros 
 
 ---
 
+## Onde Ficam as Tabelas {#where-the-tables-live}
+
+No modo Excel do MATLAB, as tabelas de classes são abas da planilha do caso, `HydroPol2D_Inputs.xlsx`. Cada aba é uma cópia, célula a célula, da planilha que substitui, porque o modelo lê algumas colunas por posição. Mantenha as linhas e a ordem das colunas, e acrescente uma classe como uma nova linha.
+
+| Aba | Antes | Lida quando |
+|---|---|---|
+| Soil classes | `SOIL_parameters.xlsx` | sempre |
+| Land use classes | `LULC_parameters.xlsx` | sempre (lida a partir da linha 2, por posição) |
+| Human instability | `human_risk.xlsx` | `flag_human_instability = 1` ou `3` |
+| Mesh | `Voronoi_Settings.xlsx` | `flag_voronoi = 1` |
+| Control structures | `BC_Control_structure.xlsx` | `flag_reservoir = 1` |
+
+No formato antigo, as mesmas tabelas são as planilhas separadas da segunda coluna, na pasta de `General_Data.xlsx`. O modelo lê a aba quando a planilha do caso a tem e, caso contrário, a planilha antiga. O HydroPol2D-Python lê as mesmas propriedades das classes a partir do contrato do Case Builder.
+
+---
+
 ## Estrutura Geral
 
 Cada tabela de parâmetros contém:
@@ -35,8 +51,8 @@ A tabela LULC define propriedades relacionadas à superfície que controlam a re
 | Cobertura de árvore | 10 | 0,10 | 0 | 0 | 10 | 0,20 | 800 | 1,20 | 50 | 1,50 |
 | Arbustos | 20 | 0,08 | 0 | 0 | 12 | 0,20 | 900 | 1,20 | NaN | 1,00 |
 | Pastagem | 30 | 0,06 | 0 | 0 | 15 | 0,22 | 1000 | 1,20 | NaN | 0,60 |
-| Terras agrícolas | 40 | 0,05 | 0 | 0 | 30 | 0,25 | 1400 | 13h30 | NaN | 1,00 |
-| Construído | 50 | 0,03 | 0 | 0 | 80 | 0h30 | 2000 | 13h30 | NaN | 0,00 |
+| Terras agrícolas | 40 | 0,05 | 0 | 0 | 30 | 0,25 | 1400 | 1,30 | NaN | 1,00 |
+| Construído | 50 | 0,03 | 0 | 0 | 80 | 0,30 | 2000 | 1,30 | NaN | 0,00 |
 | Vegetação nua / esparsa | 60 | 0,035 | 0 | 0 | 45 | 0,25 | 1600 | 1,25 | NaN | 0,10 |
 | Neve e gelo | 70 | 0,02 | 0 | 0 | 1 | 0,10 | 200 | 1.10 | NaN | 0,00 |
 | Corpos de água permanentes | 80 | 0,035 | 0 | 0 | 0 | 0 | 0 | 0 | NaN | 0,00 |
@@ -77,7 +93,7 @@ A tabela de solos define as propriedades hidráulicas básicas usadas para estim
 | Argila arenosa | 9 | 10.9 | 1,89 | 7,5 | 0,412 | 0,065 | 0,1287 | 0,22 | 218 | 1 | 1 | 1 | 1 |
 | Lodo | 10 | 3.4 | 1,37 | 4,0 | 0,486 | 0,067 | 0,1234 | 0,12 | 68 | 1 | 1 | 1 | 1 |
 | Areia Argilosa | 11 | 29,9 | 2.28 | 14,5 | 0,401 | 0,057 | 0,1172 | 0,25 | 598 | 1 | 1 | 1 | 1 |
-| Areia | 12 | 117,8 | 2,68 | 14,5 | 0,417 | 0,045 | 0,1225 | 0h30 | 2356 | 1 | 1 | 1 | 1 |
+| Areia | 12 | 117,8 | 2,68 | 14,5 | 0,417 | 0,045 | 0,1225 | 0,30 | 2356 | 1 | 1 | 1 | 1 |
 | Água | 0 | 0,3 | 1.09 | 0,8 | 0,385 | 0,068 | 0,0997 | 0,03 | 6 | 1 | 1 | 1 | 1 |
 
 *Tabela 2. Tabela de parâmetros do solo HydroPol2D. Os valores `Index` devem corresponder aos valores categóricos no raster do solo.*
@@ -102,15 +118,16 @@ Os valores mostrados acima correspondem à tabela atual de parâmetros de solo H
 
 ---
 
-## Atribuição DTB através da tabela de solos
+## Atribuição DTB através da tabela de solos {#dtb-assignment-through-the-soil-table}
 
-Se um raster DTB não estiver disponível, os valores DTB podem ser atribuídos diretamente na tabela de solos.
-Nesse caso:
-- cada classe de solo está associada a um valor representativo de DTB,
-- o campo DTB é construído implicitamente a partir do mapa do solo,
-- a profundidade de armazenamento permanece consistente com a classificação de solo adotada.
+A coluna `DTB (m)` dá uma profundidade até o leito rochoso por classe de solo. O uso dessa coluna depende do esquema de subsuperfície.
 
-Isto é particularmente útil em aplicações com escassez de dados.
+| Esquema | Papel de `DTB (m)` |
+|---|---|
+| [Subsuperfície em camadas](../theory/layered-subsurface) | Fundo da coluna onde `DTB_path` e `subsurface_depth_to_bedrock_m` estão ambos vazios (no MATLAB desde 2026-10-20; o HydroPol2D-Python lê a sua tabela de solos da mesma forma) |
+| Esquema padrão de águas subterrâneas (MATLAB) | Não é lida. `DTB_path` é obrigatório. Sem águas subterrâneas, um `DTB_path` vazio dá uma profundidade do solo de 1 m |
+
+Cada classe de solo passa então a ter uma profundidade representativa, e o fundo da coluna acompanha o mapa de solos. Isso é útil em aplicações com escassez de dados.
 
 
 ---
@@ -188,7 +205,8 @@ Isto significa que o solucionador inercial local é modificado localmente pelo c
 
 ### Estrutura da tabela de entrada
 
-As condições de contorno interno são definidas através de uma planilha dedicada.
+As condições de contorno internas são definidas na aba Control structures da planilha do caso (`BC_Control_structure.xlsx` no formato antigo), lida quando `flag_reservoir = 1`. Cada linha é uma estrutura. A vazão de saída é $Q = k_1 (h - h_{0,1})^{k_2}$ para a célula $(x_{d,1}, y_{d,1})$ e $Q = k_3 (h - h_{0,2})^{k_4}$ para a célula $(x_{d,2}, y_{d,2})$, com coordenadas na projeção do DEM.
+
 #### Estrutura da tabela
 
 | Parâmetro | Unidades | Descrição |

@@ -54,9 +54,7 @@ Esta abordagem é apropriada quando:
 Se um mapa DTB não estiver disponível, uma profundidade do solo por classe de solo pode substituí-lo.
 
 - O **HydroPol2D-Python** pode tomar a profundidade do solo da sua tabela de solos, de um raster de profundidade do solo ou do escalar `vertical.soil_depth_m`.
-- O **HydroPol2D (MATLAB)** atualmente não lê a coluna `DTB (m)` de `SOIL_parameters.xlsx`. Com `DTB_path` vazio, a profundidade do solo é 1 m.
-
-Ainda está em aberto se a coluna `DTB (m)` do MATLAB deve ser lida ou removida.
+- O **HydroPol2D (MATLAB)**, com a subsuperfície em camadas, usa a coluna `DTB (m)` da aba Soil classes como último recurso para o fundo da coluna (desde 2026-10-20). O esquema padrão de águas subterrâneas exige `DTB_path` e não lê essa coluna. Sem águas subterrâneas, um `DTB_path` vazio dá uma profundidade do solo de 1 m.
 
 ---
 
@@ -100,7 +98,7 @@ Na [subsuperfície em camadas](../theory/layered-subsurface) (Python `vertical.s
 | Profundidade | O que marca | Entrada |
 |---|---|---|
 | Base do solo | Onde terminam as propriedades do solo e começa o regolito | raster `SoilBaseDepth_path`; na falta dele, `subsurface_soil_base_depth_m` (padrão 2 m) |
-| Profundidade até o leito rochoso | Onde termina o aquífero | raster `DTB_path`; na falta dele, `subsurface_depth_to_bedrock_m`; na falta deste, a profundidade do solo do esquema padrão (com aviso) |
+| Profundidade até o leito rochoso | Onde termina o aquífero | raster `DTB_path`; na falta dele, `subsurface_depth_to_bedrock_m`; na falta deste, a profundidade do solo de cada classe de solo (`DTB (m)` no MATLAB), com aviso |
 
 A base do aquífero é o terreno menos $\min(\mathrm{DTB},\ D_{\max})$, com $D_{\max}$ = `subsurface_max_depth_m` (padrão 50 m). Células com DTB mais profundo que o teto param no teto.
 
@@ -108,7 +106,7 @@ Entre a base do solo e a base da coluna, o modelo distribui camadas de regolito 
 
 No Python, as chaves equivalentes são `vertical.subsurface.soil_base_depth_m`, `depth_to_bedrock_m`, `max_depth_m` e `deep_layers`, e os rasters são `static.soil_base_depth_path` e `static.depth_to_bedrock_path`.
 
-Ainda está em aberto se `DTB_path` deve ser obrigatório no modo Excel do MATLAB quando o esquema em camadas está ativo. Hoje vale o recurso à profundidade do solo padrão, com aviso.
+`DTB_path` é opcional no modo em camadas. No MATLAB, o fundo da coluna recorre a `subsurface_depth_to_bedrock_m` e, depois, ao `DTB (m)` de cada classe de solo, com aviso. Antes de 2026-10-20, a falta de `DTB_path` significava 1 m, sem aviso. O esquema padrão de águas subterrâneas continua exigindo `DTB_path`.
 
 ### Fontes globais usadas pelo Case Builder {#global-sources-used-by-the-case-builder}
 

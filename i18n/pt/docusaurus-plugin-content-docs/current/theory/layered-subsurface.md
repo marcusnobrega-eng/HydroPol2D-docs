@@ -51,7 +51,7 @@ Cada profundidade vem da primeira fonte encontrada.
 | Profundidade | Fontes, na ordem em que são procuradas |
 |---|---|
 | Base do solo | raster da base do solo; depois, o escalar `soil_base_depth_m` (padrão 2 m) |
-| Profundidade até o leito rochoso | raster de DTB; depois, o escalar `depth_to_bedrock_m`; depois, a profundidade do solo do esquema padrão (com aviso) |
+| Profundidade até o leito rochoso | raster de DTB; depois, o escalar `depth_to_bedrock_m`; depois, a profundidade do solo de cada classe de solo (com aviso) |
 
 No esquema em camadas, a profundidade do solo do esquema padrão serve apenas como esse último recurso. A página [Profundidade até o leito rochoso](../inputs/dtb) descreve as fontes globais de dados para as duas profundidades.
 
@@ -75,7 +75,7 @@ No esquema em camadas, a profundidade do solo do esquema padrão serve apenas co
 | $\theta$ | Conteúdo de água da parte não saturada de uma camada | m³/m³ |
 | $\theta_s$ | Conteúdo de água na saturação | m³/m³ |
 | $\theta_r$ | Conteúdo de água residual | m³/m³ |
-| $\theta_{fc}$ | Conteúdo de água na capacidade de campo, $\theta(\psi = -3.3\ \mathrm{m})$ por padrão | m³/m³ |
+| $\theta_{fc}$ | Conteúdo de água na capacidade de campo, $\theta(\psi = -3.3\ \mathrm{m})$ por padrão; também o nível até o qual a ascensão capilar repõe a água de uma camada | m³/m³ |
 | $S_y$ | Rendimento específico (porosidade drenável), $\theta_s - \theta_{fc}$ | - |
 | $S_e$ | Saturação efetiva, $(\theta - \theta_r)/(\theta_s - \theta_r)$ | - |
 | $K_v$ | Condutividade hidráulica saturada vertical de uma camada | m/s |
@@ -169,22 +169,46 @@ q = K(\theta_k)\left(\frac{\psi_k}{\Delta z} + 1\right),
 \qquad \Delta z = \tfrac{1}{2}u_k
 $$
 
-onde $\psi_k$ é a carga matricial da camada, com $\psi = 0$ no lençol freático. Um fluxo para baixo é recarga, limitada pela água da camada. Um fluxo para cima é ascensão capilar, limitada pelo espaço livre da camada e pela água drenável abaixo do lençol.
+onde $\psi_k$ é a carga matricial da camada, com $\psi = 0$ no lençol freático. Um fluxo para baixo é recarga, limitada pela água da camada. Um fluxo para cima é ascensão capilar, limitada pela água drenável abaixo do lençol e pela regra de reposição descrita a seguir.
 
-**Fluxo implícito (padrão).** Em uma faixa não saturada fina sobre um lençol raso, o fluxo explícito é rígido (stiff). Em passos longos, ele ultrapassa a solução e troca de sinal. Por padrão, o HydroPol2D calcula o fluxo no fim do passo com um único passo de Euler implícito linearizado por célula, sem iteração. Transferir $q\,\Delta t$ drena a camada em $q\,\Delta t$ e eleva o lençol em $q\,\Delta t / S_y$. Assim,
+**Regra de reposição capilar.** A ascensão capilar repõe a água da camada não saturada mais baixa apenas até a capacidade de campo, o conteúdo de água $\theta_{fc}$ que um lençol em rebaixamento deixa para trás (ou $\theta_s - S_y$, onde um $S_y$ do regolito é informado). Essa é a abordagem do HBV (Lindström et al., 1997). O fluxo para cima, portanto, cessa quando
 
 $$
-q = \frac{q_0}{1 + \Delta t\,\max\!\left(\dfrac{\partial q}{\partial W} - \dfrac{1}{S_y}\dfrac{\partial q}{\partial h},\ 0\right)}
+\theta_k \ge \theta_{fc}
 $$
 
-onde $q_0$ é o fluxo explícito. Só a parte amortecedora da derivada é mantida. O CLM5 também resolve de forma implícita o fluxo no lençol freático. Em passos curtos, as duas formas coincidem.
+e nunca umedece o solo acima de um lençol raso até a saturação. A regra vale no HydroPol2D-Python (desde `fe81252`) e no modelo MATLAB (desde `051b52b`), na grade estruturada e na malha.
 
-| Teste: lençol a 15 cm de profundidade, solo arenoso úmido, passos de 1 h, contra uma referência de 36 s | Trocas de sinal | Erro |
+Antes dessa regra, a ascensão capilar enchia a camada rumo ao equilíbrio hidrostático, enquanto um lençol em rebaixamento deixava a capacidade de campo para trás. Com isso, a água circulava para cima e para baixo perto de um lençol raso. A tabela abaixo mostra o efeito no vale gêmeo da calibração.
+
+| Medida | Antes | Depois |
 |---|---:|---:|
-| Fluxo explícito | 2 | 53 % |
-| Fluxo implícito | 0 | abaixo de 0.1 % |
+| Água circulando entre o solo e o lençol, só a coluna | 9.3 × 10⁻³ m³/s | 0 |
+| Células que trocam o sinal do fluxo a cada passo, só a coluna | 38 | 0 |
+| Ascensão capilar bruta, modelo completo | 0.016 m³/s | 0 |
+| Vazão do rio | inalterada | inalterada |
 
-A chave é `implicit_water_table_flux` (padrão `true`). O fluxo implícito existe apenas no HydroPol2D-Python. O modelo MATLAB mantém o fluxo explícito, para que os seus fixtures de paridade continuem coincidindo. A versão em MATLAB está planejada.
+A contrapartida é que o modelo não tem franja capilar. Para representar uma franja, reduza `capillary_field_capacity_head_m`. Nesse caso, $\theta_{fc}$ e $S_y$ mudam juntos.
+
+**Fluxo implícito (padrão).** Em uma faixa não saturada fina sobre um lençol raso, o fluxo explícito é rígido (stiff). Em passos longos, ele ultrapassa a solução e troca de sinal. Por padrão, o HydroPol2D calcula o fluxo no fim do passo com um único passo de Euler implícito linearizado por célula, sem iteração.
+
+$$
+q = \frac{q_0}{1 + \Delta t\,\max\!\left(\dfrac{\partial q}{\partial W} - \dfrac{1}{S_y^{*}}\dfrac{\partial q}{\partial h},\ 0\right)}
+$$
+
+onde $q_0$ é o fluxo explícito e $W$ é a água da camada. A derivada em relação à carga acompanha o movimento do lençol causado pelo fluxo. Uma elevação mantém o conteúdo de água da faixa, e um rebaixamento expõe $\theta_{fc}$. $S_y^{*}$ é o custo em armazenamento desse movimento ($\theta_s - \theta_k$ da faixa quando a água desce). Só a parte amortecedora da derivada é mantida. Uma faixa saturada ($\theta_k = \theta_s$) drena a $K_{sat}$, sem amortecimento. O CLM5 também resolve de forma implícita o fluxo no lençol freático. Em passos curtos, as duas formas coincidem.
+
+| Teste: areia, $\theta = 0.41$, lençol a 30 cm de profundidade (faixa quase saturada), passos de 1 h, contra uma simulação com passos de 1 s | Resultado |
+|---|---|
+| Fluxo implícito | o lençol fica a menos de 2 mm da simulação de 1 s |
+| Fluxo explícito | drena cerca de 20 vezes mais água que o devido |
+
+| Modelo | Chave | Derivadas |
+|---|---|---|
+| HydroPol2D-Python | `implicit_water_table_flux` (padrão `true`) | `jax.jvp` |
+| HydroPol2D (MATLAB) | `flag_implicit_water_table_flux` (padrão `1`; `HYDROPOL_IMPLICIT_WATER_TABLE_FLUX` prevalece sobre ela) | diferenças centrais de quarta ordem |
+
+Os dois modelos concordam até cerca de $10^{-9}$, e os seus testes de paridade usam uma tolerância de $10^{-8}$.
 
 ### 4.5 Fluxo lateral {#45-lateral-flow}
 
@@ -304,7 +328,7 @@ vertical:
 
 Um raster `static.regolith_<name>_path` prevalece onde for finito. O escalar preenche o restante.
 
-HydroPol2D (MATLAB): `flag_layered_subsurface` e `flag_feddes` na aba `Flags`, e os blocos "Layered Subsurface", "Feddes Root-Water Stress" e "Lateral Conductivity Multipliers" de `General_Data`. Veja [Parâmetros de configuração](../configuration/general_data) e [Bandeiras do modelo](../configuration/flags).
+HydroPol2D (MATLAB): a aba Soil and groundwater da planilha do caso guarda todas as configurações acima, bloco a bloco, com a chave de cada bloco no topo (`flag_layered_subsurface`, `flag_feddes`, `flag_implicit_water_table_flux`). Veja [Configurações da Planilha do Caso](../configuration/general_data#tab-soil-and-groundwater) e [Flags do Modelo](../configuration/flags).
 
 ---
 
@@ -313,9 +337,9 @@ HydroPol2D (MATLAB): `flag_layered_subsurface` e `flag_feddes` na aba `Flags`, e
 - **Sem fluxo lateral de água suspensa.** Uma camada de solo saturada sobre regolito não saturado não escoa lateralmente.
 - **Sem tabela de classes de regolito.** Os parâmetros do regolito são escalares ou rasters.
 - **Sem saídas raster por camada.**
-- **Circulação no lençol freático.** A regra de rebaixamento na capacidade de campo e o fluxo de Darcy calculado com a média da camada, juntos, fazem a água circular para cima e para baixo perto de um lençol raso. A troca líquida fica perto de zero, mas a circulação infla a ascensão capilar bruta e a recarga bruta no balanço de água. A questão está em aberto e ainda não foi corrigida.
+- **Sem franja capilar.** A ascensão capilar repõe a água de uma camada apenas até a capacidade de campo (Seção 4.4). Reduzir `capillary_field_capacity_head_m` representa uma franja, com um $S_y$ menor.
 - **Laço compilado para cidades.** O laço compilado do HydroPol2D-Python para simulações de cidades ainda não roda o esquema em camadas com fluxo lateral de águas subterrâneas.
-- **Fluxo implícito apenas no Python.** O modelo MATLAB ainda usa o fluxo explícito no lençol freático.
+- **Duas formas de calcular as derivadas implícitas.** O Python usa `jax.jvp`, e o MATLAB usa diferenças centrais. Os dois concordam até cerca de $10^{-9}$.
 
 ---
 
@@ -326,3 +350,4 @@ HydroPol2D (MATLAB): `flag_layered_subsurface` e `flag_feddes` na aba `Flags`, e
 - Niswonger, R. G., Prudic, D. E., and Regan, R. S. (2006). Documentation of the Unsaturated-Zone Flow (UZF1) Package for modeling unsaturated flow between the land surface and the water table with MODFLOW-2005. USGS Techniques and Methods 6-A19. [pubs.usgs.gov/tm/2006/tm6a19](https://pubs.usgs.gov/tm/2006/tm6a19/)
 - Lv, M., et al. (2021). A comprehensive review of specific yield in land surface and groundwater studies. *Journal of Advances in Modeling Earth Systems*, 13, e2020MS002270. [doi:10.1029/2020MS002270](https://doi.org/10.1029/2020MS002270)
 - Feddes, R. A., Kowalik, P. J., and Zaradny, H. (1978). *Simulation of Field Water Use and Crop Yield*. Pudoc, Wageningen.
+- Lindström, G., Johansson, B., Persson, M., Gardelin, M., and Bergström, S. (1997). Development and test of the distributed HBV-96 hydrological model. *Journal of Hydrology*, 201, 272–288. [doi:10.1016/S0022-1694(97)00041-3](https://doi.org/10.1016/S0022-1694(97)00041-3)

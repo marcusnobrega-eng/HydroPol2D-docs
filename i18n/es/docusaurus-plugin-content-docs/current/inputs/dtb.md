@@ -54,9 +54,7 @@ Este enfoque es apropiado cuando:
 Si no hay un mapa DTB disponible, una profundidad del suelo por clase de suelo puede reemplazarlo.
 
 - **HydroPol2D-Python** puede tomar la profundidad del suelo de su tabla de suelos, de un ráster de profundidad del suelo o del escalar `vertical.soil_depth_m`.
-- **HydroPol2D (MATLAB)** actualmente no lee la columna `DTB (m)` de `SOIL_parameters.xlsx`. Con `DTB_path` vacío, la profundidad del suelo es 1 m.
-
-Si la columna `DTB (m)` de MATLAB debe leerse o eliminarse es una decisión pendiente.
+- **HydroPol2D (MATLAB)**, con el subsuelo en capas, toma la columna `DTB (m)` de la pestaña Soil classes como último recurso para el fondo de la columna (desde 2026-10-20). El esquema de agua subterránea predeterminado requiere `DTB_path` y no lee esa columna. Sin agua subterránea, un `DTB_path` vacío da una profundidad del suelo de 1 m.
 
 ---
 
@@ -100,7 +98,7 @@ Con el [subsuelo en capas](../theory/layered-subsurface) (Python `vertical.subsu
 | Profundidad | Qué marca | Entrada |
 |---|---|---|
 | Base del suelo | Donde terminan las propiedades del suelo y comienza el regolito | Ráster `SoilBaseDepth_path`; si no existe, `subsurface_soil_base_depth_m` (2 m por defecto) |
-| Profundidad hasta el lecho de roca | Donde termina el acuífero | Ráster `DTB_path`; si no existe, `subsurface_depth_to_bedrock_m`; si tampoco existe, la profundidad del suelo del esquema predeterminado (con una advertencia) |
+| Profundidad hasta el lecho de roca | Donde termina el acuífero | Ráster `DTB_path`; si no existe, `subsurface_depth_to_bedrock_m`; si tampoco existe, la profundidad del suelo de cada clase de suelo (`DTB (m)` en MATLAB), con una advertencia |
 
 La base del acuífero es el terreno menos $\min(\mathrm{DTB},\ D_{\max})$, con $D_{\max}$ = `subsurface_max_depth_m` (50 m por defecto). En las celdas con DTB más profunda que el límite, la columna se detiene en el límite.
 
@@ -108,7 +106,7 @@ Entre la base del suelo y la base de la columna, el modelo coloca capas de regol
 
 En Python, las claves equivalentes son `vertical.subsurface.soil_base_depth_m`, `depth_to_bedrock_m`, `max_depth_m` y `deep_layers`, y los rásteres son `static.soil_base_depth_path` y `static.depth_to_bedrock_path`.
 
-Si `DTB_path` debe ser obligatorio en el modo Excel de MATLAB cuando el esquema en capas está activo es una decisión pendiente. Actualmente se aplica la alternativa de la profundidad del suelo predeterminada, con una advertencia.
+`DTB_path` es opcional en el modo en capas. En MATLAB, el fondo de la columna recurre a `subsurface_depth_to_bedrock_m` y luego a la `DTB (m)` de cada clase de suelo, con una advertencia. Antes del 2026-10-20, un `DTB_path` ausente significaba 1 m sin aviso. El esquema de agua subterránea predeterminado sigue requiriendo `DTB_path`.
 
 ### Fuentes globales usadas por el Case Builder {#global-sources-used-by-the-case-builder}
 

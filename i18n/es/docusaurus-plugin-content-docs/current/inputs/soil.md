@@ -85,7 +85,7 @@ La conductividad horizontal de las capas de suelo es `ksat` × `soil_lateral_ani
 
 Los parámetros del regolito son escalares o rásteres. Un ráster tiene prioridad donde es finito, y el escalar completa el resto.
 
-| Parámetro | Unidades | Predeterminado | Ráster de MATLAB (`General_Data`) | Ráster de Python |
+| Parámetro | Unidades | Predeterminado | Ráster de MATLAB (pestaña Soil and groundwater) | Ráster de Python |
 |---|---|---|---|---|
 | `regolith_theta_s` | m³/m³ | 0.35 | `RegolithThetaS_path` | `static.regolith_theta_s_path` |
 | `regolith_theta_r` | m³/m³ | 0.05 | `RegolithThetaR_path` | `static.regolith_theta_r_path` |
@@ -98,6 +98,20 @@ Los parámetros del regolito son escalares o rásteres. Un ráster tiene priorid
 Un $S_y$ del regolito indicado debe estar en $(0,\ \theta_s - \theta_r]$. La conductividad horizontal de las capas de regolito se multiplica por `regolith_lateral_conductivity_multiplier` (1 por defecto).
 
 Todavía no hay una tabla de clases de regolito. Las propiedades del regolito solo pueden ser escalares o rásteres.
+
+### Mapas de propiedades del suelo {#soil-property-maps}
+
+Las propiedades del suelo también pueden provenir de rásteres. Las celdas finitas sobrescriben el valor de la clase de suelo, y las celdas sin datos (nodata) lo conservan. En el modo Excel de MATLAB, los mapas forman el bloque "Soil-property maps" de la pestaña Input maps (desde 2026-10-20). En el modo bypass, son los mapas del Case Builder.
+
+| Mapa | Sobrescribe |
+|---|---|
+| `ThetaS_path`, `ThetaR_path` | $\theta_s$, $\theta_r$ |
+| `AlphaVG_path`, `NVG_path` | $\alpha$ y $n$ de van Genuchten |
+| `KsatNearSurface_path`, `KsatRootZone_path`, `KsatTransmission_path` | $K_{sat}$ de las tres capas de suelo |
+| `GroundwaterKsat_path` | `kgsat` |
+| `SpecificYield_path` | `Sy` (solo el esquema de agua subterránea predeterminado) |
+
+Una ruta que no corresponde a un archivo genera una advertencia.
 
 ### Cargas de absorción de agua por las raíces {#root-water-uptake-heads}
 

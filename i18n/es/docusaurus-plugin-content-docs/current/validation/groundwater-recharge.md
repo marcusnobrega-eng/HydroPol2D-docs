@@ -85,38 +85,37 @@ El [subsuelo en capas](../theory/layered-subsurface) se incorporó en octubre de
 
 HydroPol2D-Python prueba directamente la columna en capas, el estrés de Feddes y el estado inicial del acuífero profundo (`tests/test_subsurface_column.py`, `test_subsurface_geometry.py`, `test_subsurface_lateral.py`, `test_subsurface_mesh.py`, `test_subsurface_run.py`, `test_feddes.py`, `test_deep_aquifer_initial_state.py`).
 
-La prueba numérica clave compara el flujo explícito y el implícito en el nivel freático.
+Dos pruebas numéricas tienen el mayor peso.
 
-| Caso | Flujo | Cambios de signo | Agua movida en 24 h frente a una referencia de 36 s |
-|---|---|---:|---:|
-| Suelo arenoso, húmedo, nivel freático a 15 cm, pasos de 1 h | Explícito | 2 | 53 % en exceso |
-| Igual | Implícito (predeterminado) | 0 | dentro de 0.1 % |
+| Prueba | Caso | Resultado |
+|---|---|---|
+| Flujo implícito frente a explícito | Arena, $\theta = 0.41$, nivel freático a 30 cm de profundidad (franja casi saturada), pasos de 1 h frente a una simulación con pasos de 1 s | Implícito: el nivel freático se mantiene a menos de 2 mm de la simulación de 1 s. Explícito: drena cerca de 20 veces más agua de la debida. |
+| Regla de rellenado capilar | Valle gemelo, solo la columna y modelo completo | Agua que circula entre el suelo y el nivel freático 9.3 × 10⁻³ → 0 m³/s; celdas que cambian de signo en cada paso 38 → 0; ascenso capilar bruto 0.016 → 0 m³/s; caudal del cauce sin cambio |
 
-Con un paso de 0.01 s, ambas formas coinciden dentro de $1.5 \times 10^{-5}$.
+Otra prueba verifica que el ascenso capilar se detiene en la capacidad de campo.
 
 ### Paridad entre Python y MATLAB {#python-to-matlab-parity}
 
-La adaptación a MATLAB se verifica con datos de referencia (fixtures) exportados desde HydroPol2D-Python (`Validation/Groundwater/Layered` en el repositorio de MATLAB). Los fixtures usan el flujo explícito en el nivel freático, porque el flujo implícito todavía no se ha adaptado.
+La adaptación a MATLAB se verifica con datos de referencia (fixtures) exportados desde HydroPol2D-Python (`Validation/Groundwater/Layered` en el repositorio de MATLAB). Desde el 2026-10-20, ambos modelos tienen el flujo implícito en el nivel freático. Los fixtures de los núcleos contienen salidas implícitas y explícitas, y los fixtures del paso usan el valor predeterminado del modelo (implícito). MATLAB calcula las derivadas implícitas por diferencias centrales y Python con `jax.jvp`, por lo que las verificaciones del flujo implícito usan una tolerancia de $10^{-8}$.
 
-| Script | Qué verifica | Resultado registrado |
+| Script | Qué verifica | Resultado registrado (2026-10-20) |
 |---|---|---|
-| `run_layered_kernel_parity.m` | Cada núcleo de la columna: geometría, actualización del nivel freático MMF, drenaje, flujo de Darcy, Feddes, bisección del nivel freático compartido y avance lateral | 193 comprobaciones, peor caso $2.8 \times 10^{-16}$ |
-| `run_layered_step_parity.m` | El paso vertical en capas completo en una malla en V de 2 × 2, 4 escenarios, 312 pasos | 3 120 comprobaciones, peor caso $2.1 \times 10^{-17}$ |
-| `run_layered_vtilted_case.m` | Simulaciones del modelo completo en la cuenca en V: `local`, `lateral`, `feddes`, `legacy`, `deep`, `deep_legacy`, `deep_empty` | Se ejecuta desde una copia de `Examples/VTilted_Excel`; error de volumen de `lateral` de $-1.7 \times 10^{-10}$ m³ |
+| `run_layered_kernel_parity.m` | Cada núcleo de la columna: geometría, actualización del nivel freático MMF, drenaje, flujo de Darcy (explícito e implícito), Feddes, bisección del nivel freático compartido y avance lateral | 211 comprobaciones, peor caso $2.6 \times 10^{-9}$ |
+| `run_layered_step_parity.m` | El paso vertical en capas completo en una malla en V de 2 × 2, 4 escenarios, 312 pasos | 3 120 comprobaciones, peor caso $4.9 \times 10^{-11}$ |
+| `run_layered_vtilted_case.m` | Simulaciones del modelo completo en la cuenca en V: `local`, `lateral`, `feddes`, `legacy`, `deep`, `deep_legacy`, `deep_empty` y, desde el 2026-10-20, `no_dtb` (fondo de la columna desde la tabla de suelos), `explicit_flux` y `soil_rasters` | Se ejecuta desde una copia de `Examples/VTilted_Excel`; error de volumen de `lateral` de $-1.7 \times 10^{-10}$ m³ |
 | `run_feddes_legacy_consistency.m` | La ET de Feddes en el esquema predeterminado de tres capas es igual a la ET de Feddes en capas para el mismo estado; Feddes nunca extrae más que la regla sin estrés | verificación de consistencia |
 | `run_layered_mesh_case.m` | Malla de Voronoi de 20 m en la cuenca en V con 2 HRU: predeterminado, en capas, en capas + Feddes | cada paso cierra la masa dentro de $10^{-8}$ del volumen de lluvia |
 
-`run_deep_aquifer_initial_state_validation.m` verifica el estado inicial profundo $S_0 = q_0 A \tau$ con un fixture compartido con HydroPol2D-Python. `Validation/Groundwater/run_groundwater_release_checks.m` ejecuta todos estos scripts.
+`run_deep_aquifer_initial_state_validation.m` verifica el estado inicial profundo $S_0 = q_0 A \tau$ con un fixture compartido con HydroPol2D-Python. `Validation/Groundwater/run_groundwater_release_checks.m` ejecuta todos estos scripts. El 2026-10-20 se aprobaron 17 de 17.
 
 ### Experimento gemelo de calibración {#calibration-twin-experiment}
 
-Un experimento gemelo recuperó multiplicadores conocidos de la conductividad del suelo y del regolito a partir de una recesión sintética de 30 días con 0, 5 y 10 % de ruido. La configuración, los resultados y los límites se presentan en la página [Calibración por Recesión del Agua Subterránea](../calibration/groundwater-recession#5-twin-experiments).
+Un experimento gemelo recuperó multiplicadores conocidos de la conductividad del suelo y del regolito a partir de una recesión sintética de 30 días con 0, 5 y 10 % de ruido. Con la regla de rellenado capilar, la verdad fue el único par aceptable en cada nivel de ruido. La configuración, los resultados y los límites se presentan en la página [Calibración por Recesión del Agua Subterránea](../calibration/groundwater-recession#5-twin-experiments).
 
 ### Lo que no cubre la evidencia del esquema en capas {#what-the-layered-evidence-does-not-cover}
 
-- El flujo implícito en el nivel freático solo se prueba en Python.
 - No hay un caso de campo. Las pruebas usan dominios sintéticos en V.
-- Estas pruebas no resuelven los problemas abiertos indicados en [Límites conocidos](../theory/layered-subsurface#9-known-limits), incluida la circulación en el nivel freático.
+- Estas pruebas no resuelven los problemas abiertos indicados en [Límites conocidos](../theory/layered-subsurface#9-known-limits), como el flujo lateral de agua colgada y la falta de franja capilar.
 
 ## Lo que respalda esta validación {#what-this-validation-supports}
 

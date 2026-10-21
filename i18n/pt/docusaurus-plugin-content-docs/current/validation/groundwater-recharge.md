@@ -85,38 +85,37 @@ A [subsuperfície em camadas](../theory/layered-subsurface) foi incluída em out
 
 O HydroPol2D-Python testa diretamente a coluna em camadas, o estresse de Feddes e o estado inicial do aquífero profundo (`tests/test_subsurface_column.py`, `test_subsurface_geometry.py`, `test_subsurface_lateral.py`, `test_subsurface_mesh.py`, `test_subsurface_run.py`, `test_feddes.py`, `test_deep_aquifer_initial_state.py`).
 
-O principal teste numérico compara o fluxo explícito e o implícito no lençol freático.
+Dois testes numéricos têm o maior peso.
 
-| Caso | Fluxo | Trocas de sinal | Água transferida em 24 h vs. uma referência de 36 s |
-|---|---|---:|---:|
-| Solo arenoso, úmido, lençol a 15 cm de profundidade, passos de 1 h | Explícito | 2 | 53 % a mais |
-| Idem | Implícito (padrão) | 0 | dentro de 0.1 % |
+| Teste | Caso | Resultado |
+|---|---|---|
+| Fluxo implícito vs. explícito | Areia, $\theta = 0.41$, lençol a 30 cm de profundidade (faixa quase saturada), passos de 1 h contra uma simulação com passos de 1 s | Implícito: o lençol fica a menos de 2 mm da simulação de 1 s. Explícito: drena cerca de 20 vezes mais água que o devido. |
+| Regra de reposição capilar | Vale gêmeo, só a coluna e modelo completo | Água circulando entre o solo e o lençol, 9.3 × 10⁻³ → 0 m³/s; células que trocam de sinal a cada passo, 38 → 0; ascensão capilar bruta, 0.016 → 0 m³/s; vazão do rio inalterada |
 
-Com passo de 0.01 s, as duas formas concordam até $1.5 \times 10^{-5}$.
+Um teste adicional verifica que a ascensão capilar para na capacidade de campo.
 
 ### Paridade Python-MATLAB {#python-to-matlab-parity}
 
-A versão em MATLAB é verificada contra fixtures exportados do HydroPol2D-Python (`Validation/Groundwater/Layered` no repositório MATLAB). Os fixtures usam o fluxo explícito no lençol freático, porque o fluxo implícito ainda não foi portado.
+A versão em MATLAB é verificada contra fixtures exportados do HydroPol2D-Python (`Validation/Groundwater/Layered` no repositório MATLAB). Desde 2026-10-20, os dois modelos têm o fluxo implícito no lençol freático. Os fixtures dos kernels trazem as saídas implícitas e explícitas, e os fixtures do passo usam o padrão do modelo (implícito). O MATLAB calcula as derivadas implícitas por diferenças centrais e o Python por `jax.jvp`, e por isso as verificações do fluxo implícito usam uma tolerância de $10^{-8}$.
 
-| Script | O que verifica | Resultado registrado |
+| Script | O que verifica | Resultado registrado (2026-10-20) |
 |---|---|---|
-| `run_layered_kernel_parity.m` | Todos os kernels da coluna: geometria, atualização do lençol pelo MMF, drenagem, fluxo de Darcy, Feddes, bisseção do lençol compartilhado e avanço lateral | 193 verificações, pior caso $2.8 \times 10^{-16}$ |
-| `run_layered_step_parity.m` | O passo vertical completo em camadas em uma grade em V de 2 × 2, com 4 cenários e 312 passos | 3 120 verificações, pior caso $2.1 \times 10^{-17}$ |
-| `run_layered_vtilted_case.m` | Simulações do modelo completo na bacia em V: `local`, `lateral`, `feddes`, `legacy`, `deep`, `deep_legacy`, `deep_empty` | Executado a partir de uma cópia de `Examples/VTilted_Excel`; erro de volume do caso `lateral` de $-1.7 \times 10^{-10}$ m³ |
+| `run_layered_kernel_parity.m` | Todos os kernels da coluna: geometria, atualização do lençol pelo MMF, drenagem, fluxo de Darcy (explícito e implícito), Feddes, bisseção do lençol compartilhado e avanço lateral | 211 verificações, pior caso $2.6 \times 10^{-9}$ |
+| `run_layered_step_parity.m` | O passo vertical completo em camadas em uma grade em V de 2 × 2, com 4 cenários e 312 passos | 3 120 verificações, pior caso $4.9 \times 10^{-11}$ |
+| `run_layered_vtilted_case.m` | Simulações do modelo completo na bacia em V: `local`, `lateral`, `feddes`, `legacy`, `deep`, `deep_legacy`, `deep_empty` e, desde 2026-10-20, `no_dtb` (fundo da coluna a partir da tabela de solos), `explicit_flux` e `soil_rasters` | Executado a partir de uma cópia de `Examples/VTilted_Excel`; erro de volume do caso `lateral` de $-1.7 \times 10^{-10}$ m³ |
 | `run_feddes_legacy_consistency.m` | O Feddes na ET padrão de três camadas é igual à ET de Feddes em camadas para o mesmo estado; o Feddes nunca retira mais que a regra sem estresse | verificação de consistência |
 | `run_layered_mesh_case.m` | Malha Voronoi de 20 m na bacia em V com 2 HRUs: padrão, em camadas, em camadas + Feddes | todo passo fecha a massa dentro de $10^{-8}$ do volume de chuva |
 
-`run_deep_aquifer_initial_state_validation.m` verifica o estado inicial profundo $S_0 = q_0 A \tau$ contra um fixture compartilhado com o HydroPol2D-Python. `Validation/Groundwater/run_groundwater_release_checks.m` roda todos esses scripts.
+`run_deep_aquifer_initial_state_validation.m` verifica o estado inicial profundo $S_0 = q_0 A \tau$ contra um fixture compartilhado com o HydroPol2D-Python. `Validation/Groundwater/run_groundwater_release_checks.m` roda todos esses scripts. Em 2026-10-20, 17 de 17 passaram.
 
 ### Experimento gêmeo de calibração {#calibration-twin-experiment}
 
-Um experimento gêmeo recuperou multiplicadores conhecidos da condutividade do solo e do regolito a partir de uma recessão sintética de 30 dias, com 0, 5 e 10 % de ruído. A configuração, os resultados e os limites estão na página [Calibração por Recessão das Águas Subterrâneas](../calibration/groundwater-recession#5-twin-experiments).
+Um experimento gêmeo recuperou multiplicadores conhecidos da condutividade do solo e do regolito a partir de uma recessão sintética de 30 dias, com 0, 5 e 10 % de ruído. Com a regra de reposição capilar, a verdade foi o único par aceitável em todos os níveis de ruído. A configuração, os resultados e os limites estão na página [Calibração por Recessão das Águas Subterrâneas](../calibration/groundwater-recession#5-twin-experiments).
 
 ### O que a evidência em camadas não cobre {#what-the-layered-evidence-does-not-cover}
 
-- O fluxo implícito no lençol freático foi testado apenas em Python.
 - Não há caso de campo. Os testes usam domínios sintéticos em V.
-- Os problemas em aberto listados em [Limites Conhecidos](../theory/layered-subsurface#9-known-limits), incluindo a circulação no lençol freático, não são resolvidos por esses testes.
+- Os problemas em aberto listados em [Limites Conhecidos](../theory/layered-subsurface#9-known-limits), como o fluxo lateral de água suspensa e a ausência de franja capilar, não são resolvidos por esses testes.
 
 ## O que esta validação sustenta {#what-this-validation-supports}
 

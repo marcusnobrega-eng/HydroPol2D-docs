@@ -87,4 +87,4 @@ Todos os casos mantidos conservam água até a precisão numérica. O teste esca
 
 Os testes sustentam o uso da formulação de Neal (2012) para escoamento controlado dentro das margens, ativação da planície, hidráulica de pico e extensão máxima da inundação nas geometrias avaliadas. Eles não estabelecem a precisão em campo. Aplicações com recessões longas na planície devem comparar o tempo de drenagem com observações ou com uma referência hidráulica mais fina.
 
-As equações e os dados de entrada necessários são descritos nas páginas [Modelo hidrodinâmico](../theory/hydrodynamic-model) e [Bandeiras do modelo](../configuration/flags).
+As equações e os dados de entrada necessários são descritos nas páginas [Modelo hidrodinâmico](../theory/hydrodynamic-model) e [Flags do Modelo](../configuration/flags).

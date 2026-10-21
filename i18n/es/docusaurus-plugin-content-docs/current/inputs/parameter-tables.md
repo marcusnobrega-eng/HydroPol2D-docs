@@ -10,6 +10,22 @@ Esta estructura separa la información espacial de la definición de parámetros
 
 ---
 
+## Dónde están las tablas {#where-the-tables-live}
+
+En el modo Excel de MATLAB, las tablas de clases son pestañas del libro del caso `HydroPol2D_Inputs.xlsx`. Cada pestaña es una copia, celda por celda, del libro de Excel que reemplaza, porque el modelo lee algunas columnas por posición. Se deben mantener las filas y el orden de las columnas. Una clase nueva se agrega como una fila nueva.
+
+| Pestaña | Antes | Se lee cuando |
+|---|---|---|
+| Soil classes | `SOIL_parameters.xlsx` | siempre |
+| Land use classes | `LULC_parameters.xlsx` | siempre (se lee por posición desde la fila 2) |
+| Human instability | `human_risk.xlsx` | `flag_human_instability = 1` o `3` |
+| Mesh | `Voronoi_Settings.xlsx` | `flag_voronoi = 1` |
+| Control structures | `BC_Control_structure.xlsx` | `flag_reservoir = 1` |
+
+En el formato anterior, las mismas tablas son los libros de Excel separados de la segunda columna, en la carpeta de `General_Data.xlsx`. El modelo lee la pestaña cuando el libro del caso la tiene y, si no, el libro de Excel anterior. HydroPol2D-Python lee las mismas propiedades de clase desde el contrato del Case Builder.
+
+---
+
 ## Estructura General
 
 Cada tabla de parámetros contiene:
@@ -102,15 +118,16 @@ Los valores mostrados arriba corresponden a la tabla actual de parámetros del s
 
 ---
 
-## DTB Asignación a través de la Tabla de Suelos
+## Asignación de la DTB mediante la tabla de suelos {#dtb-assignment-through-the-soil-table}
 
-Si un ráster DTB no está disponible, los valores DTB se pueden asignar directamente en la tabla de suelos.
-En este caso:
-- cada clase de suelo está asociada con un valor representativo de DTB,
-- el campo DTB se construye implícitamente a partir del mapa de suelo,
-- La profundidad de almacenamiento sigue siendo consistente con la clasificación de suelo adoptada.
+La columna `DTB (m)` da una profundidad hasta el lecho de roca por clase de suelo. Que se lea o no depende del esquema del subsuelo.
 
-Esto es particularmente útil en aplicaciones con escasez de datos.
+| Esquema | Función de `DTB (m)` |
+|---|---|
+| [Subsuelo en capas](../theory/layered-subsurface) | Fondo de la columna donde `DTB_path` y `subsurface_depth_to_bedrock_m` están ambos vacíos (MATLAB desde 2026-10-20; HydroPol2D-Python lee su tabla de suelos de la misma manera) |
+| Esquema de agua subterránea predeterminado (MATLAB) | No se lee. `DTB_path` es obligatorio. Sin agua subterránea, un `DTB_path` vacío da una profundidad del suelo de 1 m |
+
+Así, cada clase de suelo tiene una profundidad representativa, y el fondo de la columna sigue el mapa de suelos. Esto es útil en aplicaciones con pocos datos.
 
 
 ---
@@ -188,7 +205,8 @@ Esto significa que el solucionador inercial local es modificado localmente por e
 
 ### Estructura de la tabla de entrada
 
-Las condiciones de contorno internas se definen mediante una hoja de cálculo dedicada.
+Las condiciones de contorno internas se definen en la pestaña Control structures del libro del caso (`BC_Control_structure.xlsx` en el formato anterior), que se lee cuando `flag_reservoir = 1`. Cada fila es una estructura. El caudal de salida es $Q = k_1 (h - h_{0,1})^{k_2}$ hacia la celda $(x_{d,1}, y_{d,1})$ y $Q = k_3 (h - h_{0,2})^{k_4}$ hacia la celda $(x_{d,2}, y_{d,2})$, con coordenadas en la proyección del DEM.
+
 #### Estructura de la mesa
 
 | Parámetro | Unidades | Descripción |

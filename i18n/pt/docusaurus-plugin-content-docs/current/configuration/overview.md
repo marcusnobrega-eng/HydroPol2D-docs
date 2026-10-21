@@ -4,7 +4,7 @@ title: Visão geral
 
 # Configuração do modelo
 
-O HydroPol2D é configurado principalmente por `General_Data.xlsx`. Essa planilha seleciona o conjunto de processos, a família de roteamento, os controles de tempo do groundwater, os arquivos de entrada e os diagnósticos opcionais.
+No modo Excel do MATLAB, um caso do HydroPol2D é uma única planilha, `HydroPol2D_Inputs.xlsx`. As suas abas de configurações selecionam o conjunto de processos, a família de roteamento, os controles das águas subterrâneas, os arquivos de entrada e os diagnósticos opcionais. As demais abas guardam as tabelas de classes e as séries temporais. Os casos antigos, com `General_Data.xlsx` e planilhas separadas, continuam rodando (veja [Rodar pelo Excel](../getting-started/excel-workflow#older-layout)). O HydroPol2D-Python lê as mesmas configurações do YAML do caso.
 
 As páginas de configuração e teoria cumprem papéis diferentes:
 
@@ -26,6 +26,9 @@ A configuração pública deve refletir o modelo implementado:
 | Núcleo hidrológico | `flag_infiltration`, controles de ET, chuva e neve, tabelas de solo e LULC | Padrão + validado |
 | Recarga subterrânea em camadas e agendador assíncrono | `flag_groundwater_modeling`, `flag_groundwater_async`, `groundwater_target_dt_min`, `groundwater_min_dt_min`, `groundwater_max_head_change_m`, `groundwater_courant` | Padrão + validado |
 | Ascensão capilar | `flag_capillary_rise` | Opcional + validada em benchmarks controlados |
+| Subsuperfície em camadas | `flag_layered_subsurface`, `flag_implicit_water_table_flux` | Opcional + testes controlados e paridade Python-MATLAB |
+| Estresse hídrico radicular de Feddes | `flag_feddes` | Opcional + testes de consistência |
+| Aquífero profundo | `flag_deep_aquifer` | Opcional + testes do estado inicial com fixture |
 | Roteamento local inertial | `flag_inertial`, `flag_numerical_scheme` | Padrão + validado |
 | Roteamento full momentum | `flag_full_momentum` | Opcional + validado em benchmarks controlados |
 | Roteamento diffusive | `flag_diffusive` | Opcional + validado em benchmarks controlados |
@@ -37,7 +40,7 @@ A configuração pública deve refletir o modelo implementado:
 
 ### 1. Controle de simulação e forçantes
 
-`General_Data.xlsx` define o tempo da simulação, as forçantes de chuva e meteorologia, as condições de contorno de inflow e stage, a frequência de saída e opções de execução, como time step adaptativo ou GPU.
+As abas Run control, Rain and ET, Design storm e Surface flow definem o tempo da simulação, as forçantes de chuva e meteorológicas, os contornos de vazão de entrada e de nível, a frequência de saída e opções de execução, como o passo de tempo adaptativo ou a GPU. Todas as configurações estão listadas em [Configurações da Planilha do Caso](./general_data).
 
 ### 2. Seleção da família de roteamento
 

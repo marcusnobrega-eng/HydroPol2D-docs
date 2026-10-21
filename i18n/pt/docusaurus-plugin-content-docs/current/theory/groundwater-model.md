@@ -622,7 +622,7 @@ Escolha uma data inicial dentro de uma recessão. O filtro de escoamento de base
 | Recarga média | `vertical.deep_aquifer_mean_recharge_mm_year` | `deep_aquifer_mean_recharge_mm_year` |
 | Arquivo de estado inicial | `static.deep_aquifer_initial_state_path` | `DeepAquiferInitialState_path` |
 
-No MATLAB, os valores do estado inicial ficam no bloco "Deep Aquifer Initial State" de `General_Data` (veja [Parâmetros de configuração](../configuration/general_data)). O Case Builder gera os rasters de sub-bacias e de pesos do canal a partir do terreno D8 condicionado.
+No MATLAB, os valores do estado inicial ficam no bloco "Deep aquifer: starting storage" da aba Soil and groundwater (veja [Configurações da Planilha do Caso](../configuration/general_data#tab-soil-and-groundwater)). O Case Builder gera os rasters de sub-bacias e de pesos do canal a partir do terreno D8 condicionado.
 
 ---
 

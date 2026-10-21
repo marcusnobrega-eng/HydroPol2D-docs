@@ -625,7 +625,7 @@ Conviene elegir una fecha de inicio dentro de una recesión. El filtro de flujo 
 | Recarga media | `vertical.deep_aquifer_mean_recharge_mm_year` | `deep_aquifer_mean_recharge_mm_year` |
 | Archivo de estado inicial | `static.deep_aquifer_initial_state_path` | `DeepAquiferInitialState_path` |
 
-En MATLAB, los valores del estado inicial están en el bloque "Deep Aquifer Initial State" de `General_Data` (ver [Parámetros de configuración](../configuration/general_data)). El Case Builder escribe los rásteres de subcuencas y de pesos del canal a partir del terreno D8 acondicionado.
+En MATLAB, los valores del estado inicial están en el bloque "Deep aquifer: starting storage" de la pestaña Soil and groundwater (ver [Parámetros del libro del caso](../configuration/general_data#tab-soil-and-groundwater)). El Case Builder escribe los rásteres de subcuencas y de pesos del canal a partir del terreno D8 acondicionado.
 
 ---
 

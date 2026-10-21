@@ -31,9 +31,11 @@ Estas entradas son opcionales según el caso de uso, no experimentales por defin
 
 HydroPol2D también lee hojas de cálculo:
 
-- [Parameter Tables](./parameter-tables) para clases de LULC, suelo y nieve;
-- `General_Data.xlsx` para flags, tiempos de simulación, rutas de archivos y controles de ejecución;
-- hojas de forzantes o condiciones de contorno para lluvia, evapotranspiración, inflow, stage o estructuras de control, cuando esas opciones estén activas.
+- el libro del caso de MATLAB `HydroPol2D_Inputs.xlsx`, cuyas pestañas de parámetros contienen los interruptores, los tiempos, las rutas de archivos y los controles de ejecución ([Parámetros del libro del caso](../configuration/general_data));
+- sus pestañas de tablas de clases para las clases de uso del suelo y de suelo, la inestabilidad humana, la malla y las estructuras de control ([Tablas de parámetros](./parameter-tables));
+- sus pestañas de series para la lluvia, las estaciones climáticas, los caudales de entrada y los niveles, cuando esas opciones están activas ([Forzamientos opcionales](./optional-forcing)).
+
+Los casos antiguos guardan estos datos en `General_Data.xlsx` y en libros de Excel separados. Ambos formatos siguen funcionando.
 
 ## Entradas de forzantes
 

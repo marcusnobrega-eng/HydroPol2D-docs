@@ -415,7 +415,7 @@ Por estas razões, fornece o melhor equilíbrio entre realismo físico e tratabi
 
 ---
 
-### 1.15 Modelo subgrade de Neal (2012)
+### 1.15 Modelo subgrade de Neal (2012) {#115-neal-2012-subgrid-model}
 
 O HydroPol2D inclui a formulação retangular de canal subgrade proposta por [Neal et al. (2012)](https://doi.org/10.1029/2012WR012514). Essa extensão é usada quando o rio é mais estreito que a célula raster. O canal é embutido na célula grosseira, enquanto o escoamento bidimensional continua sendo calculado na planície ao redor do canal.
 
@@ -511,7 +511,7 @@ $$
 
 Assim, a área ativa da superfície $\mathrm{d}V/\mathrm{d}h$ muda de $\Delta xw$, dentro das margens, para $\Delta x^2$, acima das margens. Os fluxos de roteamento e os termos hidrológicos de fonte ou sumidouro atualizam primeiro $V$. Em seguida, o HydroPol2D inverte a mesma relação por partes para recuperar $h$. Esse procedimento evita uma descontinuidade de massa na passagem pela altura da margem.
 
-A configuração ativa e os dados geométricos são descritos em [Bandeiras do modelo](../configuration/flags). Os resultados dos testes controlados são apresentados em [Validação do modelo subgrade de Neal (2012)](../validation/neal-subgrid).
+A configuração ativa e os dados geométricos são descritos em [Flags do Modelo](../configuration/flags). Os resultados dos testes controlados são apresentados em [Validação do modelo subgrade de Neal (2012)](../validation/neal-subgrid).
 
 ### 1.16 Resumo
 

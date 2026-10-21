@@ -419,7 +419,7 @@ Por estos motivos, proporciona el mejor equilibrio entre realismo físico y mane
 
 ---
 
-### 1.15 Modelo submalla de Neal (2012)
+### 1.15 Modelo submalla de Neal (2012) {#115-neal-2012-subgrid-model}
 
 HydroPol2D incluye la formulación rectangular de canal submalla propuesta por [Neal et al. (2012)](https://doi.org/10.1029/2012WR012514). Esta extensión se usa cuando el río es más estrecho que la celda ráster. El canal se embebe en la celda gruesa, mientras que el flujo bidimensional se mantiene en la llanura que rodea el canal.
 

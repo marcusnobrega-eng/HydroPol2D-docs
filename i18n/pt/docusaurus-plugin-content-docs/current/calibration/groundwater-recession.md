@@ -121,7 +121,9 @@ Um experimento gêmeo testa a identificabilidade antes do uso de dados reais.
 
 As ferramentas estão em `hydropol2d.calibration.recession_twin` (`run_recession_twin_experiment`, `write_recession_twin_report`).
 
-### 5.1 Resultado em um vale de drenagem rápida (2026-10-19) {#51-result-on-a-fast-draining-valley-2026-10-19}
+### 5.1 Resultado em um vale de drenagem rápida {#51-result-on-a-fast-draining-valley}
+
+Esta rodada (2026-10-20) usa a física atual, incluindo a regra de reposição capilar da [subsuperfície em camadas](../theory/layered-subsurface#44-darcy-flux-at-the-water-table).
 
 | Configuração | Valor |
 |---|---|
@@ -132,13 +134,15 @@ As ferramentas estão em `hydropol2d.calibration.recession_twin` (`run_recession
 | Verdade | solo 3, regolito 0.3 |
 | Recessão | 30 dias |
 
-| Ruído | Melhor candidato | Multiplicador do solo aceito | Multiplicador do regolito aceito |
-|---|---|---|---|
-| 0 % | solo 3, regolito 0.3 | 3 | 0.3 |
-| 5 % | solo 3, regolito 0.3 | 3 | 0.3 |
-| 10 % | solo 3, regolito 0.3 | 3 a 10 | 0.3 |
+| Ruído | Melhor candidato | Candidatos aceitáveis | Função objetivo, melhor | Função objetivo, segundo melhor |
+|---|---|---:|---:|---:|
+| 0 % | solo 3, regolito 0.3 | 1 | 0.033 | 0.123 |
+| 5 % | solo 3, regolito 0.3 | 1 | 0.065 | 0.117 |
+| 10 % | solo 3, regolito 0.3 | 1 | 0.106 | 0.131 |
 
-A verdade foi recuperada nos três níveis de ruído. O multiplicador do regolito foi recuperado com exatidão. Com 10 % de ruído, o multiplicador do solo foi aceito de 3 a 10. Os nove candidatos propagados levaram 55 min em um notebook com 2 workers. As três linhas pontuam os mesmos nove candidatos propagados. Só muda o ruído adicionado ao alvo.
+A verdade foi recuperada nos três níveis de ruído e foi o único par aceitável em todos eles. Os nove candidatos propagados levaram 68 min em um notebook com 2 workers. As três linhas pontuam os mesmos nove candidatos propagados. Só muda o ruído adicionado ao alvo.
+
+Na primeira rodada, antes da regra de reposição capilar (2026-10-19), a verdade também foi o melhor candidato, mas com 10 % de ruído o multiplicador do solo foi aceito em toda a faixa de 3 a 10.
 
 <p align="center">
   <img src={useBaseUrl('/img/calibration/layered-twin-experiment.png')} width="900" alt="À esquerda, a recessão alvo com 5 por cento de ruído, a recessão verdadeira e o melhor candidato em eixo logarítmico ao longo de 30 dias. À direita, a função objetivo na grade 3 por 3 de multiplicadores do solo e do regolito, com o melhor candidato coincidindo com a verdade" />
@@ -150,7 +154,7 @@ A verdade foi recuperada nos três níveis de ruído. O multiplicador do regolit
 
 ### 5.2 O que limita o teste {#52-what-limits-the-test}
 
-- **Ruído entre execuções.** Repetir a simulação com os mesmos parâmetros dá uma dispersão diária de ±2.7 %, vinda de uma oscilação de dois intervalos no canal pequeno. Diferenças entre candidatos abaixo dessa ordem ficam dentro do ruído entre execuções.
+- **Ruído entre execuções.** Na rodada de 2026-10-19, repetir a simulação com os mesmos parâmetros deu uma dispersão diária de ±2.7 %, vinda de uma oscilação de dois intervalos no canal pequeno. Diferenças entre candidatos abaixo dessa ordem ficam dentro do ruído entre execuções.
 - **O vale gêmeo padrão é lento demais.** Com encostas de 500 m e $S_y$ do solo de cerca de 0.29, ele drena ao longo de anos. A recessão caiu apenas 9 % em 20 dias, plana demais para separar os candidatos. Para recessões de semanas, use encostas mais curtas e um $S_y$ menor, como na Seção 5.1.
 - **Um teste gêmeo não é um teste de campo.** Ele mostra que o método consegue recuperar parâmetros em um vale sintético com a mesma estrutura de modelo. Séries reais acrescentam regularização das vazões, evapotranspiração e erro de medição.
 

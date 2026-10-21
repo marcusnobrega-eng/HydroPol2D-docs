@@ -1,0 +1,29 @@
+---
+title: Registro de Cambios
+---
+
+# Registro de Cambios
+
+Cambios del modelo que afectan las entradas, los resultados o la validación, del más reciente al más antiguo. Las fechas están en hora de California (PDT). Los códigos entre corchetes son commits de HydroPol2D-Python (Py), del modelo MATLAB (ML) y del Case Builder (CB).
+
+## 2026-10-20 {#2026-10-20}
+
+- **Un solo libro del caso (ML).** Un caso de MATLAB es ahora un solo libro de Excel, `HydroPol2D_Inputs.xlsx`, con 8 pestañas de parámetros, 5 pestañas de tablas de clases, 5 pestañas de series y una nota en cada valor. Los interruptores están al inicio de sus bloques, y no hay hoja `Flags`. Los casos antiguos (`General_Data.xlsx`, su hoja `Flags` y libros de Excel separados) siguen funcionando, y un constructor los convierte. En la verificación, el caso en V da resultados idénticos con cualquiera de los dos formatos, con todos los libros antiguos eliminados, y duplicar la pestaña Rain series duplica la lluvia (3 de 3 verificaciones). Ver [Ejecutar desde Excel](../getting-started/excel-workflow). [ML `a0a6b7a`, `993d830`]
+- **Corrección de las listas de mapas de ET (ML, ambos formatos).** En `General_Data.xlsx`, las listas de mapas de lluvia, transpiración y evaporación comparten una fila de encabezado. Antes de esta corrección, la lista de transpiración leía los tiempos de la lista de lluvia (en minutos, sin conversión de días a minutos), y la lista de evaporación leía las rutas de transpiración. Las simulaciones con `flag_input_ETP_map = 1` hechas antes del 2026-10-20 usaron entradas de ET incorrectas y deben ejecutarse de nuevo. Ahora cada lista termina en su primera fila vacía, y sus columnas se buscan solo bajo su propio título. [ML `993d830`]
+- **Secciones transversales de caudal en las estaciones (ML).** Cada estación registra la profundidad y el nivel del agua en su celda, y el caudal a lo largo de una línea de celdas perpendicular al flujo (5 celdas por defecto, con dirección aguas abajo automática o N/S/E/W). Las salidas nuevas son una línea en el hidrograma, una columna en `Rating_Curve_Gauges.csv` y el archivo `Gauge_Cross_Sections.csv`. Ahora la tabla de estaciones termina en su primera fila vacía. Se aprobaron 3 de 3 verificaciones. Ver [Tabla de estaciones](../configuration/general_data#gauge-table-and-discharge-cross-sections). [ML `fa36e1f`]
+- **Flujo implícito en el nivel freático en MATLAB (ML).** El interruptor es `flag_implicit_water_table_flux`, con valor predeterminado 1. MATLAB calcula las derivadas por diferencias centrales de cuarto orden y coincide con Python hasta cerca de $10^{-9}$. Una franja saturada ahora drena a $K_{sat}$ según una regla establecida en ambos modelos (los resultados no cambian). [ML `2559060`; Py `04ca62a`]
+- **`DTB_path` opcional en el modo en capas (ML).** El fondo de la columna recurre a `subsurface_depth_to_bedrock_m` y luego a la `DTB (m)` de cada clase de suelo. Antes, un `DTB_path` ausente significaba 1 m sin aviso. El esquema de agua subterránea predeterminado sigue requiriendo `DTB_path`. [ML `2559060`]
+- **Mapas de propiedades del suelo en el modo Excel (ML).** Nueve mapas opcionales (`ThetaS_path` … `SpecificYield_path`) sobrescriben celda por celda los valores de las clases de suelo. [ML `2559060`]
+- **Corrección de la validación (ML).** El entorno de verificación del agua subterránea escribía su cuadrícula `Flags` desplazada una celda, por lo que la simulación en V con Feddes tenía Feddes desactivado. Ahora se ejecuta con Feddes activado, y se añadieron tres simulaciones (sin `DTB_path`, con flujo explícito y con mapas de suelo). Se aprobaron 17 de 17 verificaciones de publicación del agua subterránea. [ML `2559060`]
+
+## 2026-10-19 {#2026-10-19}
+
+- **Regla de rellenado capilar (Py, ML).** El ascenso capilar rellena una capa de suelo solo hasta la capacidad de campo (al estilo de HBV). Esto eliminó una circulación de agua entre el suelo y un nivel freático somero. En el valle gemelo, el ascenso capilar bruto bajó de 0.016 a 0 m³/s sin cambios en el caudal del cauce. El flujo implícito en el nivel freático ahora toma su derivada respecto de la carga a lo largo del movimiento real del nivel freático. Ver [Subsuelo en Capas, sección 4.4](../theory/layered-subsurface#44-darcy-flux-at-the-water-table). [Py `fe81252`; ML `051b52b`]
+- **Calibración por recesión en capas (Py, CB).** Dos multiplicadores de la conductividad lateral, del suelo y del regolito, ajustados a una curva maestra de recesión, con salidas de identificabilidad y un spin-up que ejecuta los propios flujos de la columna del modelo. Ver [Calibración por Recesión del Agua Subterránea](../calibration/groundwater-recession). [Py `b1f686e`, `1ffddd8`, `3390dc6`, `e837f7d`; ML `f78a130`; CB `d45e5be`]
+- **Flujo implícito en el nivel freático (Py)** y un **paso en capas compilado** (cerca de 6 veces más rápido, con resultados idénticos). [Py `c384ea4`, `0a4b393`]
+- **Estado inicial del acuífero profundo (Py, ML, CB).** $S_0 = q_0 A \tau$ a partir de un flujo base inicial o de una recarga media. Ver [Modelo de aguas subterráneas, sección 13.3](../theory/groundwater-model#133-starting-state). [Py `57ea20a`, `83d7071`; ML `13fa3d8`; CB `52bdbad`]
+
+## 2026-10-15 a 2026-10-17 {#2026-10-15-to-2026-10-17}
+
+- **Subsuelo en capas y estrés de Feddes (Py, ML).** La columna de suelo sobre regolito en la malla estructurada y en la malla de Voronoi, el estrés de Feddes en la absorción de agua por las raíces en ambos esquemas de suelo, y la adaptación a MATLAB con paridad entre Python y MATLAB. Ver [Subsuelo en Capas](../theory/layered-subsurface). [Py `b6ced47` … `c268969`; ML `0ded343`, `282cac9`, `383ea82`]
+- **Entradas del esquema en capas (CB, ML).** Reglas globales para los mapas de la base del suelo y del regolito, casos de MATLAB en capas y las entradas de Excel para los bloques nuevos. [CB `06f5e75`, `1ec94f4`; ML `2074ae6`]

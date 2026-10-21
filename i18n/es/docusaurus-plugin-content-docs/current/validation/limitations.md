@@ -14,8 +14,7 @@ El subsuelo en capas cuenta con pruebas controladas y paridad entre Python y MAT
 
 - no hay flujo lateral del agua colgada sobre regolito no saturado;
 - no hay tabla de clases de regolito ni salidas ráster por capa;
-- el agua circula hacia arriba y hacia abajo cerca de un nivel freático somero, lo que infla el ascenso capilar bruto y la recarga bruta en el balance, mientras el valor neto se mantiene cercano a cero;
-- el flujo implícito en el nivel freático solo se prueba en Python;
+- no hay franja capilar, ya que el ascenso capilar rellena el suelo por encima del nivel freático solo hasta la capacidad de campo;
 - el bucle compilado de ciudad de Python todavía no ejecuta el esquema en capas con flujo lateral de agua subterránea.
 
 La calibración por recesión se probó con un experimento gemelo en un valle sintético, no con pozos observados ni con un hidrograma de campo.

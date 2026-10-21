@@ -121,7 +121,9 @@ Un experimento gemelo evalúa la identificabilidad antes de usar datos reales.
 
 Las herramientas están en `hydropol2d.calibration.recession_twin` (`run_recession_twin_experiment`, `write_recession_twin_report`).
 
-### 5.1 Resultado en un valle de drenaje rápido (2026-10-19) {#51-result-on-a-fast-draining-valley-2026-10-19}
+### 5.1 Resultado en un valle de drenaje rápido {#51-result-on-a-fast-draining-valley}
+
+Esta simulación (2026-10-20) usa la física actual, incluida la regla de rellenado capilar del [subsuelo en capas](../theory/layered-subsurface#44-darcy-flux-at-the-water-table).
 
 | Configuración | Valor |
 |---|---|
@@ -132,13 +134,15 @@ Las herramientas están en `hydropol2d.calibration.recession_twin` (`run_recessi
 | Verdad | suelo 3, regolito 0.3 |
 | Recesión | 30 días |
 
-| Ruido | Mejor candidato | Multiplicador del suelo aceptado | Multiplicador del regolito aceptado |
-|---|---|---|---|
-| 0 % | suelo 3, regolito 0.3 | 3 | 0.3 |
-| 5 % | suelo 3, regolito 0.3 | 3 | 0.3 |
-| 10 % | suelo 3, regolito 0.3 | 3 a 10 | 0.3 |
+| Ruido | Mejor candidato | Candidatos aceptables | Función objetivo, mejor | Función objetivo, siguiente mejor |
+|---|---|---:|---:|---:|
+| 0 % | suelo 3, regolito 0.3 | 1 | 0.033 | 0.123 |
+| 5 % | suelo 3, regolito 0.3 | 1 | 0.065 | 0.117 |
+| 10 % | suelo 3, regolito 0.3 | 1 | 0.106 | 0.131 |
 
-La verdad se recuperó en los tres niveles de ruido. El multiplicador del regolito se recuperó exactamente. Con 10 % de ruido, se aceptó el multiplicador del suelo entre 3 y 10. Los nueve candidatos enrutados tardaron 55 min en una computadora portátil con 2 procesos de trabajo (workers). Las tres filas evalúan los mismos nueve candidatos enrutados, y solo difiere el ruido añadido al objetivo.
+La verdad se recuperó en los tres niveles de ruido y fue el único par aceptable en cada nivel. Los nueve candidatos enrutados tardaron 68 min en una computadora portátil con 2 procesos de trabajo (workers). Las tres filas evalúan los mismos nueve candidatos enrutados, y solo difiere el ruido añadido al objetivo.
+
+En la primera simulación, antes de la regla de rellenado capilar (2026-10-19), la verdad también fue el mejor candidato, pero con 10 % de ruido se aceptó cualquier multiplicador del suelo entre 3 y 10.
 
 <p align="center">
   <img src={useBaseUrl('/img/calibration/layered-twin-experiment.png')} width="900" alt="Izquierda: recesión objetivo con 5 por ciento de ruido, recesión verdadera y mejor candidato en eje logarítmico durante 30 días. Derecha: función objetivo sobre la malla de 3 por 3 de multiplicadores del suelo y del regolito, con el mejor candidato en los valores verdaderos" />
@@ -150,7 +154,7 @@ La verdad se recuperó en los tres niveles de ruido. El multiplicador del regoli
 
 ### 5.2 Qué limita la prueba {#52-what-limits-the-test}
 
-- **Ruido entre repeticiones.** Repetir la simulación con los mismos parámetros produce una dispersión diaria de ±2.7 %, debida a una oscilación de dos intervalos en el canal pequeño. Las diferencias entre candidatos menores que ese valor están dentro del ruido entre repeticiones.
+- **Ruido entre repeticiones.** En la simulación del 2026-10-19, repetir la ejecución con los mismos parámetros produjo una dispersión diaria de ±2.7 %, debida a una oscilación de dos intervalos en el canal pequeño. Las diferencias entre candidatos menores que ese valor están dentro del ruido entre repeticiones.
 - **El valle gemelo predeterminado es demasiado lento.** Con laderas de 500 m y un $S_y$ del suelo de aproximadamente 0.29, drena a lo largo de años. Su recesión bajó solo 9 % en 20 días, una pendiente demasiado plana para separar los candidatos. Para recesiones de semanas, se deben usar laderas más cortas y un $S_y$ menor, como en la sección 5.1.
 - **Una prueba gemela no es una prueba de campo.** Muestra que el método puede recuperar parámetros en un valle sintético con la misma estructura del modelo. Los registros reales añaden regulación, evapotranspiración y error de medición.
 

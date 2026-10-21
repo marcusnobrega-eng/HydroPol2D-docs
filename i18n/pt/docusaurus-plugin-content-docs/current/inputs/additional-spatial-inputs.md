@@ -85,7 +85,7 @@ O modo de canal subgrade de Neal (2012) usa o DEM grosseiro como elevação da p
 
 A largura do canal deve ser menor que a resolução da célula. Um canal com largura igual ou superior à célula deve ser resolvido pela grade comum. As rugosidades do canal e da planície são definidas separadamente pelas entradas de parâmetros do rio e do uso e cobertura da terra.
 
-Consulte [Bandeiras do modelo](../configuration/flags) para a combinação de roteamento necessária.
+Consulte [Flags do Modelo](../configuration/flags) para a combinação de roteamento necessária.
 
 ---
 
