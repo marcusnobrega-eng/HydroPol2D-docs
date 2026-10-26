@@ -82,21 +82,21 @@ La tabla de suelos define las propiedades hidráulicas básicas utilizadas para 
 
 | Tipo de suelo | Índice | $K_{\mathrm{sat}}$<br />$(\mathrm{mm\,h^{-1}})$ | $n$ | $\alpha$<br />$(\mathrm{m^{-1}})$ | $\theta_{\mathrm{sat}}$ | $\theta_{\mathrm{r}}$ | $\theta_{\mathrm{i}}$ | $S_{\mathrm{y}}$ | $K_{\mathrm{g,sat}}$<br />$(\mathrm{mm\,h^{-1}})$ | $\mathrm{DTB}$<br />$(\mathrm{m})$ | $K_s$ cerca | $K_s$ raíz | $K_s$ transmisión |
 |:---------:|:-----:|:-----------------------------------------------:|:---:|:----------------------------------:|:----------------------:|:--------------------:|:--------------------:|:---------------:|:---------------------------------------------------:|:--------------------------------:|:------------:|:----------:|:--------------------:|
-| Arcilla | 1 | 0.3 | 1.09 | 0,8 | 0.385 | 0.068 | 0.0997 | 0,03 | 6 | 1 | 1 | 1 | 1 |
-| Arcilla limosa | 2 | 0,5 | 1.23 | 1.0 | 0.423 | 0,089 | 0,1224 | 0,04 | 10 | 1 | 1 | 1 | 1 |
-| Arcilla arenosa | 3 | 0,6 | 1.31 | 1.5 | 0.321 | 0,075 | 0.0996 | 0,06 | 12 | 1 | 1 | 1 | 1 |
-| Franco arcilloso | 4 | 1.0 | 1.31 | 1.9 | 0.309 | 0.095 | 0.1164 | 0,08 | 20 | 1 | 1 | 1 | 1 |
-| Franco arcilloso limoso | 5 | 1.0 | 1.23 | 1.5 | 0,432 | 0,089 | 0.1233 | 0,09 | 20 | 1 | 1 | 1 | 1 |
-| Franco arcilloso arenoso | 6 | 1.5 | 1,48 | 3.0 | 0.330 | 0.065 | 0.0915 | 0,11 | 30 | 1 | 1 | 1 | 1 |
-| Franco limoso | 7 | 7.6 | 1.41 | 4.5 | 0,434 | 0.067 | 0,1220 | 0,14 | 152 | 1 | 1 | 1 | 1 |
-| Marga | 8 | 3.4 | 1,56 | 3.6 | 0,486 | 0,078 | 0.1104 | 0,18 | 68 | 1 | 1 | 1 | 1 |
-| Franco arenoso | 9 | 10.9 | 1,89 | 7.5 | 0.412 | 0.065 | 0.1287 | 0,22 | 218 | 1 | 1 | 1 | 1 |
-| Limo | 10 | 3.4 | 1.37 | 4.0 | 0,486 | 0.067 | 0,1234 | 0,12 | 68 | 1 | 1 | 1 | 1 |
-| Arena franca | 11 | 29,9 | 2.28 | 14.5 | 0.401 | 0.057 | 0.1172 | 0,25 | 598 | 1 | 1 | 1 | 1 |
-| Arena | 12 | 117,8 | 2,68 | 14.5 | 0.417 | 0.045 | 0,1225 | 0,30 | 2356 | 1 | 1 | 1 | 1 |
-| Agua | 0 | 0.3 | 1.09 | 0,8 | 0.385 | 0.068 | 0.0997 | 0,03 | 6 | 1 | 1 | 1 | 1 |
+| Arcilla | 1 | 0,3 | 1,09 | 0,8 | 0,385 | 0,068 | 0,0997 | 0,03 | 6 | 1 | 1 | 1 | 1 |
+| Arcilla limosa | 2 | 0,5 | 1,09 | 0,5 | 0,423 | 0,070 | 0,1053 | 0,04 | 10 | 1 | 1 | 1 | 1 |
+| Arcilla arenosa | 3 | 0,6 | 1,23 | 2,7 | 0,321 | 0,100 | 0,1221 | 0,06 | 12 | 1 | 1 | 1 | 1 |
+| Franco arcilloso | 4 | 1,0 | 1,31 | 1,9 | 0,309 | 0,095 | 0,1164 | 0,08 | 20 | 1 | 1 | 1 | 1 |
+| Franco arcilloso limoso | 5 | 1,0 | 1,23 | 1,0 | 0,432 | 0,089 | 0,1233 | 0,09 | 20 | 1 | 1 | 1 | 1 |
+| Franco arcilloso arenoso | 6 | 1,5 | 1,48 | 5,9 | 0,330 | 0,100 | 0,1230 | 0,11 | 30 | 1 | 1 | 1 | 1 |
+| Franco | 7 | 3,4 | 1,56 | 3,6 | 0,434 | 0,078 | 0,1136 | 0,18 | 68 | 1 | 1 | 1 | 1 |
+| Franco limoso | 8 | 6,5 | 1,41 | 2,0 | 0,486 | 0,067 | 0,1298 | 0,14 | 130 | 1 | 1 | 1 | 1 |
+| Franco arenoso | 9 | 10,9 | 1,89 | 7,5 | 0,412 | 0,065 | 0,0997 | 0,22 | 218 | 1 | 1 | 1 | 1 |
+| Limo | 10 | 2,5 | 1,37 | 1,6 | 0,460 | 0,034 | 0,1192 | 0,12 | 50 | 1 | 1 | 1 | 1 |
+| Arena franca | 11 | 29,9 | 2,28 | 12,4 | 0,401 | 0,057 | 0,1258 | 0,25 | 598 | 1 | 1 | 1 | 1 |
+| Arena | 12 | 117,8 | 2,68 | 14,5 | 0,417 | 0,045 | 0,1194 | 0,30 | 2356 | 1 | 1 | 1 | 1 |
+| Agua | 0 | 0,3 | 1,09 | 0,8 | 0,385 | 0,068 | 0,0997 | 0,03 | 6 | 1 | 1 | 1 | 1 |
 
-*Tabla 2. Tabla de parámetros del suelo HydroPol2D. Los valores `Index` deben coincidir con los valores categóricos en el ráster de suelo.*
+*Tabla 2. Tabla de parámetros del suelo de HydroPol2D. Los valores de `Index` deben coincidir con los valores categóricos del ráster de suelo; los códigos predeterminados siguen la leyenda de textura USDA de OpenLandMap (7 franco, 8 franco limoso). $K_{\mathrm{sat}}$ y $\theta_{\mathrm{sat}}$ son la conductividad de Green–Ampt y la porosidad efectiva de [Rawls et al. (1983)](https://doi.org/10.1061/%28ASCE%290733-9429%281983%29109%3A1%2862%29); $n$, $\alpha$ y $\theta_{\mathrm{r}}$ son las medias por clase de [Carsel y Parrish (1988)](https://doi.org/10.1029/WR024i005p00755). El limo, que Rawls et al. no incluyen, toma $K_{\mathrm{sat}}$ y $\theta_{\mathrm{sat}}$ de Carsel y Parrish. $\theta_{\mathrm{i}} = \theta_{\mathrm{r}} + S_e(\theta_{\mathrm{sat}} - \theta_{\mathrm{r}})$, con $S_e = 0{,}1$ (0,15 para franco limoso; 0,2 para limo, arena franca y arena), y $K_{\mathrm{g,sat}} = 20\,K_{\mathrm{sat}}$.*
 ### Definiciones de variables
 
 - $K_{\mathrm{sat}}$: conductividad hidráulica saturada

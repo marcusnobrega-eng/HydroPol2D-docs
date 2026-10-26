@@ -82,21 +82,21 @@ A tabela de solos define as propriedades hidráulicas básicas usadas para estim
 
 | Tipo de solo | Índice | $K_{\mathrm{sat}}$<br />$(\mathrm{mm\,h^{-1}})$ | $n$ | $\alpha$<br />$(\mathrm{m^{-1}})$ | $\theta_{\mathrm{sat}}$ | $\theta_{\mathrm{r}}$ | $\theta_{\mathrm{i}}$ | $S_{\mathrm{y}}$ | $K_{\mathrm{g,sat}}$<br />$(\mathrm{mm\,h^{-1}})$ | $\mathrm{DTB}$<br />$(\mathrm{m})$ | $K_s$ perto | $K_s$ raiz | transmissão $K_s$ |
 |:---------:|:-----:|:-----------------------------------------------:|:---:|:----------------------------------:|:----------------------:|:--------------------:|:--------------------:|:---------------:|:---------------------------------------------------:|:--------------------------------:|:------------:|:----------:|:--------------------:|
-| Argila | 1 | 0,3 | 1.09 | 0,8 | 0,385 | 0,068 | 0,0997 | 0,03 | 6 | 1 | 1 | 1 | 1 |
-| Argila Siltosa | 2 | 0,5 | 1.23 | 1,0 | 0,423 | 0,089 | 0,1224 | 0,04 | 10 | 1 | 1 | 1 | 1 |
-| Argila arenosa | 3 | 0,6 | 1.31 | 1,5 | 0,321 | 0,075 | 0,0996 | 0,06 | 12 | 1 | 1 | 1 | 1 |
-| Argila Argilosa | 4 | 1,0 | 1.31 | 1,9 | 0,309 | 0,095 | 0,1164 | 0,08 | 20 | 1 | 1 | 1 | 1 |
-| Argila Siltosa | 5 | 1,0 | 1.23 | 1,5 | 0,432 | 0,089 | 0,1233 | 0,09 | 20 | 1 | 1 | 1 | 1 |
-| Argila arenosa | 6 | 1,5 | 1,48 | 3,0 | 0,330 | 0,065 | 0,0915 | 0,11 | 30 | 1 | 1 | 1 | 1 |
-| Argila Siltosa | 7 | 7.6 | 1,41 | 4,5 | 0,434 | 0,067 | 0,1220 | 0,14 | 152 | 1 | 1 | 1 | 1 |
-| Argila | 8 | 3.4 | 1,56 | 3.6 | 0,486 | 0,078 | 0,1104 | 0,18 | 68 | 1 | 1 | 1 | 1 |
-| Argila arenosa | 9 | 10.9 | 1,89 | 7,5 | 0,412 | 0,065 | 0,1287 | 0,22 | 218 | 1 | 1 | 1 | 1 |
-| Lodo | 10 | 3.4 | 1,37 | 4,0 | 0,486 | 0,067 | 0,1234 | 0,12 | 68 | 1 | 1 | 1 | 1 |
-| Areia Argilosa | 11 | 29,9 | 2.28 | 14,5 | 0,401 | 0,057 | 0,1172 | 0,25 | 598 | 1 | 1 | 1 | 1 |
-| Areia | 12 | 117,8 | 2,68 | 14,5 | 0,417 | 0,045 | 0,1225 | 0,30 | 2356 | 1 | 1 | 1 | 1 |
-| Água | 0 | 0,3 | 1.09 | 0,8 | 0,385 | 0,068 | 0,0997 | 0,03 | 6 | 1 | 1 | 1 | 1 |
+| Argila | 1 | 0,3 | 1,09 | 0,8 | 0,385 | 0,068 | 0,0997 | 0,03 | 6 | 1 | 1 | 1 | 1 |
+| Argila siltosa | 2 | 0,5 | 1,09 | 0,5 | 0,423 | 0,070 | 0,1053 | 0,04 | 10 | 1 | 1 | 1 | 1 |
+| Argila arenosa | 3 | 0,6 | 1,23 | 2,7 | 0,321 | 0,100 | 0,1221 | 0,06 | 12 | 1 | 1 | 1 | 1 |
+| Franco-argilosa | 4 | 1,0 | 1,31 | 1,9 | 0,309 | 0,095 | 0,1164 | 0,08 | 20 | 1 | 1 | 1 | 1 |
+| Franco-argilossiltosa | 5 | 1,0 | 1,23 | 1,0 | 0,432 | 0,089 | 0,1233 | 0,09 | 20 | 1 | 1 | 1 | 1 |
+| Franco-argiloarenosa | 6 | 1,5 | 1,48 | 5,9 | 0,330 | 0,100 | 0,1230 | 0,11 | 30 | 1 | 1 | 1 | 1 |
+| Franca | 7 | 3,4 | 1,56 | 3,6 | 0,434 | 0,078 | 0,1136 | 0,18 | 68 | 1 | 1 | 1 | 1 |
+| Franco-siltosa | 8 | 6,5 | 1,41 | 2,0 | 0,486 | 0,067 | 0,1298 | 0,14 | 130 | 1 | 1 | 1 | 1 |
+| Franco-arenosa | 9 | 10,9 | 1,89 | 7,5 | 0,412 | 0,065 | 0,0997 | 0,22 | 218 | 1 | 1 | 1 | 1 |
+| Silte | 10 | 2,5 | 1,37 | 1,6 | 0,460 | 0,034 | 0,1192 | 0,12 | 50 | 1 | 1 | 1 | 1 |
+| Areia franca | 11 | 29,9 | 2,28 | 12,4 | 0,401 | 0,057 | 0,1258 | 0,25 | 598 | 1 | 1 | 1 | 1 |
+| Areia | 12 | 117,8 | 2,68 | 14,5 | 0,417 | 0,045 | 0,1194 | 0,30 | 2356 | 1 | 1 | 1 | 1 |
+| Água | 0 | 0,3 | 1,09 | 0,8 | 0,385 | 0,068 | 0,0997 | 0,03 | 6 | 1 | 1 | 1 | 1 |
 
-*Tabela 2. Tabela de parâmetros do solo HydroPol2D. Os valores `Index` devem corresponder aos valores categóricos no raster do solo.*
+*Tabela 2. Tabela de parâmetros do solo do HydroPol2D. Os valores de `Index` devem corresponder aos valores categóricos do raster de solo; os códigos padrão seguem a legenda de textura USDA do OpenLandMap (7 franca, 8 franco-siltosa). $K_{\mathrm{sat}}$ e $\theta_{\mathrm{sat}}$ são a condutividade de Green–Ampt e a porosidade efetiva de [Rawls et al. (1983)](https://doi.org/10.1061/%28ASCE%290733-9429%281983%29109%3A1%2862%29); $n$, $\alpha$ e $\theta_{\mathrm{r}}$ são as médias por classe de [Carsel e Parrish (1988)](https://doi.org/10.1029/WR024i005p00755). O silte, que Rawls et al. não listam, usa $K_{\mathrm{sat}}$ e $\theta_{\mathrm{sat}}$ de Carsel e Parrish. $\theta_{\mathrm{i}} = \theta_{\mathrm{r}} + S_e(\theta_{\mathrm{sat}} - \theta_{\mathrm{r}})$, com $S_e = 0{,}1$ (0,15 para franco-siltosa; 0,2 para silte, areia franca e areia), e $K_{\mathrm{g,sat}} = 20\,K_{\mathrm{sat}}$.*
 ### Definições de variáveis
 
 - $K_{\mathrm{sat}}$: condutividade hidráulica saturada

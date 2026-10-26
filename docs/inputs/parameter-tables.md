@@ -114,20 +114,20 @@ The soil table defines the base hydraulic properties used to estimate infiltrati
 | Soil Type | Index | $K_{\mathrm{sat}}$<br />$(\mathrm{mm\,h^{-1}})$ | $n$ | $\alpha$<br />$(\mathrm{m^{-1}})$ | $\theta_{\mathrm{sat}}$ | $\theta_{\mathrm{r}}$ | $\theta_{\mathrm{i}}$ | $S_{\mathrm{y}}$ | $K_{\mathrm{g,sat}}$<br />$(\mathrm{mm\,h^{-1}})$ | $\mathrm{DTB}$<br />$(\mathrm{m})$ | $K_s$ near | $K_s$ root | $K_s$ transmission |
 |:---------:|:-----:|:-----------------------------------------------:|:---:|:----------------------------------:|:----------------------:|:--------------------:|:--------------------:|:---------------:|:---------------------------------------------------:|:--------------------------------:|:------------:|:----------:|:--------------------:|
 | Clay | 1 | 0.3 | 1.09 | 0.8 | 0.385 | 0.068 | 0.0997 | 0.03 | 6 | 1 | 1 | 1 | 1 |
-| Silty Clay | 2 | 0.5 | 1.23 | 1.0 | 0.423 | 0.089 | 0.1224 | 0.04 | 10 | 1 | 1 | 1 | 1 |
-| Sandy Clay | 3 | 0.6 | 1.31 | 1.5 | 0.321 | 0.075 | 0.0996 | 0.06 | 12 | 1 | 1 | 1 | 1 |
+| Silty Clay | 2 | 0.5 | 1.09 | 0.5 | 0.423 | 0.070 | 0.1053 | 0.04 | 10 | 1 | 1 | 1 | 1 |
+| Sandy Clay | 3 | 0.6 | 1.23 | 2.7 | 0.321 | 0.100 | 0.1221 | 0.06 | 12 | 1 | 1 | 1 | 1 |
 | Clay Loam | 4 | 1.0 | 1.31 | 1.9 | 0.309 | 0.095 | 0.1164 | 0.08 | 20 | 1 | 1 | 1 | 1 |
-| Silty Clay Loam | 5 | 1.0 | 1.23 | 1.5 | 0.432 | 0.089 | 0.1233 | 0.09 | 20 | 1 | 1 | 1 | 1 |
-| Sandy Clay Loam | 6 | 1.5 | 1.48 | 3.0 | 0.330 | 0.065 | 0.0915 | 0.11 | 30 | 1 | 1 | 1 | 1 |
-| Silty Loam | 7 | 7.6 | 1.41 | 4.5 | 0.434 | 0.067 | 0.1220 | 0.14 | 152 | 1 | 1 | 1 | 1 |
-| Loam | 8 | 3.4 | 1.56 | 3.6 | 0.486 | 0.078 | 0.1104 | 0.18 | 68 | 1 | 1 | 1 | 1 |
-| Sandy Loam | 9 | 10.9 | 1.89 | 7.5 | 0.412 | 0.065 | 0.1287 | 0.22 | 218 | 1 | 1 | 1 | 1 |
-| Silt | 10 | 3.4 | 1.37 | 4.0 | 0.486 | 0.067 | 0.1234 | 0.12 | 68 | 1 | 1 | 1 | 1 |
-| Loamy Sand | 11 | 29.9 | 2.28 | 14.5 | 0.401 | 0.057 | 0.1172 | 0.25 | 598 | 1 | 1 | 1 | 1 |
-| Sand | 12 | 117.8 | 2.68 | 14.5 | 0.417 | 0.045 | 0.1225 | 0.30 | 2356 | 1 | 1 | 1 | 1 |
+| Silty Clay Loam | 5 | 1.0 | 1.23 | 1.0 | 0.432 | 0.089 | 0.1233 | 0.09 | 20 | 1 | 1 | 1 | 1 |
+| Sandy Clay Loam | 6 | 1.5 | 1.48 | 5.9 | 0.330 | 0.100 | 0.1230 | 0.11 | 30 | 1 | 1 | 1 | 1 |
+| Loam | 7 | 3.4 | 1.56 | 3.6 | 0.434 | 0.078 | 0.1136 | 0.18 | 68 | 1 | 1 | 1 | 1 |
+| Silty Loam | 8 | 6.5 | 1.41 | 2.0 | 0.486 | 0.067 | 0.1298 | 0.14 | 130 | 1 | 1 | 1 | 1 |
+| Sandy Loam | 9 | 10.9 | 1.89 | 7.5 | 0.412 | 0.065 | 0.0997 | 0.22 | 218 | 1 | 1 | 1 | 1 |
+| Silt | 10 | 2.5 | 1.37 | 1.6 | 0.460 | 0.034 | 0.1192 | 0.12 | 50 | 1 | 1 | 1 | 1 |
+| Loamy Sand | 11 | 29.9 | 2.28 | 12.4 | 0.401 | 0.057 | 0.1258 | 0.25 | 598 | 1 | 1 | 1 | 1 |
+| Sand | 12 | 117.8 | 2.68 | 14.5 | 0.417 | 0.045 | 0.1194 | 0.30 | 2356 | 1 | 1 | 1 | 1 |
 | Water | 0 | 0.3 | 1.09 | 0.8 | 0.385 | 0.068 | 0.0997 | 0.03 | 6 | 1 | 1 | 1 | 1 |
 
-*Table 2. HydroPol2D soil parameter table. The `Index` values must match the categorical values in the soil raster.*
+*Table 2. HydroPol2D soil parameter table. The `Index` values must match the categorical values in the soil raster; the default codes follow the OpenLandMap USDA texture legend (7 loam, 8 silt loam). $K_{\mathrm{sat}}$ and $\theta_{\mathrm{sat}}$ are the Green–Ampt conductivity and effective porosity of [Rawls et al. (1983)](https://doi.org/10.1061/%28ASCE%290733-9429%281983%29109%3A1%2862%29); $n$, $\alpha$ and $\theta_{\mathrm{r}}$ are the class means of [Carsel and Parrish (1988)](https://doi.org/10.1029/WR024i005p00755). Silt, which Rawls et al. do not list, takes $K_{\mathrm{sat}}$ and $\theta_{\mathrm{sat}}$ from Carsel and Parrish. $\theta_{\mathrm{i}} = \theta_{\mathrm{r}} + S_e(\theta_{\mathrm{sat}} - \theta_{\mathrm{r}})$ with $S_e = 0.1$ (0.15 for silt loam; 0.2 for silt, loamy sand and sand), and $K_{\mathrm{g,sat}} = 20\,K_{\mathrm{sat}}$.*
 
 ### Variable definitions
 
