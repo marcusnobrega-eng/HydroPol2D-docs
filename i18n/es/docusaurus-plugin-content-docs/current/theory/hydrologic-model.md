@@ -744,12 +744,12 @@ La formulación predeterminada actual es un **sistema vadose en capas**, no un s
 - una capa de transmisión,
 - y una interfaz de acoplamiento de agua subterránea debajo de la capa de transmisión.
 
-Para una capa vadosa genérica $\ell$ con almacenamiento activo $S_{\ell}$ y espesor $z_{\ell}$,
+Para una capa vadosa genérica $\ell$ con almacenamiento activo $S_{\ell}$ (agua por encima de $\theta_{\mathrm{r}}$, como lámina sobre toda la celda) y espesor $z_{\ell}$, el agua ocupa la fracción permeable $f_p$ de la celda:
 $$
 \theta_{\ell}
 =
 \theta_{\mathrm{r},\ell}+
-\frac{S_{\ell}}{z_{\ell}}
+\frac{S_{\ell}}{f_p\, z_{\ell}}
 $$
 $$
 S_{e,\ell}
@@ -765,7 +765,7 @@ K_{\ell}
 =
 K_{\mathrm{sat},\ell} K_r(S_{e,\ell})
 $$
-La conductividad insaturada resultante gobierna el drenaje descendente de una capa a la siguiente durante el paso de tiempo actual, sujeto a la capacidad de almacenamiento disponible en la capa receptora.
+La capa comienza con $S_{\ell} = f_p(\theta_i - \theta_{\mathrm{r},\ell})\, z_{\ell}$ y almacena como máximo $f_p(\theta_{\mathrm{sat},\ell} - \theta_{\mathrm{r},\ell})\, z_{\ell}$. En un paso de tiempo $\Delta t$, drena $f_p K_{\ell} \Delta t$ hacia la capa inferior, sujeto a la capacidad de almacenamiento disponible en la capa receptora. (Antes del 26/10/2026, el almacenamiento inicial y el drenaje no incluían $f_p$, por lo que las celdas parcialmente impermeables empezaban demasiado húmedas y drenaban demasiado lento.)
 ### 6.2 Drenaje descendente y recarga
 
 En la ruta predeterminada:

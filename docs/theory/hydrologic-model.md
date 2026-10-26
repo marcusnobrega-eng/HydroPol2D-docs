@@ -995,14 +995,14 @@ The current default formulation is a **layered vadose system**, not a single rec
 - a transmission layer,
 - and a groundwater-coupling interface below the transmission layer.
 
-For a generic vadose layer $\ell$ with active storage $S_{\ell}$ and thickness $z_{\ell}$,
+For a generic vadose layer $\ell$ with active storage $S_{\ell}$ (water above $\theta_{\mathrm{r}}$, as a depth over the whole cell) and thickness $z_{\ell}$, the water sits in the pervious fraction $f_p$ of the cell:
 
 $$
 \theta_{\ell}
 =
 \theta_{\mathrm{r},\ell}
 +
-\frac{S_{\ell}}{z_{\ell}}
+\frac{S_{\ell}}{f_p\, z_{\ell}}
 $$
 
 $$
@@ -1021,7 +1021,7 @@ K_{\ell}
 K_{\mathrm{sat},\ell} K_r(S_{e,\ell})
 $$
 
-The resulting unsaturated conductivity governs downward drainage from one layer to the next over the current time step, subject to the available storage capacity in the receiving layer.
+The layer starts at $S_{\ell} = f_p(\theta_i - \theta_{\mathrm{r},\ell})\, z_{\ell}$ and holds at most $f_p(\theta_{\mathrm{sat},\ell} - \theta_{\mathrm{r},\ell})\, z_{\ell}$. Over a time step $\Delta t$ it drains $f_p K_{\ell} \Delta t$ to the layer below, subject to the available storage capacity in the receiving layer. (Before 2026-10-26 the initial storage and the drainage left out $f_p$, so partly impervious cells started too wet and drained too slowly.)
 
 ### 6.2 Downward drainage and recharge
 

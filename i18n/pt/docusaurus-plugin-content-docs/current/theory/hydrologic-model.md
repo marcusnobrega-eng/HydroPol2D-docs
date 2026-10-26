@@ -742,12 +742,12 @@ A formulação padrão atual é um **sistema vadose em camadas**, e não um úni
 - uma camada de transmissão,
 - e uma interface de acoplamento de águas subterrâneas abaixo da camada de transmissão.
 
-Para uma camada vadosa genérica $\ell$ com armazenamento ativo $S_{\ell}$ e espessura $z_{\ell}$,
+Para uma camada vadosa genérica $\ell$ com armazenamento ativo $S_{\ell}$ (água acima de $\theta_{\mathrm{r}}$, como lâmina sobre a célula inteira) e espessura $z_{\ell}$, a água fica na fração permeável $f_p$ da célula:
 $$
 \theta_{\ell}
 =
 \theta_{\mathrm{r},\ell}+
-\frac{S_{\ell}}{z_{\ell}}
+\frac{S_{\ell}}{f_p\, z_{\ell}}
 $$
 $$
 S_{e,\ell}
@@ -763,7 +763,7 @@ K_{\ell}
 =
 K_{\mathrm{sat},\ell} K_r(S_{e,\ell})
 $$
-A condutividade insaturada resultante governa a drenagem descendente de uma camada para a próxima durante o intervalo de tempo atual, sujeita à capacidade de armazenamento disponível na camada receptora.
+A camada começa com $S_{\ell} = f_p(\theta_i - \theta_{\mathrm{r},\ell})\, z_{\ell}$ e armazena no máximo $f_p(\theta_{\mathrm{sat},\ell} - \theta_{\mathrm{r},\ell})\, z_{\ell}$. Em um intervalo de tempo $\Delta t$, ela drena $f_p K_{\ell} \Delta t$ para a camada de baixo, limitada pela capacidade de armazenamento disponível na camada receptora. (Antes de 26/10/2026, o armazenamento inicial e a drenagem não incluíam $f_p$, e por isso células parcialmente impermeáveis começavam úmidas demais e drenavam devagar demais.)
 ### 6.2 Drenagem descendente e recarga
 
 No caminho padrão:
