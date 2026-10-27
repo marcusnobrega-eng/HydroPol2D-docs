@@ -6,6 +6,10 @@ title: Changelog
 
 Model changes that affect inputs, results or validation, newest first. Dates are in California time (PDT). The codes in brackets are commits in HydroPol2D-Python (Py), the MATLAB model (ML) and the Case Builder (CB).
 
+## 2026-10-27 {#2026-10-27}
+
+- **Optional modules on the mesh (Py).** Snow, water quality, human instability, reservoirs, urban drainage, green infrastructure and detention ponds now run on Voronoi and quadtree meshes, on the CPU engine. Before, a mesh case with any of them stopped at the input check. Each module uses the regular grid's own equations; on a mesh made of the grid's squares the results match the grid's to round-off. When a mesh cannot run a module (the GPU engine, or some modules with mesh river channels), the message names the module and Studio offers to switch the model to the regular grid. See [Limitations](./limitations#voronoi-mesh-mode). [Py `7b6c556` … `d6f8a86`]
+
 ## 2026-10-20 {#2026-10-20}
 
 - **One case workbook (ML).** A MATLAB case is now one workbook, `HydroPol2D_Inputs.xlsx`, with 8 settings tabs, 5 class-table tabs and 5 series tabs and a note on every value. The switches sit at the top of their blocks; there is no `Flags` sheet. Older cases (`General_Data.xlsx`, its `Flags` sheet and separate workbooks) still run, and a builder converts them. Check: the V-tilted case gives identical results from either layout, with every old workbook deleted, and doubling the Rain series tab doubles the rain (3 of 3 checks). See [Run from Excel](../getting-started/excel-workflow). [ML `a0a6b7a`, `993d830`]

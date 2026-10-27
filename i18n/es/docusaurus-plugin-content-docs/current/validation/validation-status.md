@@ -31,6 +31,7 @@ El <a href={useBaseUrl('/reports/validation_report.pdf')}>informe de validación
 | Autómatas celulares | Validado | Casos de cuenca en V, plano y condiciones de contorno. |
 | Ondas cinemática y difusiva | Validado | Benchmarks de plano, cuenca en V y contorno de nivel adecuados para las ecuaciones reducidas. |
 | Modelo subgrid de Neal (2012) | Validado para las geometrías evaluadas | Referencias de malla fina para flujo en canal, canal compuesto, activación de márgenes y extensión inundada. |
+| Malla de volúmenes finitos de Voronoi | Validación controlada en CPU | Inercial local con el grafo de Neal; cinemática, difusiva y momento completo en 2D resuelto. Los módulos opcionales (nieve, calidad del agua, inestabilidad humana, embalses, drenaje urbano, infraestructura verde, estanques de detención) reproducen la malla ráster regular en una malla formada por sus propias celdas cuadradas. La ejecución en GPU y a escala de la India sigue sin validar. |
 | Embalses y estructuras de control | Validado | Solución de vaciado por curva de gasto y balance de volumen. |
 | Contorno por hidrograma de entrada | Validado | Volumen del hidrograma prescrito y balance de almacenamiento o salida. |
 | Contorno por hidrograma de nivel | Validado | Aplicación del nivel prescrito y respuesta de volumen. |

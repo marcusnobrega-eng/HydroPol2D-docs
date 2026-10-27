@@ -6,6 +6,10 @@ title: Registro de Alterações
 
 Mudanças no modelo que afetam entradas, resultados ou validação, das mais recentes para as mais antigas. As datas estão no horário da Califórnia (PDT). Os códigos entre colchetes são commits no HydroPol2D-Python (Py), no modelo MATLAB (ML) e no Case Builder (CB).
 
+## 2026-10-27 {#2026-10-27}
+
+- **Módulos opcionais na malha (Py).** Neve, qualidade da água, instabilidade humana, reservatórios, drenagem urbana, infraestrutura verde e bacias de detenção agora rodam em malhas Voronoi e quadtree, no motor de CPU. Antes, um caso em malha com qualquer um deles parava na verificação das entradas. Cada módulo usa as próprias equações da grade regular, e em uma malha formada pelos quadrados da grade os resultados reproduzem os da grade até o arredondamento. Quando a malha não consegue rodar um módulo (o motor de GPU, ou alguns módulos com canais de rio na malha), a mensagem informa qual é o módulo e o Studio oferece passar o modelo para a grade regular. Ver [Limitações](./limitations#voronoi-mesh-mode). [Py `7b6c556` … `d6f8a86`]
+
 ## 2026-10-20 {#2026-10-20}
 
 - **Uma única planilha do caso (ML).** Um caso MATLAB agora é uma única planilha, `HydroPol2D_Inputs.xlsx`, com 8 abas de configurações, 5 abas de tabelas de classes, 5 abas de séries e uma nota em cada valor. As chaves ficam no topo dos seus blocos, e não existe aba `Flags`. Os casos antigos (`General_Data.xlsx`, a sua aba `Flags` e planilhas separadas) continuam rodando, e um gerador os converte. Verificação: o caso V-tilted dá resultados idênticos nos dois formatos, com todas as planilhas antigas apagadas, e dobrar a aba Rain series dobra a chuva (3 de 3 verificações). Veja [Rodar pelo Excel](../getting-started/excel-workflow). [ML `a0a6b7a`, `993d830`]

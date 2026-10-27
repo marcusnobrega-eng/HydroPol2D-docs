@@ -31,6 +31,7 @@ O <a href={useBaseUrl('/reports/validation_report.pdf')}>relatório de validaç�
 | Autômatos celulares | Validado | Casos de bacia em V, plano e condições de contorno. |
 | Ondas cinemática e difusiva | Validado | Benchmarks de plano, bacia em V e contorno de nível adequados às equações reduzidas. |
 | Modelo subgrid de Neal (2012) | Validado para as geometrias testadas | Referências de malha fina para escoamento em canal, canal composto, ativação de margens e extensão inundada. |
+| Malha de volumes finitos Voronoi | Validação controlada em CPU | Inercial local com o grafo de Neal; cinemática, difusiva e momento completo em 2D resolvido. Os módulos opcionais (neve, qualidade da água, instabilidade humana, reservatórios, drenagem urbana, infraestrutura verde, bacias de detenção) reproduzem a grade regular em uma malha formada pelas suas próprias células quadradas. A execução em GPU e na escala da Índia segue sem validação. |
 | Reservatórios e estruturas de controle | Validado | Solução de depleção por curva-chave e balanço de volume. |
 | Contorno por hidrograma de entrada | Validado | Volume do hidrograma prescrito e balanço de armazenamento ou saída. |
 | Contorno por hidrograma de nível | Validado | Aplicação do nível prescrito e resposta de volume. |

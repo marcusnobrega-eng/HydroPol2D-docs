@@ -20,6 +20,23 @@ and unresolved channels are supported only by the local-inertial solver. A
 case that needs kinematic, diffusive, or full-momentum routing must use fully
 resolved 2D channels until a separate channel-coupling validation is added.
 
+In HydroPol2D-Python, the mesh runs the regular grid's optional modules on its CPU
+(NumPy) engine: snow, water quality, human instability, reservoirs, urban drainage,
+green infrastructure and detention ponds. Each is checked against the regular grid on
+a mesh made of the grid's own square cells, where the two agree to round-off. None has
+been checked against observations on an irregular mesh. Open limits:
+
+- the GPU (JAX) mesh engine does not run these modules yet;
+- reservoirs, urban drainage, green infrastructure and detention ponds need a mesh
+  without river channels or sub-grid tables, and water quality one without river
+  channels;
+- a reservoir, drainage inlet, GI compartment or pond device moves to the mesh cell
+  that holds most of its raster cell, and a pond takes the mesh cells it covers by half
+  or more;
+- with a wash-off exponent other than 1, wash-off depends on how many edges the water
+  leaves a cell through, so a Voronoi mesh (about six edges per cell) washes off
+  differently from the grid (four faces).
+
 ## Layered Subsurface and Recession Calibration
 
 The layered subsurface has controlled tests and Python-MATLAB parity on

@@ -31,7 +31,7 @@ The <a href={useBaseUrl('/reports/validation_report.pdf')}>validation report</a>
 | Cellular automata routing | Validated | V-tilted, plane, and boundary-condition checks. |
 | Kinematic and diffusive routing | Validated | Plane, V-tilted, and stage-boundary benchmarks appropriate to the reduced equations. |
 | Neal (2012) subgrid model | Validated for tested channel geometries | Fine-grid references for in-bank routing, compound-channel flow, bank activation, and inundation extent. |
-| Voronoi finite-volume mesh | Controlled CPU validation | Local inertial with Neal graph; resolved-2D kinematic, diffusive, and full momentum. GPU and India-scale execution remain unvalidated. |
+| Voronoi finite-volume mesh | Controlled CPU validation | Local inertial with Neal graph; resolved-2D kinematic, diffusive, and full momentum. The optional modules (snow, water quality, human instability, reservoirs, urban drainage, green infrastructure, detention ponds) match the regular grid on a mesh of its own squares. GPU and India-scale execution remain unvalidated. |
 | Reservoir and control structures | Validated | Rating-curve storage-depletion solution and volume ledger. |
 | Inflow hydrograph boundary | Validated | Prescribed-hydrograph volume and routed storage or outlet ledger. |
 | Stage hydrograph boundary | Validated | Prescribed-stage enforcement and volume response. |

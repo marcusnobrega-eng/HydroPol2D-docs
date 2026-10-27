@@ -8,6 +8,17 @@ El paquete de validación actual corresponde a una campaña de verificación y d
 
 Estas pruebas no sustituyen la calibración de campo, el análisis de incertidumbre ni la validación observacional específica de cada sitio.
 
+## Modo de malla de Voronoi {#voronoi-mesh-mode}
+
+La vía de volúmenes finitos en malla de Voronoi cuenta con validación controlada en CPU, pero no con validación a escala de campo. La ejecución en GPU y el rendimiento a escala de la India están bloqueados, y los canales no resueltos solo se admiten con el solucionador inercial local. Un caso que necesite enrutamiento cinemático, difusivo o de momento completo debe usar canales 2D totalmente resueltos hasta que se añada una validación propia del acoplamiento de canales.
+
+En HydroPol2D-Python, la malla ejecuta los módulos opcionales de la malla ráster regular en su motor de CPU (NumPy): nieve, calidad del agua, inestabilidad humana, embalses, drenaje urbano, infraestructura verde y estanques de detención. Cada uno se comparó con la malla ráster en una malla formada por sus propias celdas cuadradas, donde ambas coinciden hasta el redondeo. Ninguno se ha comparado con observaciones en una malla irregular. Sus límites abiertos son los siguientes.
+
+- el motor de malla en GPU (JAX) todavía no ejecuta estos módulos;
+- los embalses, el drenaje urbano, la infraestructura verde y los estanques de detención requieren una malla sin canales de río ni tablas de submalla, y la calidad del agua, una malla sin canales de río;
+- un embalse, un sumidero, un compartimento de infraestructura verde o un dispositivo de estanque pasa a la celda de la malla que contiene la mayor parte de su celda ráster, y un estanque ocupa las celdas de la malla que cubre en la mitad o más;
+- con un exponente de lavado distinto de 1, el lavado depende de cuántas aristas atraviesa el agua al salir de una celda, de modo que una malla de Voronoi (unas seis aristas por celda) lava de forma distinta que la malla ráster (cuatro caras).
+
 ## Subsuelo en capas y calibración por recesión {#layered-subsurface-and-recession-calibration}
 
 El subsuelo en capas cuenta con pruebas controladas y paridad entre Python y MATLAB en dominios sintéticos en V, pero no con validación de campo. Sus límites abiertos son los siguientes.

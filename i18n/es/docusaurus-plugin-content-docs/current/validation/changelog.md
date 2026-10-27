@@ -6,6 +6,10 @@ title: Registro de Cambios
 
 Cambios del modelo que afectan las entradas, los resultados o la validación, del más reciente al más antiguo. Las fechas están en hora de California (PDT). Los códigos entre corchetes son commits de HydroPol2D-Python (Py), del modelo MATLAB (ML) y del Case Builder (CB).
 
+## 2026-10-27 {#2026-10-27}
+
+- **Módulos opcionales en la malla (Py).** La nieve, la calidad del agua, la inestabilidad humana, los embalses, el drenaje urbano, la infraestructura verde y los estanques de detención ahora se ejecutan en mallas de Voronoi y quadtree, con el motor de CPU. Antes, un caso en malla con cualquiera de ellos se detenía en la verificación de entradas. Cada módulo usa las propias ecuaciones de la malla ráster regular, y en una malla formada por los cuadrados de esa malla los resultados coinciden con los suyos hasta el redondeo. Cuando la malla no puede ejecutar un módulo (el motor de GPU, o algunos módulos con canales de río en la malla), el mensaje indica cuál es y Studio ofrece pasar el modelo a la malla ráster regular. Ver [Limitaciones](./limitations#voronoi-mesh-mode). [Py `7b6c556` … `d6f8a86`]
+
 ## 2026-10-20 {#2026-10-20}
 
 - **Un solo libro del caso (ML).** Un caso de MATLAB es ahora un solo libro de Excel, `HydroPol2D_Inputs.xlsx`, con 8 pestañas de parámetros, 5 pestañas de tablas de clases, 5 pestañas de series y una nota en cada valor. Los interruptores están al inicio de sus bloques, y no hay hoja `Flags`. Los casos antiguos (`General_Data.xlsx`, su hoja `Flags` y libros de Excel separados) siguen funcionando, y un constructor los convierte. En la verificación, el caso en V da resultados idénticos con cualquiera de los dos formatos, con todos los libros antiguos eliminados, y duplicar la pestaña Rain series duplica la lluvia (3 de 3 verificaciones). Ver [Ejecutar desde Excel](../getting-started/excel-workflow). [ML `a0a6b7a`, `993d830`]
