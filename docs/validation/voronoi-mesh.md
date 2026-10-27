@@ -43,6 +43,26 @@ one resolved/subgrid transition. Its first adaptive step is 7.821 s, compared
 with a 15.641 s one-link wave limit, while mass closes exactly. This confirms
 that the graph limiter accounts for all incident paths.
 
+## Optional modules
+
+On the CPU engine, HydroPol2D-Python runs the regular grid's optional modules on
+mesh cells, each through the grid's own equations. The tests run every module on
+the grid and on a mesh made of the grid's own square cells, and compare:
+
+| Module | Compared on the square mesh |
+|---|---|
+| Human instability | Final and maximum index, index maps; the mesh cell velocity against the grid's on random fields |
+| Snow | SWE maps, depth and infiltration, legacy and layered soil |
+| Reservoirs | Release, storage and every internal-boundary series |
+| Urban drainage | Node heads and storage, pipe and inlet discharge, outfall volume, substep count |
+| Water quality | Pollutant mass, export and concentration; the edge wash-off against the grid's on random fields |
+| Green infrastructure | Storage, capture, overflow, exfiltration and underdrain per facility, the three GI maps, legacy and layered soil |
+| Detention ponds | Stage, storage, lateral inflow and device flows, with and without groundwater, legacy and layered soil |
+
+Each pair agrees to 1e-10 or tighter, and every mesh run closes its water balance
+to 1e-9 m³. The comparisons use gentle flow, where the two surface solvers agree to
+round-off; [Limitations](./limitations#voronoi-mesh-mode) lists what remains open.
+
 ## Interpretation
 
 These results establish that the tested numerical pathways behave
