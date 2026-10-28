@@ -858,6 +858,7 @@ In the default layered implementation, the accepted infiltration first fills the
 - transmission-zone storage.
 
 The scalar expression above is therefore the conceptual summary of a layered update rather than the only internal representation.
+
 ---
 
 ## 5. Snow Accumulation, Melt, and Sublimation
@@ -962,6 +963,7 @@ C_eu(q_s-q_a)\mathrm{SWE}_{\mathrm{after\ melt}}\Delta t_d,
 $$
 
 Here, $C_e$ is the LULC-specific sublimation coefficient, $u$ is wind speed $[\mathrm{m\,s^{-1}}]$, and $q_s$ and $q_a$ are saturation and ambient specific humidity. The current implementation estimates $q_a$ from the available temperature fields. Sublimation is nonnegative and cannot exceed post-melt SWE.
+
 ---
 
 ### 5.6 Initial snow states and class-code fallback
@@ -982,6 +984,7 @@ $$
 d_t=d_p+P_{\mathrm{eff}},
 $$
 where $d_t$ and $d_p$ are current and previous surface-water depth.
+
 ---
 
 ## 6. Vadose Storage, Recharge, and Groundwater Feedback
