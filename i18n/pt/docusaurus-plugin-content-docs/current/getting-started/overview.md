@@ -31,6 +31,12 @@ Em alto nível, o HydroPol2D avança o sistema acoplado nesta ordem:
 
 Esse encadeamento é o que conecta os módulos hidrológicos, subterrâneos, hidrodinâmicos e diagnósticos em um único modelo.
 
+## Interface desktop
+
+O [HydroPol2D Studio](../studio/overview) é a interface desktop do HydroPol2D-Python: ele monta um
+modelo a partir de um mapa ou dos seus próprios arquivos, configura o modelo passo a passo, executa
+a simulação e mostra os resultados.
+
 ## Como ler a documentação
 
 Para a maioria dos usuários, a ordem de leitura mais clara é:

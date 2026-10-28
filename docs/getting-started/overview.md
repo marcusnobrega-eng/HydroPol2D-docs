@@ -31,6 +31,11 @@ At a high level, HydroPol2D advances the coupled system in this order:
 
 This sequencing is what links the hydrologic, groundwater, routing, and diagnostic modules into one model.
 
+## Desktop interface
+
+[HydroPol2D Studio](../studio/overview) is the desktop interface for HydroPol2D-Python: it builds a
+model from a map or your own files, sets it up step by step, runs it and shows the results.
+
 ## How to read the documentation
 
 For most users, the clearest reading order is:

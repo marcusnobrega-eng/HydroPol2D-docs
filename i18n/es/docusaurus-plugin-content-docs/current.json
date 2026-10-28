@@ -7,6 +7,10 @@
     "message": "Primeros pasos",
     "description": "The label for category 'Getting Started' in sidebar 'tutorialSidebar'"
   },
+  "sidebar.tutorialSidebar.category.Studio": {
+    "message": "Studio",
+    "description": "The label for category 'Studio' in sidebar 'tutorialSidebar'"
+  },
   "sidebar.tutorialSidebar.category.Inputs": {
     "message": "Entradas",
     "description": "The label for category 'Inputs' in sidebar 'tutorialSidebar'"

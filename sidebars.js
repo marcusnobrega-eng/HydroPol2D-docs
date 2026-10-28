@@ -17,6 +17,17 @@ const sidebars = {
     },
     {
       type: 'category',
+      label: 'Studio',
+      items: [
+        'studio/overview',
+        'studio/install-and-license',
+        'studio/building-a-model',
+        'studio/working-in-studio',
+        'studio/run-and-results',
+      ],
+    },
+    {
+      type: 'category',
       label: 'Inputs',
       items: [
         'inputs/overview',
