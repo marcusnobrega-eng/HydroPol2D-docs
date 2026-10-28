@@ -41,7 +41,9 @@ a simulação e mostra os resultados.
 
 Para a maioria dos usuários, a ordem de leitura mais clara é:
 
-1. [Visão geral da configuração](../configuration/overview) para os controles públicos e flags.
-2. [Visão matemática geral](../theory/overview) para as equações governantes e a estrutura conceitual.
-3. [Visão geral da validação](../validation/overview) para as evidências de validação de cada módulo.
-4. [Exemplos](../Examples/RainfallRunoff) para fluxos de trabalho reprodutíveis.
+1. [Rodar pelo Excel](./excel-workflow) para os fluxos de planilha testados, com grade regular e malha de Voronoi.
+2. [Visão geral da configuração](../configuration/overview) para os controles públicos e flags.
+3. [Arquitetura do ecossistema](./ecosystem-architecture) para a geração de malha, os contratos compartilhados e o papel de cada repositório.
+4. [Visão matemática geral](../theory/overview) para as equações governantes e a estrutura conceitual.
+5. [Visão geral da validação](../validation/overview) para as evidências de validação de cada módulo.
+6. [Exemplos](../Examples/RainfallRunoff) para fluxos de trabalho reprodutíveis.

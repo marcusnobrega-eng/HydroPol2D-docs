@@ -34,6 +34,7 @@ Muitos casos hidrológicos e de águas subterrâneas usam a bacia sintética em 
 - [Módulos hidrológicos](./hydrologic-modules)
 - [Águas subterrâneas e recarga](./groundwater-recharge)
 - [Hidrodinâmica e roteamento](./hydrodynamics-routing)
+- [Validação da malha Voronoi](./voronoi-mesh)
 - [Reservatórios, contornos, qualidade da água e risco](./ancillary-modules)
 
 A página [Estado da validação](./validation-status) resume as evidências disponíveis para cada módulo.

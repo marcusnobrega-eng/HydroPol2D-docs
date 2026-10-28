@@ -708,31 +708,131 @@ En la implementación en capas predeterminada, la infiltración aceptada primero
 
 Por lo tanto, la expresión escalar anterior es el resumen conceptual de una actualización en capas y no la única representación interna.---
 
-## 5. Acumulación, fusión y sublimación de nieve
+## 5. Acumulación, fusión y sublimación de nieve {#5-snow-accumulation-melt-and-sublimation}
 
-Cuando el modelado de nieve está activo, HydroPol2D sigue el equivalente de agua de nieve (SWE), la densidad y la profundidad física de la nieve en cada celda activa. Los parámetros se leen de la tabla de parámetros LULC y se asignan mediante `LULC_Index`. El forzamiento meteorológico interno proporciona temperatura media del aire, temperatura mínima y velocidad del viento. Por tanto, las simulaciones de nieve requieren `flag_ETP = 1`, `flag_input_ETP_map = 0` y una hoja meteorológica que cubra todo el período simulado.
+Cuando el modelado de nieve está activo, HydroPol2D sigue el equivalente de agua de nieve (SWE), la densidad de la nieve y la profundidad física de la nieve en cada celda activa de la malla. Los parámetros de nieve se leen de la tabla de parámetros LULC y se asignan a la malla a partir de `LULC_Index`. La vía de forzamiento meteorológico interno proporciona la temperatura media del aire, la temperatura mínima del aire y la velocidad del viento. Por tanto, las simulaciones de nieve requieren `flag_ETP = 1`, `flag_input_ETP_map = 0` y un libro meteorológico que cubra el período de simulación.
 
-### 5.1 Partición lluvia-nieve
+---
 
-Cada clase LULC define una temperatura de nieve total (`T_Snow_All_C`) y una temperatura de lluvia total (`T_Rain_All_C`), en grados Celsius. Por debajo del primer límite toda la precipitación es nieve; por encima del segundo, toda es lluvia; entre ambos, la fracción de nieve varía linealmente. Los límites deben cumplir `T_Rain_All_C >= T_Snow_All_C`.
+### 5.1 Partición lluvia-nieve {#51-rain-snow-partitioning}
 
-### 5.2 Balance de SWE y fusión
+Cada clase LULC define un umbral de nieve total $T_{\mathrm{snow}}$ y un umbral de lluvia total $T_{\mathrm{rain}}$, ambos en $^{\circ}\mathrm{C}$. La fracción de nieve es
 
-La actualización conservativa es `SWE(t) = SWE(t-1) + P_snow - M_snow - E_s`. La fusión combina grados-día y radiación neta positiva, limitada por la SWE disponible. El factor de grados-día, la sublimación y la compactación son tasas y se multiplican por el paso de tiempo actual. Por ello, los resultados son consistentes cuando cambia el paso de enrutamiento.
+$$
+f_{\mathrm{snow}}
+=
+\begin{cases}
+1, & T_{\mathrm{air}} \le T_{\mathrm{snow}} \\
+\dfrac{T_{\mathrm{rain}}-T_{\mathrm{air}}}{T_{\mathrm{rain}}-T_{\mathrm{snow}}}, & T_{\mathrm{snow}} < T_{\mathrm{air}} < T_{\mathrm{rain}} \\
+0, & T_{\mathrm{air}} \ge T_{\mathrm{rain}}.
+\end{cases}
+$$
 
-### 5.3 Densidad, profundidad y sublimación
+Los umbrales deben cumplir $T_{\mathrm{rain}} \ge T_{\mathrm{snow}}$. Si los umbrales son iguales, la partición es un escalón en esa temperatura. La nevada y la lluvia resultantes son
 
-La densidad es una variable de estado. La nieve nueva usa la densidad inicial de su clase LULC; la nieve antigua y nueva se mezclan por SWE antes de la compactación. La densidad permanece entre los límites inicial y máximo de la clase. La profundidad física se calcula de forma coherente a partir de SWE y densidad. La sublimación usa la velocidad del viento y el gradiente de presión de vapor, y no puede exceder la nieve disponible.
+$$
+P_{\mathrm{snow}}=P_{\mathrm{gross}}f_{\mathrm{snow}}
+$$
 
-### 5.4 Estados iniciales y códigos de clase
+$$
+P_{\mathrm{rain}}=P_{\mathrm{gross}}-P_{\mathrm{snow}}
+$$
 
-`Initial_SWE_path` e `Initial_Snow_Depth_path` son mapas opcionales. Sin mapas, la celda empieza sin nieve. Con un solo mapa, el otro estado se calcula con la densidad inicial de la clase. Con ambos, el modelo calcula la densidad implícita y rechaza pares positivos incompatibles o valores negativos. Nodata indica que no hay condición inicial especificada.
+donde $f_{\mathrm{snow}}$ es la fracción de nieve, que depende de la temperatura.
 
-Si un código válido de LULC, suelo o nieve no existe en la tabla correspondiente, el modelo usa el promedio ponderado por área de las propiedades de las clases asignadas. `Input_Class_Code_Audit.csv` registra este uso. Los índices duplicados, no numéricos o una tabla sin clases asignadas siguen siendo errores de entrada.
+---
 
-### 5.5 Actualización del agua superficial
+### 5.2 Equivalente de agua de nieve {#52-snow-water-equivalent}
 
-La lluvia líquida y la fusión se transfieren al agua superficial en el mismo paso: `d_t = d_p + M_snow + P_rain`. Cuando el modelado de nieve está desactivado, la actualización usa la precipitación efectiva habitual.
+El balance de SWE es
+
+$$
+\mathrm{SWE}_t=\mathrm{SWE}_{t-1}+P_{\mathrm{snow}}-M_{\mathrm{snow}}-E_{\mathrm{s}}
+$$
+
+donde todos los términos están en milímetros de equivalente de agua y $E_{\mathrm{s}}$ es la sublimación.
+
+---
+
+### 5.3 Fusión de la nieve y escalado con el paso de tiempo {#53-snowmelt-and-timestep-scaling}
+
+La fusión de la nieve es la suma de un término de grados-día y un término de radiación neta positiva. Para un paso de enrutamiento de $\Delta t_s$ segundos y $\Delta t_d=\Delta t_s/86400$ días,
+
+$$
+M_{\mathrm{snow}}
+=
+\min\!\left[
+\mathrm{SWE}_{\mathrm{after\ snowfall}},
+\max\!\left(
+\mathrm{DDF}\max(T_{\mathrm{air}},0)\Delta t_d+
+\frac{\max(Q_{\mathrm{net}},0)\Delta t_s}{L_f},
+0\right)\right]
+$$
+
+Aquí, $\mathrm{DDF}$ es el factor de grados-día propio de cada clase LULC $[\mathrm{mm\,^{\circ}C^{-1}\,day^{-1}}]$, $Q_{\mathrm{net}}$ es el flujo de radiación neta calculado internamente $[\mathrm{W\,m^{-2}}]$ y $L_f=3.34\times10^5\ \mathrm{J\,kg^{-1}}$ es el calor latente de fusión. Un flujo de $1\ \mathrm{kg\,m^{-2}}$ equivale a $1\ \mathrm{mm}$ de equivalente de agua. La fusión no puede superar el SWE disponible.
+
+---
+
+### 5.4 Densidad y profundidad de la nieve {#54-snow-density-and-depth}
+
+La nieve fresca usa la densidad inicial propia de su clase LULC, $\rho_{\mathrm{init}}$. La nieve existente y la nueva se mezclan en proporción a su SWE antes de la compactación. Luego, la densidad evoluciona como
+
+$$
+\rho_{\mathrm{snow}}^{\,\mathrm{new}}=
+\rho_{\mathrm{snow}}^{\,\mathrm{mixed}}+
+\Delta t_d\left[
+k_t\max(T_{\mathrm{air}},0)+
+k_{\mathrm{swe}}\mathrm{SWE}+
+k_DH_{\mathrm{snow}}\right]
+$$
+
+con $\rho_{\mathrm{init}}\le\rho_{\mathrm{snow}}\le\rho_{\mathrm{max}}$. La profundidad de la nieve es
+
+$$
+H_{\mathrm{snow}}=\frac{1000\,\mathrm{SWE}}{\rho_{\mathrm{snow}}}
+$$
+
+---
+
+El factor 1000 convierte la profundidad en equivalente de agua en profundidad física de la nieve cuando el SWE está en milímetros y la densidad en $\mathrm{kg\,m^{-3}}$.
+
+### 5.5 Sublimación {#55-sublimation}
+
+$$
+E_{\mathrm{s}}
+=
+\min\!\left[
+\mathrm{SWE}_{\mathrm{after\ melt}},
+\max\!\left(
+C_eu(q_s-q_a)\mathrm{SWE}_{\mathrm{after\ melt}}\Delta t_d,
+0
+\right)\right]
+$$
+
+Aquí, $C_e$ es el coeficiente de sublimación propio de cada clase LULC, $u$ es la velocidad del viento $[\mathrm{m\,s^{-1}}]$, y $q_s$ y $q_a$ son la humedad específica de saturación y la humedad específica del ambiente. La implementación actual estima $q_a$ a partir de los campos de temperatura disponibles. La sublimación no es negativa y no puede superar el SWE posterior a la fusión.
+
+---
+
+### 5.6 Estados iniciales de nieve y fallback de códigos de clase {#56-initial-snow-states-and-class-code-fallback}
+
+`Initial_SWE_path` e `Initial_Snow_Depth_path` son rásteres opcionales. Sin ninguno de los dos rásteres, el modelo inicia con SWE nulo y profundidad de nieve nula, y conserva la densidad de nieve fresca propia de cada clase LULC. Con un solo ráster, el otro estado se deriva de esa densidad. Con ambos rásteres, el modelo deriva la densidad a partir del SWE y de la profundidad, y rechaza los pares positivos que quedan fuera del intervalo de densidad configurado. Un valor nodata en el ráster significa que no se especificó nieve inicial para esa celda.
+
+Si el ráster LULC contiene un código válido que no figura en la tabla LULC, de suelo o de nieve, HydroPol2D asigna la media ponderada por área de las propiedades de las celdas con clase asignada. El modelo escribe `Input_Class_Code_Audit.csv`, que enumera los códigos del ráster, los índices de tabla asignados, el área a la que se aplicó el fallback y las propiedades aplicadas. Los índices de tabla duplicados o no numéricos, o una tabla sin clases asignadas, siguen siendo errores de entrada.
+
+### 5.7 Actualización del agua superficial en condiciones de nieve {#57-surface-water-update-under-snow-conditions}
+
+$$
+d_t=d_p+M_{\mathrm{snow}}+P_{\mathrm{rain}}
+$$
+
+Si el modelado de nieve está desactivado,
+
+$$
+d_t=d_p+P_{\mathrm{eff}},
+$$
+donde $d_t$ y $d_p$ son la profundidad actual y la profundidad anterior del agua superficial.
+
+---
 
 ## 6. Almacenamiento, recarga y retroalimentación de aguas subterráneas de vadosa
 
