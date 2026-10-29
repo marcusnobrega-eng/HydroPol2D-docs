@@ -76,10 +76,10 @@ Las principales variables son:
 
 ### 2.1 Programador asincrónico {#21-asynchronous-scheduler}
 
-El programador asincrónico está activo de forma predeterminada cuando el modelado de aguas subterráneas está habilitado. Los principales controles son:
+El programador asincrónico está siempre activo cuando el modelado de aguas subterráneas está habilitado. Los principales controles son:
 | Control | Por defecto | Significado |
 |---|---:|---|
-| `flag_groundwater_async` | 1 | Utiliza actualizaciones más lentas de agua subterránea saturada en lugar de actualizar los cabezales en cada paso de la superficie. |
+| `flag_groundwater_async` | 1 | No se lee: la actualización saturada siempre sigue al programador (Sección 7.1). |
 | `groundwater_target_dt_min` | 1440 | Intervalo objetivo de actualización del agua subterránea, en minutos. |
 | `groundwater_min_dt_min` | 1 | Intervalo mínimo de actualización de aguas subterráneas, en minutos. |
 | `groundwater_max_head_change_m` | 0,25 | Fuerza una actualización cuando el intercambio acumulado cambie de cabeza en esta cantidad. |
@@ -378,7 +378,7 @@ El intercambio de vadosa se acumula en cada paso del agua superficial, pero los 
 - el intervalo implicado por el cambio de cabeza acumulado máximo permitido,
 - y el intervalo parcial final al final de la carrera.
 
-Si `flag_groundwater_async = 0`, la actualización del agua subterránea saturada se fuerza en cada paso de la superficie.
+El programador no se puede desactivar. Ni HydroPol2D-Python ni el código MATLAB leen `flag_groundwater_async`, así que el valor 0 no fuerza una actualización en cada paso de la superficie. Un `groundwater_target_dt_min` más corto hace las actualizaciones más frecuentes.
 ### 7.2 Límite explícito de estabilidad del agua subterránea
 
 El límite externo del programador se basa en una estimación de difusividad explícita para la ecuación ilimitada Boussinesq:

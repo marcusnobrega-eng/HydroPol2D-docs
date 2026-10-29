@@ -76,10 +76,10 @@ As principais variáveis ​​são:
 
 ### 2.1 Agendador assíncrono {#21-asynchronous-scheduler}
 
-O agendador assíncrono fica ativo por padrão quando a modelagem de águas subterrâneas está habilitada. Os principais controles são:
+O agendador assíncrono fica sempre ativo quando a modelagem de águas subterrâneas está habilitada. Os principais controles são:
 | Controlar | Padrão | Significado |
 |---|---:|---|
-| `flag_groundwater_async` | 1 | Usa atualizações mais lentas de águas subterrâneas saturadas em vez de atualizar cabeças a cada passo da superfície. |
+| `flag_groundwater_async` | 1 | Não é lido: a atualização saturada sempre segue o agendador (Seção 7.1). |
 | `groundwater_target_dt_min` | 1440 | Intervalo alvo de atualização das águas subterrâneas, em minutos. |
 | `groundwater_min_dt_min` | 1 | Intervalo mínimo de atualização das águas subterrâneas, em minutos. |
 | `groundwater_max_head_change_m` | 0,25 | Força uma atualização quando o câmbio acumulado mudaria a cabeça nesse valor. |
@@ -376,7 +376,7 @@ A troca vadose é acumulada a cada etapa da água superficial, mas as alturas sa
 - o intervalo implícito na mudança de carga acumulada máxima permitida,
 - e o intervalo parcial final no final da corrida.
 
-Se `flag_groundwater_async = 0`, a atualização saturada da água subterrânea é forçada a cada passo da superfície.
+O agendador não pode ser desligado. Nem o HydroPol2D-Python nem o código MATLAB leem `flag_groundwater_async`, então o valor 0 não força uma atualização a cada passo da superfície. Um `groundwater_target_dt_min` menor deixa as atualizações mais frequentes.
 ### 7.2 Limite explícito de estabilidade das águas subterrâneas
 
 O limite externo do escalonador é baseado em uma estimativa de difusividade explícita para a equação Boussinesq não confinada:

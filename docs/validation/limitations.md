@@ -27,6 +27,9 @@ a mesh made of the grid's own square cells, where the two agree to round-off. No
 been checked against observations on an irregular mesh. Open limits:
 
 - the GPU (JAX) mesh engine does not run these modules yet;
+- human instability runs as the continuous risk index (mode 1) only; a mesh case with
+  the slide and topple classification (`human_risk.method: classification`, mode 3)
+  stops at the input check, which offers the regular grid;
 - reservoirs, urban drainage, green infrastructure and detention ponds need a mesh
   without river channels or sub-grid tables, and water quality one without river
   channels;

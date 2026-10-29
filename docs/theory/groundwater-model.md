@@ -83,11 +83,11 @@ The principal variables are:
 
 ### 2.1 Asynchronous scheduler
 
-The asynchronous scheduler is active by default when groundwater modeling is enabled. The principal controls are:
+The asynchronous scheduler is always active when groundwater modeling is enabled. The principal controls are:
 
 | Control | Default | Meaning |
 |---|---:|---|
-| `flag_groundwater_async` | 1 | Uses slower saturated-groundwater updates instead of updating heads every surface step. |
+| `flag_groundwater_async` | 1 | Not read: the saturated update always follows the scheduler (Section 7.1). |
 | `groundwater_target_dt_min` | 1440 | Target groundwater update interval, in minutes. |
 | `groundwater_min_dt_min` | 1 | Minimum groundwater update interval, in minutes. |
 | `groundwater_max_head_change_m` | 0.25 | Forces an update when accumulated exchange would change head by this amount. |
@@ -464,7 +464,7 @@ Vadose exchange is accumulated every surface-water step, but saturated groundwat
 - the interval implied by the maximum allowed accumulated head change,
 - and the final partial interval at the end of the run.
 
-If `flag_groundwater_async = 0`, the saturated groundwater update is forced every surface step.
+The scheduler cannot be switched off. Neither HydroPol2D-Python nor the MATLAB code reads `flag_groundwater_async`, so a value of 0 does not force an update every surface step. A shorter `groundwater_target_dt_min` makes the updates more frequent.
 
 ### 7.2 Explicit groundwater stability cap
 

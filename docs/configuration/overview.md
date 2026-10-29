@@ -24,7 +24,7 @@ The public configuration story should match the implemented model:
 | Capability | Main public controls | Current status |
 |---|---|---|
 | Hydrologic core | `flag_infiltration`, ET/rainfall/snow controls, soil/LULC tables | Default + validated |
-| Layered groundwater recharge and async scheduler | `flag_groundwater_modeling`, `flag_groundwater_async`, `groundwater_target_dt_min`, `groundwater_min_dt_min`, `groundwater_max_head_change_m`, `groundwater_courant` | Default + validated |
+| Layered groundwater recharge and async scheduler | `flag_groundwater_modeling`, `groundwater_target_dt_min`, `groundwater_min_dt_min`, `groundwater_max_head_change_m`, `groundwater_courant` | Default + validated |
 | Capillary rise | `flag_capillary_rise` | Optional + validated in controlled benchmarks |
 | Layered subsurface | `flag_layered_subsurface`, `flag_implicit_water_table_flux` | Optional + controlled tests and Python-MATLAB parity |
 | Feddes root-water stress | `flag_feddes` | Optional + consistency tests |

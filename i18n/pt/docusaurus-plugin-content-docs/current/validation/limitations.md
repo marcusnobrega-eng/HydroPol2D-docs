@@ -15,6 +15,7 @@ O caminho de volumes finitos em malha Voronoi tem validação controlada em CPU,
 No HydroPol2D-Python, a malha roda os módulos opcionais da grade regular no seu motor de CPU (NumPy): neve, qualidade da água, instabilidade humana, reservatórios, drenagem urbana, infraestrutura verde e bacias de detenção. Cada um foi comparado com a grade regular em uma malha formada pelas próprias células quadradas da grade, onde os dois concordam até o arredondamento. Nenhum foi comparado com observações em uma malha irregular. Os limites ainda em aberto são estes.
 
 - o motor de malha em GPU (JAX) ainda não roda esses módulos;
+- a instabilidade humana roda apenas como índice de risco contínuo (modo 1); um caso em malha com a classificação de deslizamento e tombamento (`human_risk.method: classification`, modo 3) para na verificação de entrada, que oferece a grade regular;
 - reservatórios, drenagem urbana, infraestrutura verde e bacias de detenção exigem uma malha sem canais de rio nem tabelas subgrade, e a qualidade da água, uma malha sem canais de rio;
 - um reservatório, uma boca de lobo, um compartimento de infraestrutura verde ou um dispositivo de bacia passa para a célula da malha que contém a maior parte da sua célula raster, e uma bacia ocupa as células da malha que cobre pela metade ou mais;
 - com expoente de lavagem diferente de 1, a lavagem depende de quantas arestas a água atravessa ao sair de uma célula, de modo que uma malha Voronoi (cerca de seis arestas por célula) lava de forma diferente da grade (quatro faces).
