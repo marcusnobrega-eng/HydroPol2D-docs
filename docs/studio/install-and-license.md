@@ -37,11 +37,7 @@ either.
 4. Open **System Settings › Privacy & Security**, scroll down to the message about HydroPol2D
    Studio and click **Open Anyway**. Confirm with your password.
 
-You do steps 3 and 4 only once. In Terminal, this command does the same as step 4:
-
-```bash
-xattr -dr com.apple.quarantine "/Applications/HydroPol2D Studio.app"
-```
+You do steps 3 and 4 only once.
 
 ### Windows (64-bit) {#windows-64-bit}
 

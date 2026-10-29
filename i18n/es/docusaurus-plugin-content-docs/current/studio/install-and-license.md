@@ -40,11 +40,7 @@ Linux.
    Security**), desplácese hasta el mensaje sobre HydroPol2D Studio y haga clic en **Abrir igualmente**
    (**Open Anyway**). Confirme con su contraseña.
 
-Los pasos 3 y 4 se hacen solo una vez. En Terminal, este comando hace lo mismo que el paso 4:
-
-```bash
-xattr -dr com.apple.quarantine "/Applications/HydroPol2D Studio.app"
-```
+Los pasos 3 y 4 se hacen solo una vez.
 
 ### Windows (64 bits) {#windows-64-bit}
 
