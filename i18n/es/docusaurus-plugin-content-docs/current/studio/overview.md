@@ -36,15 +36,16 @@ Los modelos recientes aparecen debajo de las opciones.
 
 ## Espacios de trabajo {#workspaces}
 
-Un modelo tiene tres espacios de trabajo en la barra de la izquierda:
+Un modelo tiene cuatro espacios de trabajo en la barra de la izquierda:
 
 | Espacio de trabajo | Para qué sirve |
 |---|---|
 | **Setup** | Siete pasos: Model, Study area, Computational mesh, Processes, Parameters, Forcing y Review. |
 | **Run** | Los productos de salida, la verificación de entradas, el backend de cómputo y la simulación misma, con diagnósticos en vivo. |
 | **Results** | Mapas y series temporales de una simulación terminada, con reproducción, perfiles y exportaciones. |
+| **Calibrate** | Las series observadas, los parámetros que se van a calibrar, los ajustes de la búsqueda, la calibración misma y sus resultados. |
 
-En un Mac, Cmd+1, Cmd+2 y Cmd+3 abren cada uno (Ctrl+1 a Ctrl+3 en Windows).
+En un Mac, Cmd+1 a Cmd+4 abren cada uno (Ctrl+1 a Ctrl+4 en Windows).
 
 ## En esta sección {#in-this-section}
 
@@ -53,3 +54,5 @@ En un Mac, Cmd+1, Cmd+2 y Cmd+3 abren cada uno (Ctrl+1 a Ctrl+3 en Windows).
 - [Trabajar en Studio](working-in-studio): cómo funcionan las ediciones, Save y Revert to saved, los
   mensajes de error, los temas, los menús y los atajos.
 - [Ejecución y resultados](run-and-results): cómo ejecutar un modelo y leer sus resultados.
+- [Calibración en Studio](calibrate): cómo ajustar los parámetros al caudal, las profundidades y el agua
+  subterránea observados.

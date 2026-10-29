@@ -32,15 +32,16 @@ Recent models are listed below the choices.
 
 ## Workspaces
 
-A model has three workspaces on the left rail:
+A model has four workspaces on the left rail:
 
 | Workspace | What it is for |
 |---|---|
 | **Setup** | Seven steps: Model, Study area, Computational mesh, Processes, Parameters, Forcing and Review. |
 | **Run** | Output products, the input check, the computing backend and the run itself, with live diagnostics. |
 | **Results** | Maps and time series of a finished run, with playback, profiles and exports. |
+| **Calibrate** | Observed series, the parameters to fit, the search settings, the calibration run and its results. |
 
-Cmd+1, Cmd+2 and Cmd+3 open them on a Mac (Ctrl+1 to Ctrl+3 on Windows).
+Cmd+1 to Cmd+4 open them on a Mac (Ctrl+1 to Ctrl+4 on Windows).
 
 ## In this section
 
@@ -49,3 +50,4 @@ Cmd+1, Cmd+2 and Cmd+3 open them on a Mac (Ctrl+1 to Ctrl+3 on Windows).
 - [Working in Studio](working-in-studio): how edits, Save and Revert to saved work, error messages,
   themes, menus and shortcuts.
 - [Run and results](run-and-results): running a model and reading its results.
+- [Calibrate](calibrate): fitting parameters to observed discharge, depths and groundwater.

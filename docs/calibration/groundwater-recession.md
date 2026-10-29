@@ -16,6 +16,8 @@ What the calibration fits depends on the subsurface scheme:
 
 The fitted values are effective parameters. They reproduce the observed recession under this model structure. They are not point measurements of aquifer material.
 
+The recession calibration is not in HydroPol2D Studio yet. To fit groundwater parameters to well levels or to the discharge of an event, use the [calibration against observations](ga-calibration) (the Calibrate workspace in Studio). Its groundwater-depth series and its conductivity, specific-yield and layered-subsurface multipliers cover that case.
+
 ---
 
 ## 1. Workflow

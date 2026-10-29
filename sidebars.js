@@ -24,6 +24,7 @@ const sidebars = {
         'studio/building-a-model',
         'studio/working-in-studio',
         'studio/run-and-results',
+        'studio/calibrate',
       ],
     },
     {
@@ -54,7 +55,7 @@ const sidebars = {
     {
       type: 'category',
       label: 'Calibration',
-      items: ['calibration/groundwater-recession'],
+      items: ['calibration/ga-calibration', 'calibration/groundwater-recession'],
     },
     {
       type: 'category',

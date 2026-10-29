@@ -58,7 +58,7 @@ No Windows, use Ctrl no lugar de Cmd.
 | File | Edit model file (YAML)… | |
 | File | Open results… | |
 | File | Quit | Cmd+Q (Alt+F4 no Windows) |
-| View | Setup, Run, Results | Cmd+1, Cmd+2, Cmd+3 |
+| View | Setup, Run, Results, Calibrate | Cmd+1, Cmd+2, Cmd+3, Cmd+4 |
 | View | Theme: Match system, Dark, Light | |
 | Help | About HydroPol2D Studio (versão e licença) | |
 | Help | Documentation (este site) | |

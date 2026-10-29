@@ -16,6 +16,8 @@ Los parámetros que ajusta la calibración dependen del esquema de subsuelo.
 
 Los valores ajustados son parámetros efectivos. Reproducen la recesión observada con esta estructura del modelo. No son mediciones puntuales del material del acuífero.
 
+La calibración por recesión todavía no está en HydroPol2D Studio. Para ajustar parámetros de agua subterránea a niveles en pozos o al caudal de un evento, se usa la [calibración con observaciones](ga-calibration) (el espacio de trabajo Calibrate en Studio). Sus series de profundidad del agua subterránea y sus multiplicadores de conductividad, de rendimiento específico y del subsuelo en capas cubren ese caso.
+
 ---
 
 ## 1. Flujo de trabajo {#1-workflow}

@@ -16,6 +16,8 @@ O que a calibração ajusta depende do esquema de subsuperfície.
 
 Os valores ajustados são parâmetros efetivos. Eles reproduzem a recessão observada dentro desta estrutura de modelo. Não são medições pontuais do material do aquífero.
 
+A calibração por recessão ainda não está no HydroPol2D Studio. Para ajustar parâmetros das águas subterrâneas a níveis de poços ou à vazão de um evento, use a [calibração com observações](ga-calibration) (a área de trabalho Calibrate do Studio). As suas séries de profundidade do lençol freático e os seus multiplicadores de condutividade, de rendimento específico e da subsuperfície em camadas cobrem esse caso.
+
 ---
 
 ## 1. Fluxo de Trabalho {#1-workflow}
