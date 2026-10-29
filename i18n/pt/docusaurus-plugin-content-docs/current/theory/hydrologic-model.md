@@ -738,6 +738,8 @@ $$
 
 onde $f_{\mathrm{snow}}$ é a fração de neve, que depende da temperatura.
 
+A partição vem antes da copa. Só a chuva $P_{\mathrm{rain}}$ entra no modelo de interceptação da Seção 2, no lugar de $P_{\mathrm{gross}}$; a neve vai para o manto de neve, e o degelo $M_{\mathrm{snow}}$ chega à superfície sem passar pela copa.
+
 ---
 
 ### 5.2 Equivalente de água da neve {#52-snow-water-equivalent}

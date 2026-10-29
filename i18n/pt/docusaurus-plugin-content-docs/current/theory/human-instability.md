@@ -154,6 +154,8 @@ $$
 $$
 Isso produz um raster de instabilidade categórica em vez da proporção contínua retornada pelo modo `1`.
 
+Uma célula seca ($h = 0$) é estável (código `0`), como no modo `1`: sem água, não há ninguém no escoamento para classificar. Sem essa regra, o próprio peso da pessoa faria de toda célula seca com declividade acima de $\arctan\mu$ (31° para $\mu = 0{,}6$) um deslizamento.
+
 ---
 
 ## 4. Escopo e Notas de Documentação

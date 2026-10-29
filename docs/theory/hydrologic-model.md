@@ -893,6 +893,8 @@ $$
 
 where $f_{\mathrm{snow}}$ is the temperature-dependent snow fraction.
 
+The partition comes before the canopy. Only the rainfall $P_{\mathrm{rain}}$ enters the interception model of Section 2, in place of $P_{\mathrm{gross}}$; the snowfall goes to the snowpack, and the melt $M_{\mathrm{snow}}$ reaches the surface without passing through the canopy.
+
 ---
 
 ### 5.2 Snow water equivalent

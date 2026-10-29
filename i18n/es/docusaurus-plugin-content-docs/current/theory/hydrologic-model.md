@@ -740,6 +740,8 @@ $$
 
 donde $f_{\mathrm{snow}}$ es la fracción de nieve, que depende de la temperatura.
 
+La partición va antes del dosel. Solo la lluvia $P_{\mathrm{rain}}$ entra en el modelo de intercepción de la Sección 2, en lugar de $P_{\mathrm{gross}}$; la nevada va al manto de nieve, y el deshielo $M_{\mathrm{snow}}$ llega a la superficie sin pasar por el dosel.
+
 ---
 
 ### 5.2 Equivalente de agua de nieve {#52-snow-water-equivalent}

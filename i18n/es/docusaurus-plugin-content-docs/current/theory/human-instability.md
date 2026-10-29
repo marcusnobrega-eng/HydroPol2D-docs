@@ -154,6 +154,8 @@ $$
 $$
 Esto produce un ráster de inestabilidad categórica en lugar de la relación continua devuelta por el modo `1`.
 
+Una celda seca ($h = 0$) es estable (código `0`), como en el modo `1`: sin agua, no hay nadie en el flujo que clasificar. Sin esta regla, el propio peso de la persona haría de toda celda seca con pendiente mayor que $\arctan\mu$ (31° para $\mu = 0{,}6$) un deslizamiento.
+
 ---
 
 ## 4. Notas de alcance y documentación

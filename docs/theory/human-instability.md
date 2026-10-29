@@ -191,6 +191,8 @@ $$
 
 This produces a categorical instability raster rather than the continuous ratio returned by mode `1`.
 
+A dry cell ($h = 0$) is stable (code `0`), as in mode `1`: with no water there is no one in the flow to classify. Without this rule, the person's own weight would make every dry cell steeper than $\arctan\mu$ (31° for $\mu = 0.6$) a slide.
+
 ---
 
 ## 4. Scope and Documentation Notes
