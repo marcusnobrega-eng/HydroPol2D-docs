@@ -1,11 +1,11 @@
 ---
-title: Calibration Against Observations (Genetic Algorithm)
+title: Calibration Against Observations
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-# Calibration Against Observations (Genetic Algorithm)
+# Calibration Against Observations
 
-The genetic-algorithm (GA) calibration fits model parameters to several kinds of observations at once: discharge, water depth, water level and groundwater depth. Every candidate is a full model run of the event, scored against every observed series. The user chooses which parameters are free; the others keep the model's values. In HydroPol2D Studio it is the [Calibrate workspace](../studio/calibrate).
+This calibration fits model parameters to several kinds of observations at once: discharge, water depth, water level and groundwater depth. Every candidate is a full model run of the event, scored against every observed series. Two search methods are available: a genetic algorithm (GA) that follows the MATLAB GenericGA (the default), and SCE-UA, the shuffled complex evolution of the University of Arizona. The user chooses which parameters are free; the others keep the model's values. In HydroPol2D Studio it is the [Calibrate workspace](../studio/calibrate).
 
 The two calibration tools answer different questions:
 
@@ -119,9 +119,41 @@ Every candidate is checked by the model's own rules before it runs. A candidate 
 
 ## 4. The Search
 
-### 4.1 Genetic algorithm
+Both methods work on the free parameters in their search scale (log or linear), start from the same kind of sample, and use the same scores, parallel runs, saved runs and result files. They differ in how they choose the next candidates.
 
-The GA works on the free parameters in their search scale (log or linear):
+### 4.1 SCE-UA
+
+SCE-UA ([Duan et al., 1992](https://doi.org/10.1029/91WR02985); [1993](https://doi.org/10.1007/BF00939380)) combines a local simplex search with a global exchange of information:
+
+1. **Starting sample.** $p \times m$ points spread evenly over the bounds (a Latin hypercube), with the current model as one of them, each scored with a full model run.
+2. **Deal into complexes.** The points are sorted by score and dealt into $p$ complexes of $m$ points, like cards, so that every complex holds good and poor points.
+3. **Evolve each complex.** A complex picks $q$ of its points, favouring the better ones, and tries to replace the worst of them. It first reflects the worst point through the centroid of the others. If that is not better, it contracts halfway toward the centroid. If that fails too, it takes a random point in the smallest box that holds the complex. A complex makes $\beta$ such steps.
+4. **Shuffle.** The complexes are merged and sorted, and dealt again, so that what one complex found reaches the others.
+5. **Repeat** until a stop rule is met.
+
+| Setting | Default | Meaning |
+|---|---|---|
+| Complexes $p$ | the number of free parameters $n$, at least 2 | More complexes search more widely, and run more models at once |
+| Points per complex $m$ | $2n + 1$ | |
+| Simplex size $q$ | $n + 1$ | Points that take part in one step |
+| Evolution steps $\beta$ | $2n + 1$ | Steps of each complex between shuffles |
+| Maximum runs | 1000 | Checked between shuffles |
+| Stop on improvement | below 0.1 % within 5 shuffles | |
+| Stop on convergence | population narrower than 0.1 % of the range | Geometric mean over the free parameters |
+| Starting population, time limit, random seed | as for the GA | |
+
+The defaults for $m$, $q$ and $\beta$ are those recommended by [Duan et al. (1994)](https://doi.org/10.1016/0022-1694(94)90057-4). Between shuffles the complexes evolve independently, so their steps run side by side: with $p$ complexes, up to $p$ model runs go at once.
+
+**On a test function.** The Rosenbrock valley is a narrow curved valley, a classic hard case for optimizers. With the same settings as above and no model involved:
+
+| Free parameters | SCE-UA | Genetic algorithm |
+|---|---|---|
+| 2 | optimum found (score 1 × 10⁻⁷) in 375 runs | score 3 × 10⁻⁴ after 4,000 runs |
+| 6 | optimum found (score 3 × 10⁻⁶) in 5,011 runs | score 3.6, far from the optimum, after 12,000 runs |
+
+In calibrations of runoff models, SCE-UA has often searched more effectively than a GA ([a comparison in *Water*, 2014](https://doi.org/10.3390/w6113433)). It is not always better: on a distributed model, SCE-UA and two GAs gave close results ([a comparison in *Hydrological Processes*](https://doi.org/10.1002/hyp.7543)). Section 6.1 compares the two on the twin catchment.
+
+### 4.2 Genetic algorithm
 
 1. **Starting population.** Spread evenly over the bounds (a Latin hypercube, [McKay et al., 1979](https://doi.org/10.2307/1268522)), with the current model as one member.
 2. **Score** every member with a full model run.
@@ -149,7 +181,7 @@ A candidate seen before (an elite, or a duplicate) is not run again.
 
 The operators and their defaults follow the MATLAB GenericGA, so the two give comparable searches.
 
-### 4.2 Several runs at a time
+### 4.3 Several runs at a time
 
 | Mode | What runs |
 |---|---|
@@ -163,9 +195,9 @@ The operators and their defaults follow the MATLAB GenericGA, so the two give co
 
 On a laptop (10 cores, 24 GB), one run of the twin case below used about 0.74 GB and two threads, and Auto chose five runs at a time.
 
-### 4.3 Stopping and resuming
+### 4.4 Stopping and resuming
 
-Every finished run is saved as it ends. **Cancel** stops the runs in progress at their next model step; they are not saved. A stopped calibration resumes from its folder: the search replays the same seed from the saved runs, so it reaches exactly the population an uninterrupted search would have. Only the number of generations, the time limit and the early stop may change on resume.
+Every finished run is saved as it ends. **Cancel** stops the runs in progress at their next model step; they are not saved. A stopped calibration resumes from its folder: the search replays the same seed from the saved runs, so it reaches exactly the population an uninterrupted search would have. Only the stopping settings may change on resume: the number of generations, the time limit and the early stop for the GA; the maximum runs, the time limit and the stop rules for SCE-UA.
 
 ---
 
@@ -235,6 +267,23 @@ Both parameters were recovered within 1 % and pinned down at both noise levels (
   <em>Figure 1. A short calibration in Studio on the twin catchment, with uncertainty on the observations. Discharge is scored with error / uncertainty: 46 % of the points were within their measurement error with the current model, 92 % after calibration.</em>
 </p>
 
+### 6.1 GA and SCE-UA
+
+The same twin catchment, with 5 % noise and a budget of about 100 runs per free parameter (Auto, up to 5 runs at a time):
+
+| Free parameters | Method | Runs | Best score | Time | Found / true |
+|---|---|---:|---:|---:|---|
+| 2 | GA | 140 | 0.0089 | 4.3 min | Manning 1.007, conductivity 1.004 |
+| 2 | SCE-UA | 202 | 0.0074 | 9.3 min | Manning 1.021, conductivity 1.001 |
+| 6 | GA | 481 | 0.0065 | 13.9 min | Manning 1.038, conductivity 0.998, specific yield 1.003 |
+| 6 | SCE-UA | 659 | 0.0245 | 23.8 min | Manning 1.088, conductivity 0.949, specific yield 0.946 |
+
+With 6 free parameters, the other three were soil α (true × 1.3), soil depth (× 0.8) and groundwater conductivity (× 2). Neither method pinned them down, because these observations say little about them.
+
+- **With 2 parameters** both recovered the truth. SCE-UA reached a slightly better score, but its 2 complexes let only 2 runs go at once, so it took twice as long.
+- **With 6 parameters** and a few hundred runs, the GA got much further. SCE-UA starts with 78 points and spends 78 to 234 runs per shuffle, so its budget covered only five shuffles.
+- **SCE-UA pays off** with budgets of thousands of runs, as on the test function of Section 4.1. For an expensive model and a few hundred runs, the GA is the default.
+
 A twin experiment is not a field test. It shows that these observations can identify these parameters in this model structure; real records add measurement error, regulation and processes the model leaves out.
 
 ---
@@ -252,6 +301,9 @@ A twin experiment is not a field test. It shows that these observations can iden
 
 ## Sources
 
+- Duan, Q., Sorooshian, S., and Gupta, V. (1992). Effective and efficient global optimization for conceptual rainfall-runoff models. *Water Resources Research*, 28(4), 1015–1031. [doi:10.1029/91WR02985](https://doi.org/10.1029/91WR02985)
+- Duan, Q. Y., Gupta, V. K., and Sorooshian, S. (1993). Shuffled complex evolution approach for effective and efficient global minimization. *Journal of Optimization Theory and Applications*, 76(3), 501–521. [doi:10.1007/BF00939380](https://doi.org/10.1007/BF00939380)
+- Duan, Q., Sorooshian, S., and Gupta, V. K. (1994). Optimal use of the SCE-UA global optimization method for calibrating watershed models. *Journal of Hydrology*, 158(3–4), 265–284. [doi:10.1016/0022-1694(94)90057-4](https://doi.org/10.1016/0022-1694(94)90057-4)
 - Gupta, H. V., Kling, H., Yilmaz, K. K., and Martinez, G. F. (2009). Decomposition of the mean squared error and NSE performance criteria: implications for improving hydrological modelling. *Journal of Hydrology*, 377(1–2), 80–91. [doi:10.1016/j.jhydrol.2009.08.003](https://doi.org/10.1016/j.jhydrol.2009.08.003)
 - McKay, M. D., Beckman, R. J., and Conover, W. J. (1979). A comparison of three methods for selecting values of input variables in the analysis of output from a computer code. *Technometrics*, 21(2), 239–245. [doi:10.2307/1268522](https://doi.org/10.2307/1268522)
 - Nash, J. E., and Sutcliffe, J. V. (1970). River flow forecasting through conceptual models, part I: a discussion of principles. *Journal of Hydrology*, 10(3), 282–290. [doi:10.1016/0022-1694(70)90255-6](https://doi.org/10.1016/0022-1694(70)90255-6)

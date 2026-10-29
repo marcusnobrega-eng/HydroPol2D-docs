@@ -1,11 +1,11 @@
 ---
-title: Calibración con Observaciones (Algoritmo Genético)
+title: Calibración con Observaciones
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-# Calibración con Observaciones (Algoritmo Genético)
+# Calibración con Observaciones
 
-La calibración con algoritmo genético (AG) ajusta los parámetros del modelo a varios tipos de observaciones a la vez. Estos tipos son el caudal, la profundidad del agua, el nivel del agua y la profundidad del agua subterránea. Cada candidato es una simulación completa del evento con el modelo, evaluada frente a todas las series observadas. El usuario elige qué parámetros son libres, y los demás conservan los valores del modelo. En HydroPol2D Studio, es el [espacio de trabajo Calibrate](../studio/calibrate).
+Esta calibración ajusta los parámetros del modelo a varios tipos de observaciones a la vez. Estos tipos son el caudal, la profundidad del agua, el nivel del agua y la profundidad del agua subterránea. Cada candidato es una simulación completa del evento con el modelo, evaluada frente a todas las series observadas. Hay dos métodos de búsqueda. El predeterminado es un algoritmo genético (AG) que sigue el GenericGA de MATLAB. El otro es SCE-UA, la evolución de complejos barajados (shuffled complex evolution) de la Universidad de Arizona. El usuario elige qué parámetros son libres, y los demás conservan los valores del modelo. En HydroPol2D Studio, es el [espacio de trabajo Calibrate](../studio/calibrate).
 
 Las dos herramientas de calibración responden a preguntas distintas.
 
@@ -119,9 +119,41 @@ Cada candidato se verifica con las reglas propias del modelo antes de ejecutarse
 
 ## 4. La búsqueda {#4-the-search}
 
-### 4.1 Algoritmo genético {#41-genetic-algorithm}
+Ambos métodos trabajan con los parámetros libres en su escala de búsqueda (logarítmica o lineal), parten del mismo tipo de muestra y comparten las puntuaciones, las simulaciones en paralelo, las simulaciones guardadas y los archivos de resultados. Se diferencian en la forma de elegir los siguientes candidatos.
 
-El AG trabaja con los parámetros libres en su escala de búsqueda (logarítmica o lineal).
+### 4.1 SCE-UA {#41-sce-ua}
+
+SCE-UA ([Duan et al., 1992](https://doi.org/10.1029/91WR02985); [1993](https://doi.org/10.1007/BF00939380)) combina una búsqueda local por símplex con un intercambio global de información.
+
+1. **Muestra inicial.** Se reparten $p \times m$ puntos de forma uniforme entre los límites (un hipercubo latino), con el modelo actual como uno de ellos, y cada uno se evalúa con una simulación completa del modelo.
+2. **Repartir en complejos.** Los puntos se ordenan por puntuación y se reparten como cartas entre $p$ complejos de $m$ puntos, de modo que cada complejo tenga puntos buenos y malos.
+3. **Hacer evolucionar cada complejo.** Un complejo elige $q$ de sus puntos, con preferencia por los mejores, e intenta reemplazar el peor de ellos. Primero refleja el peor punto a través del centroide de los demás. Si el punto reflejado no es mejor, lo contrae hasta la mitad del camino hacia el centroide. Si eso también falla, toma un punto aleatorio en la caja más pequeña que contiene el complejo. Un complejo da $\beta$ pasos de este tipo.
+4. **Barajar.** Los complejos se juntan, se ordenan y se vuelven a repartir, de modo que lo que encontró un complejo llegue a los demás.
+5. **Repetir** hasta que se cumpla una regla de parada.
+
+| Ajuste | Valor predeterminado | Significado |
+|---|---|---|
+| Complejos $p$ | el número de parámetros libres $n$, al menos 2 | Con más complejos, la búsqueda es más amplia y se ejecutan más simulaciones a la vez |
+| Puntos por complejo $m$ | $2n + 1$ | |
+| Tamaño del símplex $q$ | $n + 1$ | Puntos que participan en un paso |
+| Pasos de evolución $\beta$ | $2n + 1$ | Pasos de cada complejo entre dos barajados |
+| Máximo de simulaciones | 1000 | Se verifica entre barajados |
+| Parada por mejora | mejora menor que 0.1 % en 5 barajados | |
+| Parada por convergencia | población más estrecha que el 0.1 % del rango | Media geométrica sobre los parámetros libres |
+| Población inicial, límite de tiempo, semilla aleatoria | como en el AG | |
+
+Los valores predeterminados de $m$, $q$ y $\beta$ son los recomendados por [Duan et al. (1994)](https://doi.org/10.1016/0022-1694(94)90057-4). Entre dos barajados, los complejos evolucionan de forma independiente, así que sus pasos se ejecutan en paralelo. Con $p$ complejos, se ejecutan hasta $p$ simulaciones del modelo a la vez.
+
+**En una función de prueba.** El valle de Rosenbrock es un valle estrecho y curvo, un caso difícil clásico para los optimizadores. La tabla usa los mismos ajustes de arriba, sin ningún modelo de por medio.
+
+| Parámetros libres | SCE-UA | Algoritmo genético |
+|---|---|---|
+| 2 | óptimo encontrado (puntuación 1 × 10⁻⁷) en 375 evaluaciones | puntuación 3 × 10⁻⁴ después de 4000 evaluaciones |
+| 6 | óptimo encontrado (puntuación 3 × 10⁻⁶) en 5011 evaluaciones | puntuación 3.6, lejos del óptimo, después de 12 000 evaluaciones |
+
+En calibraciones de modelos de escorrentía, SCE-UA ha buscado a menudo de forma más eficaz que un AG ([una comparación en *Water*, 2014](https://doi.org/10.3390/w6113433)). No siempre es mejor. En un modelo distribuido, SCE-UA y dos AG dieron resultados parecidos ([una comparación en *Hydrological Processes*](https://doi.org/10.1002/hyp.7543)). La sección 6.1 compara los dos en la cuenca gemela.
+
+### 4.2 Algoritmo genético {#42-genetic-algorithm}
 
 1. **Población inicial.** Se reparte de forma uniforme entre los límites (un hipercubo latino, [McKay et al., 1979](https://doi.org/10.2307/1268522)), con el modelo actual como uno de sus miembros.
 2. **Evaluar** cada miembro con una simulación completa del modelo.
@@ -149,7 +181,7 @@ Un candidato ya visto (de la élite o duplicado) no se vuelve a ejecutar.
 
 Los operadores y sus valores predeterminados siguen el GenericGA de MATLAB, por lo que ambos dan búsquedas comparables.
 
-### 4.2 Varias simulaciones a la vez {#42-several-runs-at-a-time}
+### 4.3 Varias simulaciones a la vez {#43-several-runs-at-a-time}
 
 | Modo | Qué se ejecuta |
 |---|---|
@@ -163,9 +195,9 @@ Los operadores y sus valores predeterminados siguen el GenericGA de MATLAB, por 
 
 En una computadora portátil (10 núcleos, 24 GB), una simulación del caso gemelo descrito más abajo usó cerca de 0.74 GB y dos hilos, y Auto eligió cinco simulaciones a la vez.
 
-### 4.3 Detener y reanudar {#43-stopping-and-resuming}
+### 4.4 Detener y reanudar {#44-stopping-and-resuming}
 
-Cada simulación terminada se guarda en cuanto termina. **Cancel** detiene las simulaciones en curso en su siguiente paso del modelo, y estas no se guardan. Una calibración detenida se reanuda desde su carpeta. La búsqueda repite la misma semilla a partir de las simulaciones guardadas, así que llega exactamente a la población a la que habría llegado una búsqueda sin interrupciones. Al reanudar, solo pueden cambiar el número de generaciones, el límite de tiempo y la parada temprana.
+Cada simulación terminada se guarda en cuanto termina. **Cancel** detiene las simulaciones en curso en su siguiente paso del modelo, y estas no se guardan. Una calibración detenida se reanuda desde su carpeta. La búsqueda repite la misma semilla a partir de las simulaciones guardadas, así que llega exactamente a la población a la que habría llegado una búsqueda sin interrupciones. Al reanudar, solo pueden cambiar los ajustes de parada. En el AG, son el número de generaciones, el límite de tiempo y la parada temprana. En SCE-UA, son el número máximo de simulaciones, el límite de tiempo y las reglas de parada.
 
 ---
 
@@ -235,6 +267,23 @@ Ambos parámetros se recuperaron con un error menor que 1 % y quedaron bien iden
   <em>Figura 1. Una calibración corta en Studio sobre la cuenca gemela, con incertidumbre en las observaciones. El caudal se evalúa con error / incertidumbre. Con el modelo actual, el 46 % de los puntos estaba dentro de su error de medición, y el 92 % después de la calibración.</em>
 </p>
 
+### 6.1 AG y SCE-UA {#61-ga-and-sce-ua}
+
+En la misma cuenca gemela, con un 5 % de ruido y un presupuesto de unas 100 simulaciones por parámetro libre (Auto, hasta 5 simulaciones a la vez):
+
+| Parámetros libres | Método | Simulaciones | Mejor puntuación | Tiempo | Encontrado / verdadero |
+|---|---|---:|---:|---:|---|
+| 2 | AG | 140 | 0.0089 | 4.3 min | Manning 1.007, conductividad 1.004 |
+| 2 | SCE-UA | 202 | 0.0074 | 9.3 min | Manning 1.021, conductividad 1.001 |
+| 6 | AG | 481 | 0.0065 | 13.9 min | Manning 1.038, conductividad 0.998, rendimiento específico 1.003 |
+| 6 | SCE-UA | 659 | 0.0245 | 23.8 min | Manning 1.088, conductividad 0.949, rendimiento específico 0.946 |
+
+Con 6 parámetros libres, los otros tres eran el α del suelo (verdadero × 1.3), la profundidad del suelo (× 0.8) y la conductividad del agua subterránea (× 2). Ningún método los identificó bien, porque estas observaciones dicen poco sobre ellos.
+
+- **Con 2 parámetros**, los dos métodos recuperaron la verdad. SCE-UA llegó a una puntuación algo mejor, pero sus 2 complejos solo permiten 2 simulaciones a la vez, y tardó el doble.
+- **Con 6 parámetros** y unos pocos cientos de simulaciones, el AG llegó mucho más lejos. SCE-UA empieza con 78 puntos y gasta de 78 a 234 simulaciones por barajado, y el presupuesto solo alcanzó para cinco barajados.
+- **SCE-UA compensa** con presupuestos de miles de simulaciones, como en la función de prueba de la sección 4.1. Para un modelo costoso y unos pocos cientos de simulaciones, el AG es el predeterminado.
+
 Un experimento gemelo no es una prueba de campo. Muestra que estas observaciones pueden identificar estos parámetros con esta estructura del modelo. Los registros reales añaden error de medición, regulación y procesos que el modelo no incluye.
 
 ---
@@ -252,6 +301,9 @@ Un experimento gemelo no es una prueba de campo. Muestra que estas observaciones
 
 ## Fuentes {#sources}
 
+- Duan, Q., Sorooshian, S., and Gupta, V. (1992). Effective and efficient global optimization for conceptual rainfall-runoff models. *Water Resources Research*, 28(4), 1015–1031. [doi:10.1029/91WR02985](https://doi.org/10.1029/91WR02985)
+- Duan, Q. Y., Gupta, V. K., and Sorooshian, S. (1993). Shuffled complex evolution approach for effective and efficient global minimization. *Journal of Optimization Theory and Applications*, 76(3), 501–521. [doi:10.1007/BF00939380](https://doi.org/10.1007/BF00939380)
+- Duan, Q., Sorooshian, S., and Gupta, V. K. (1994). Optimal use of the SCE-UA global optimization method for calibrating watershed models. *Journal of Hydrology*, 158(3–4), 265–284. [doi:10.1016/0022-1694(94)90057-4](https://doi.org/10.1016/0022-1694(94)90057-4)
 - Gupta, H. V., Kling, H., Yilmaz, K. K., and Martinez, G. F. (2009). Decomposition of the mean squared error and NSE performance criteria: implications for improving hydrological modelling. *Journal of Hydrology*, 377(1–2), 80–91. [doi:10.1016/j.jhydrol.2009.08.003](https://doi.org/10.1016/j.jhydrol.2009.08.003)
 - McKay, M. D., Beckman, R. J., and Conover, W. J. (1979). A comparison of three methods for selecting values of input variables in the analysis of output from a computer code. *Technometrics*, 21(2), 239–245. [doi:10.2307/1268522](https://doi.org/10.2307/1268522)
 - Nash, J. E., and Sutcliffe, J. V. (1970). River flow forecasting through conceptual models, part I: a discussion of principles. *Journal of Hydrology*, 10(3), 282–290. [doi:10.1016/0022-1694(70)90255-6](https://doi.org/10.1016/0022-1694(70)90255-6)

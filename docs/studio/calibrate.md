@@ -5,7 +5,7 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # Calibrate
 
-**Calibrate** fits model parameters to observed discharge, water depths, water levels and groundwater depths with a genetic algorithm. It is the fourth workspace on the rail (Cmd+4 on a Mac, Ctrl+4 on Windows). The method, the scores and the settings are explained in [Calibration Against Observations](../calibration/ga-calibration).
+**Calibrate** fits model parameters to observed discharge, water depths, water levels and groundwater depths with a genetic algorithm or SCE-UA (shuffled complex evolution). It is the fourth workspace on the rail (Cmd+4 on a Mac, Ctrl+4 on Windows). The method, the scores and the settings are explained in [Calibration Against Observations](../calibration/ga-calibration).
 
 The page has six sections, in the order they are used.
 
@@ -46,7 +46,14 @@ Every parameter this model can calibrate is listed, grouped by process. Tick **F
 
 ## 4. Search settings
 
-**Genetic algorithm**: population size (Auto is 10 per free parameter), generations, elite share, tournament size, crossover and mutation probabilities, mutation size, starting population, early stop, time limit and random seed. The line under the settings gives the largest number of model runs and, after a first calibration, an estimate of the time.
+**Search**
+
+- **Method**: Genetic algorithm (the default) or SCE-UA. SCE-UA suits cheap runs and budgets of thousands of runs. With a few hundred runs of an expensive model the genetic algorithm got further (see [Section 6.1 of the method page](../calibration/ga-calibration#61-ga-and-sce-ua)).
+- For SCE-UA: complexes (Auto is the number of free parameters, at least 2), points per complex, simplex size and evolution steps per shuffle (Auto uses the recommended values), maximum runs, and the stop rules on improvement and on convergence.
+- For the genetic algorithm: population size (Auto is 10 per free parameter), generations, elite share, tournament size, crossover and mutation probabilities, mutation size and early stop.
+- For both: starting population, time limit and random seed.
+
+The line under the settings gives the largest number of model runs and, after a first calibration, an estimate of the time.
 
 **Computer**
 
@@ -59,7 +66,7 @@ Every parameter this model can calibrate is listed, grouped by process. Tick **F
 
 ## 5. Run
 
-**Start calibration** checks the choices and starts the search in the background; Studio stays usable. The progress bar and the line under it show the generation, the run and the best score so far, and the log lists every run.
+**Start calibration** checks the choices and starts the search in the background; Studio stays usable. The progress bar and the line under it show the generation (GA) or shuffle (SCE-UA), the run and the best score so far, and the log lists every run.
 
 **Cancel** stops the runs in progress at their next model step. Finished runs are saved, so a resumed calibration does not repeat them.
 

@@ -5,7 +5,7 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # Calibração no Studio
 
-A área de trabalho **Calibrate** ajusta os parâmetros do modelo à vazão, às profundidades da água, aos níveis da água e às profundidades do lençol freático observados, com um algoritmo genético. É a quarta área de trabalho na barra à esquerda (Cmd+4 no Mac, Ctrl+4 no Windows). O método, as pontuações e as configurações estão explicados em [Calibração com Observações](../calibration/ga-calibration).
+A área de trabalho **Calibrate** ajusta os parâmetros do modelo à vazão, às profundidades da água, aos níveis da água e às profundidades do lençol freático observados, com um algoritmo genético ou com o SCE-UA (evolução de complexos embaralhados). É a quarta área de trabalho na barra à esquerda (Cmd+4 no Mac, Ctrl+4 no Windows). O método, as pontuações e as configurações estão explicados em [Calibração com Observações](../calibration/ga-calibration).
 
 A página tem seis seções, na ordem em que são usadas.
 
@@ -46,7 +46,14 @@ Todos os parâmetros que este modelo pode calibrar aparecem na lista, agrupados 
 
 ## 4. Search settings {#4-search-settings}
 
-**Genetic algorithm**: tamanho da população (Auto é 10 por parâmetro livre), gerações, fração de elite, tamanho do torneio, probabilidades de cruzamento e de mutação, tamanho da mutação, população inicial, parada antecipada, limite de tempo e semente aleatória. A linha abaixo das configurações mostra o maior número possível de execuções do modelo e, depois de uma primeira calibração, uma estimativa do tempo.
+**Search**
+
+- **Method**: Genetic algorithm (o padrão) ou SCE-UA. O SCE-UA serve para execuções rápidas e orçamentos de milhares de execuções. Com algumas centenas de execuções de um modelo caro, o algoritmo genético foi mais longe (veja a [Seção 6.1 da página do método](../calibration/ga-calibration#61-ga-and-sce-ua)).
+- Para o SCE-UA: complexos (Auto é o número de parâmetros livres, no mínimo 2), pontos por complexo, tamanho do simplex e passos de evolução por embaralhamento (Auto usa os valores recomendados), máximo de execuções e as regras de parada por melhora e por convergência.
+- Para o algoritmo genético: tamanho da população (Auto é 10 por parâmetro livre), gerações, fração de elite, tamanho do torneio, probabilidades de cruzamento e de mutação, tamanho da mutação e parada antecipada.
+- Para os dois: população inicial, limite de tempo e semente aleatória.
+
+A linha abaixo das configurações mostra o maior número possível de execuções do modelo e, depois de uma primeira calibração, uma estimativa do tempo.
 
 **Computer**
 
@@ -59,7 +66,7 @@ Todos os parâmetros que este modelo pode calibrar aparecem na lista, agrupados 
 
 ## 5. Run {#5-run}
 
-**Start calibration** verifica as escolhas e inicia a busca em segundo plano. O Studio continua disponível enquanto isso. A barra de progresso e a linha abaixo dela mostram a geração, a execução e a melhor pontuação até o momento, e o log lista cada execução.
+**Start calibration** verifica as escolhas e inicia a busca em segundo plano. O Studio continua disponível enquanto isso. A barra de progresso e a linha abaixo dela mostram a geração (GA) ou o embaralhamento (SCE-UA), a execução e a melhor pontuação até o momento, e o log lista cada execução.
 
 **Cancel** interrompe as execuções em andamento no próximo passo do modelo. As execuções concluídas ficam salvas, e uma calibração retomada não as repete.
 
