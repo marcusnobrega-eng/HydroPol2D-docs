@@ -32,7 +32,11 @@ Use uma fonte de chuva por vez. Uma série que as chaves do caso não leem pode 
 
 A aba Rain series contém um único pluviômetro, com a intensidade de chuva (mm/h) ao longo do tempo. A chuva é aplicada de forma uniforme sobre o domínio. A aba é lida quando a chuva está ativa e não há chuva de projeto, mapas, satélite nem chuva espacial selecionados.
 
-Os tempos marcam o fim de cada intervalo. No exemplo V-tilted, 10.8 mm/h em 90 min e 0 mm/h em 180 min significam chuva de 10.8 mm/h de 0 a 90 min e nenhuma chuva de 90 a 180 min.
+Cada tempo marca o início de um intervalo. Um valor vale até o tempo seguinte; o último valor vale por mais um intervalo, e depois a taxa é 0. No exemplo V-tilted, 10.8 mm/h em 0 min e 0 mm/h em 90 min significam chuva de 10.8 mm/h de 0 a 90 min e nenhuma chuva de 90 a 180 min. A mesma regra vale para pluviômetros, mapas de chuva, mapas de evaporação e transpiração e hidrogramas de entrada. Um hidrograma de nível mantém cada profundidade do seu tempo até o seguinte.
+
+:::warning[Alterado em 2026-10-29]
+Antes de 2026-10-29, o MATLAB lia os tempos de chuva, vazão de entrada e mapas de ET como fim de intervalo, e o HydroPol2D-Python os lia como início de intervalo. Agora o MATLAB também os lê como início de intervalo. A primeira linha de uma tabela que começa em 0 min, como toda tabela com datas, passa a ser usada. Uma tabela escrita com fins de intervalo (primeiro tempo = um passo) precisa adiantar cada tempo em um passo para manter o seu significado. As chuvas de projeto são reajustadas automaticamente.
+:::
 
 ### Pluviômetros {#rain-gauges}
 

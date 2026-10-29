@@ -32,7 +32,11 @@ Se usa una sola fuente de lluvia a la vez. Una serie que los interruptores del c
 
 La pestaña Rain series contiene un pluviómetro, con la intensidad de lluvia (mm/h) en el tiempo. La lluvia se aplica de manera uniforme sobre el dominio. La pestaña se lee cuando la lluvia está activada y no se elige tormenta de diseño, mapa, lluvia satelital ni lluvia espacial.
 
-Los tiempos son finales de intervalo. En el ejemplo en V, 10.8 mm/h a los 90 min y 0 mm/h a los 180 min significan lluvia de 10.8 mm/h entre 0 y 90 min y ninguna lluvia entre 90 y 180 min.
+Cada tiempo marca el inicio de un intervalo. Un valor rige hasta el tiempo siguiente; el último valor rige durante un intervalo más, y después la tasa es 0. En el ejemplo en V, 10.8 mm/h a los 0 min y 0 mm/h a los 90 min significan lluvia de 10.8 mm/h entre 0 y 90 min y ninguna lluvia entre 90 y 180 min. La misma regla se aplica a los pluviómetros, los mapas de lluvia, los mapas de evaporación y transpiración y los hidrogramas de entrada. Un hidrograma de nivel mantiene cada profundidad desde su tiempo hasta el siguiente.
+
+:::warning[Cambiado el 2026-10-29]
+Antes del 2026-10-29, MATLAB leía los tiempos de lluvia, caudal de entrada y mapas de ET como finales de intervalo, y HydroPol2D-Python los leía como inicios de intervalo. Ahora MATLAB también los lee como inicios de intervalo. La primera fila de una tabla que empieza en 0 min, como toda tabla con fechas, ahora se usa. Una tabla escrita con finales de intervalo (primer tiempo = un paso) debe adelantar cada tiempo un paso para conservar su significado. Las tormentas de diseño se reajustan automáticamente.
+:::
 
 ### Pluviómetros {#rain-gauges}
 

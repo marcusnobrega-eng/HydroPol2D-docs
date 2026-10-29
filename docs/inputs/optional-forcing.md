@@ -32,7 +32,11 @@ Use one rainfall source at a time. A series that the case's switches do not read
 
 The Rain series tab holds one gauge: rainfall intensity (mm/h) over time. The rain is applied uniformly over the domain. The tab is read when rainfall is on and no design storm, map, satellite or spatial rainfall is chosen.
 
-The times are interval ends. In the V-tilted example, 10.8 mm/h at 90 min and 0 mm/h at 180 min mean rain at 10.8 mm/h from 0 to 90 min and none from 90 to 180 min.
+Each time starts an interval. A value holds until the next time; the last value holds for one more interval, and then the rate is 0. In the V-tilted example, 10.8 mm/h at 0 min and 0 mm/h at 90 min mean rain at 10.8 mm/h from 0 to 90 min and none from 90 to 180 min. The same rule applies to rain gauges, rainfall maps, evaporation and transpiration maps and inflow hydrographs. A stage hydrograph holds each depth from its time to the next.
+
+:::warning[Changed on 2026-10-29]
+Before 2026-10-29, MATLAB read the times of rain, inflow and ET maps as interval ends, and HydroPol2D-Python read them as interval starts. MATLAB now reads them as interval starts too. The first row of a table that starts at 0 min, as every date-based table does, is now used. A table written with interval ends (first time = one step) must move each time one step earlier to keep its meaning. Design storms are restamped automatically.
+:::
 
 ### Rain gauges {#rain-gauges}
 
