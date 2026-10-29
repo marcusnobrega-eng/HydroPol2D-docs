@@ -300,7 +300,7 @@ where:
 - the coefficients $k_1$, $k_2$, $k_3$, and $k_4$ define the rating-curve response  
 - the terms $h_{0,1}$ and $h_{0,2}$ define the reference depths associated with each branch  
 
-The coordinates $\left(x_{\mathrm{d},1}, y_{\mathrm{d},1}\right)$ and $\left(x_{\mathrm{d},2}, y_{\mathrm{d},2}\right)$ define the locations at which the discharge control is applied or evaluated.
+The coordinates $\left(x_{\mathrm{d},1}, y_{\mathrm{d},1}\right)$ and $\left(x_{\mathrm{d},2}, y_{\mathrm{d},2}\right)$ are the cells that receive each branch's release. The release leaves the control cell and enters that cell, so the transfer conserves mass. Each release is capped at the water above its threshold, and the second branch uses the depth left after the first. A destination of $(0, 0)$ sends the release out of the model, and it is counted as outlet flow. An empty destination switches that branch off.
 
 This structure makes it possible to represent a simple piecewise discharge relationship using two parameterized branches.
 

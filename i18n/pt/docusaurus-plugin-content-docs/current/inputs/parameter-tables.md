@@ -252,7 +252,7 @@ onde:
 - os coeficientes $k_1$, $k_2$, $k_3$ e $k_4$ definem a resposta da curva de classificação
 - os termos $h_{0,1}$ e $h_{0,2}$ definem as profundidades de referência associadas a cada ramo
 
-As coordenadas $\left(x_{\mathrm{d},1}, y_{\mathrm{d},1}\right)$ e $\left(x_{\mathrm{d},2}, y_{\mathrm{d},2}\right)$ definem os locais nos quais o controle de descarga é aplicado ou avaliado.
+As coordenadas $\left(x_{\mathrm{d},1}, y_{\mathrm{d},1}\right)$ e $\left(x_{\mathrm{d},2}, y_{\mathrm{d},2}\right)$ são as células que recebem a vazão de cada ramo. A vazão sai da célula de controle e entra nessa célula, de modo que a transferência conserva a massa. Cada liberação é limitada à água acima do seu limiar, e o segundo ramo usa a profundidade que sobra depois do primeiro. Um destino $(0, 0)$ manda a vazão para fora do modelo, e ela é contada como vazão no exutório. Um destino vazio desliga esse ramo.
 Esta estrutura permite representar uma relação simples de descarga por partes usando dois ramos parametrizados.
 
 ---

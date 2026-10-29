@@ -252,7 +252,7 @@ dónde:
 - los coeficientes $k_1$, $k_2$, $k_3$ y $k_4$ definen la respuesta de la curva de calificación
 - los términos $h_{0,1}$ y $h_{0,2}$ definen las profundidades de referencia asociadas con cada rama
 
-Las coordenadas $\left(x_{\mathrm{d},1}, y_{\mathrm{d},1}\right)$ y $\left(x_{\mathrm{d},2}, y_{\mathrm{d},2}\right)$ definen las ubicaciones en las que se aplica o evalúa el control de descarga.
+Las coordenadas $\left(x_{\mathrm{d},1}, y_{\mathrm{d},1}\right)$ y $\left(x_{\mathrm{d},2}, y_{\mathrm{d},2}\right)$ son las celdas que reciben el caudal de cada rama. El caudal sale de la celda de control y entra en esa celda, de modo que la transferencia conserva la masa. Cada descarga se limita al agua por encima de su umbral, y la segunda rama usa la profundidad que queda después de la primera. Un destino $(0, 0)$ envía el caudal fuera del modelo, y se cuenta como caudal en la salida. Un destino vacío desactiva esa rama.
 Esta estructura permite representar una relación de descarga simple por partes utilizando dos ramas parametrizadas.
 
 ---
