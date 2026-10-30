@@ -1,6 +1,7 @@
 ---
 title: Hydrologic Model
 ---
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # Hydrologic Model
 
@@ -829,6 +830,14 @@ Additional constraints are applied:
 
 Thus, infiltration is simultaneously **supply-limited**, **capacity-limited**, and **storage-limited**. In layered mode, acceptance is additionally constrained by the explicit near-surface storage deficit before water can continue to drain downward through the deeper vadose layers.
 
+<p align="center">
+  <img src={useBaseUrl('/img/theory/infiltration-limits.svg')} width="720" alt="Three soil columns of one cell, each a case where one limit is the smallest: light rain on a dry soil, limited by the supply; a deep pond on a soil of low conductivity, limited by the Darcy capacity; and a shallow water table, limited by the storage room; under each column, the definition of that limit and where its terms come from" />
+</p>
+
+<p align="center">
+  <em>Figure 1. The three limits on infiltration, each shown in a case where it is the smallest (schematic, not to scale). The water that does not infiltrate stays on the surface and is routed to the neighbour cells.</em>
+</p>
+
 ---
 
 ### 4.7 Vadose storage update
@@ -864,6 +873,14 @@ The scalar expression above is therefore the conceptual summary of a layered upd
 ## 5. Snow Accumulation, Melt, and Sublimation
 
 When snow modeling is active, HydroPol2D tracks snow water equivalent (SWE), snow density, and physical snow depth in every active grid cell. Snow parameters are read from the LULC parameter table and mapped to the grid from `LULC_Index`. The internal meteorological forcing pathway provides mean air temperature, minimum air temperature, and wind speed. Snow simulations therefore require `flag_ETP = 1`, `flag_input_ETP_map = 0`, and a meteorological workbook that covers the simulation period.
+
+<p align="center">
+  <img src={useBaseUrl('/img/theory/snow.svg')} width="720" alt="Left, one time step in one cell: the air temperature splits precipitation into snow and rain; the snow builds a snowpack that loses melt to the surface water and sublimation to the atmosphere, and the rain passes through the canopy store when interception is on. Right, the equations of Section 5. Bottom left, an illustration of air temperature, precipitation and SWE with synthetic forcing" />
+</p>
+
+<p align="center">
+  <em>Figure 2. Rain or snow, storage, melt and sublimation in one cell. Only the rain enters the canopy store, the melt goes straight to the surface water, and the bottom panel uses synthetic forcing, not model output.</em>
+</p>
 
 ---
 

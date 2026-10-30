@@ -1,6 +1,7 @@
 ---
 title: Modelo hidrológico
 ---
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # Modelo hidrológico
 
@@ -685,6 +686,14 @@ Se aplican restricciones adicionales:
 
 Por lo tanto, la infiltración está simultáneamente **limitada por el suministro**, **limitada por la capacidad** y **limitada por el almacenamiento**. En el modo en capas, la aceptación está además limitada por el déficit explícito de almacenamiento cerca de la superficie antes de que el agua pueda continuar drenando hacia abajo a través de las capas vadosas más profundas.
 
+<p align="center">
+  <img src={useBaseUrl('/img/theory/infiltration-limits.es.svg')} width="720" alt="Tres columnas de suelo de una celda, cada una un caso en que un límite es el menor: lluvia débil sobre suelo seco, limitada por el suministro; lámina alta sobre suelo de baja conductividad, limitada por la capacidad de Darcy; y nivel freático somero, limitado por el espacio de almacenamiento; bajo cada columna, la definición de ese límite y el origen de sus términos" />
+</p>
+
+<p align="center">
+  <em>Figura 1. Los tres límites de la infiltración, cada uno en un caso en que es el menor (esquema, sin escala). El agua que no se infiltra queda en la superficie y se enruta a las celdas vecinas.</em>
+</p>
+
 ---
 
 ### 4.7 Actualización de almacenamiento de Vadose
@@ -711,6 +720,14 @@ Por lo tanto, la expresión escalar anterior es el resumen conceptual de una act
 ## 5. Acumulación, fusión y sublimación de nieve {#5-snow-accumulation-melt-and-sublimation}
 
 Cuando el modelado de nieve está activo, HydroPol2D sigue el equivalente de agua de nieve (SWE), la densidad de la nieve y la profundidad física de la nieve en cada celda activa de la malla. Los parámetros de nieve se leen de la tabla de parámetros LULC y se asignan a la malla a partir de `LULC_Index`. La vía de forzamiento meteorológico interno proporciona la temperatura media del aire, la temperatura mínima del aire y la velocidad del viento. Por tanto, las simulaciones de nieve requieren `flag_ETP = 1`, `flag_input_ETP_map = 0` y un libro meteorológico que cubra el período de simulación.
+
+<p align="center">
+  <img src={useBaseUrl('/img/theory/snow.es.svg')} width="720" alt="A la izquierda, un paso de tiempo en una celda: la temperatura del aire separa la precipitación en nieve y lluvia; la nieve forma un manto que pierde agua por fusión hacia el agua superficial y por sublimación hacia la atmósfera, y la lluvia pasa por el almacenamiento del dosel cuando la intercepción está activa. A la derecha, las ecuaciones de la Sección 5. Abajo a la izquierda, una ilustración de la temperatura del aire, la precipitación y el SWE con forzamiento sintético" />
+</p>
+
+<p align="center">
+  <em>Figura 2. Lluvia o nieve, almacenamiento, fusión y sublimación en una celda. Solo la lluvia entra en el almacenamiento del dosel, la fusión va directa al agua superficial, y el panel inferior usa forzamiento sintético, no salida del modelo.</em>
+</p>
 
 ---
 

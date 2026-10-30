@@ -1,6 +1,7 @@
 ---
 title: Mathematical Overview
 ---
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # Mathematical Overview
 
@@ -35,6 +36,14 @@ HydroPol2D couples:
 ### 1. Hydrologic processes
 
 The hydrologic theory pages document how HydroPol2D partitions atmospheric input into canopy storage, throughfall, infiltration, evapotranspiration, snow accumulation and melt, vadose storage, recharge, and groundwater feedback.
+
+<p align="center">
+  <img src={useBaseUrl('/img/theory/cell-water-budget.svg')} width="720" alt="One model cell seen from the side: rain falls on a tree canopy and snow on a snowpack; throughfall, snowmelt, exfiltration and saturation excess feed the surface water, which infiltrates into the vadose zone and flows to a lower neighbour cell; recharge and capillary rise link the vadose zone to the groundwater, which flows laterally; grey arrows return vapour to the atmosphere" />
+</p>
+
+<p align="center">
+  <em>Figure 1. The stores and fluxes of one model cell (not to scale). Blue arrows carry liquid water and grey arrows vapour; only the rain passes through the canopy, and the snowmelt goes straight to the surface water.</em>
+</p>
 
 ### 2. Groundwater coupling
 

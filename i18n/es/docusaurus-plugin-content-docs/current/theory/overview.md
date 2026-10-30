@@ -1,6 +1,7 @@
 ---
 title: Resumen matemático
 ---
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # Resumen matemático
 
@@ -35,6 +36,14 @@ HydroPol2D acopla:
 ### 1. Procesos hidrológicos
 
 Las páginas hidrológicas documentan cómo HydroPol2D reparte la entrada atmosférica en almacenamiento en el dosel, throughfall, infiltración, evapotranspiración, acumulación y derretimiento de nieve, almacenamiento vadoso, recarga y retroalimentación del groundwater.
+
+<p align="center">
+  <img src={useBaseUrl('/img/theory/cell-water-budget.es.svg')} width="720" alt="Una celda del modelo vista de lado: la lluvia cae sobre el dosel de un árbol y la nieve sobre un manto de nieve; el throughfall, la fusión, la exfiltración y el exceso de saturación alimentan el agua superficial, que se infiltra en la zona vadosa y fluye hacia una celda vecina más baja; la recarga y el ascenso capilar conectan la zona vadosa con el agua subterránea, que fluye lateralmente; flechas grises devuelven vapor a la atmósfera" />
+</p>
+
+<p align="center">
+  <em>Figura 1. Los almacenamientos y flujos de una celda del modelo (sin escala). Las flechas azules llevan agua líquida y las grises, vapor; solo la lluvia pasa por el dosel, y la fusión va directa al agua superficial.</em>
+</p>
 
 ### 2. Acoplamiento del groundwater
 
