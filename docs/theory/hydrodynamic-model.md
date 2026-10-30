@@ -1,6 +1,7 @@
 ---
 title: Hydrodynamic Model
 ---
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # Hydrodynamic Model
 
@@ -13,6 +14,14 @@ HydroPol2D currently includes five major surface-routing families:
 - cellular automata.
 
 Only one of these major routing formulations should be active at a time. The current code enforces this routing-family exclusivity through the corresponding model flags. D8 support remains a limited-scope secondary pathway.
+
+<p align="center">
+  <img src={useBaseUrl('/img/theory/routing-families.svg')} width="720" alt="A table of the five routing families (local inertial, full momentum, diffusive D4, kinematic D4 and cellular automata) against the five terms of the shallow-water momentum equation, with a filled dot for each term a family keeps and the equation it solves" />
+</p>
+
+<p align="center">
+  <em>Figure 1. The five routing families and the terms of the shallow-water momentum equation that each one keeps. One family is active in a run.</em>
+</p>
 
 ## 1. Local Inertial Flow Routing
 
@@ -93,6 +102,14 @@ where:
 - $n$ is Manning’s roughness coefficient $[\mathrm{T}\,\mathrm{L}^{-1/3}]$
 
 This formulation neglects convective acceleration but retains the dominant hydraulic balance between local acceleration, pressure gradient, and bed-friction resistance. 
+
+<p align="center">
+  <img src={useBaseUrl('/img/theory/local-inertial.svg')} width="720" alt="Two neighbouring cells seen from the side with bed elevation, depth, water surface, face depth and slope; the grid seen from above with depths at cell centres and discharges on faces; and the five steps of one local inertial time step, from the water surface to the continuity update" />
+</p>
+
+<p align="center">
+  <em>Figure 2. The local inertial solver on one face and over one time step, in the order the code runs it. Each step gives the sections of this page that describe it.</em>
+</p>
 
 ---
 
@@ -800,6 +817,14 @@ The full-momentum model supports the same practical boundary-condition architect
 - imposed inflow hydrograph boundaries,
 - prescribed stage hydrograph boundaries,
 - reservoir and internal rating-curve control structures.
+
+<p align="center">
+  <img src={useBaseUrl('/img/theory/boundaries-structures.svg')} width="720" alt="Plan view of a schematic catchment on a regular grid with an inflow hydrograph, a reservoir behind a dam, a culvert under a road, a detention pond, a stage hydrograph, an outlet and closed walls, each numbered and explained on the right, and an inset with the groundwater boundaries on the same domain" />
+</p>
+
+<p align="center">
+  <em>Figure 3. Where water enters, leaves or is controlled in a model domain. The terrain, rivers, road and pond are synthetic.</em>
+</p>
 
 For closed boundaries, normal mass flux is zero, but wall-pressure effects are accounted for in the momentum update. This is important for stable behavior near domain edges and inactive cells.
 

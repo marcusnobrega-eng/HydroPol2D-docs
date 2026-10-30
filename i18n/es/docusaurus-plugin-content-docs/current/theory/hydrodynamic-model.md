@@ -1,6 +1,7 @@
 ---
 title: Modelo hidrodinámico
 ---
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # Modelo hidrodinámico
 
@@ -12,6 +13,15 @@ HydroPol2D incluye actualmente cinco familias principales de enrutamiento de sup
 - autómatas celulares.
 
 Sólo una de estas formulaciones de enrutamiento principales debe estar activa a la vez. El código actual impone esta exclusividad de la familia de enrutamiento a través de las banderas de modelo correspondientes. El soporte D8 sigue siendo una vía secundaria de alcance limitado.
+
+<p align="center">
+  <img src={useBaseUrl('/img/theory/routing-families.es.svg')} width="720" alt="Tabla de las cinco familias de enrutamiento (inercial local, momento completo, difusivo D4, cinemático D4 y autómatas celulares) frente a los cinco términos de la ecuación de momento en aguas poco profundas, con un punto lleno en cada término que conserva la familia y la ecuación que resuelve" />
+</p>
+
+<p align="center">
+  <em>Figura 1. Las cinco familias de enrutamiento y los términos de la ecuación de momento en aguas poco profundas que conserva cada una. Solo una familia está activa en cada ejecución.</em>
+</p>
+
 ## 1. Enrutamiento de flujo inercial local
 
 ### 1.1 Justificación general
@@ -78,6 +88,14 @@ dónde:
 - $n$ es el coeficiente de rugosidad de Manning $[\mathrm{T}\,\mathrm{L}^{-1/3}]$
 
 Esta formulación ignora la aceleración convectiva pero conserva el equilibrio hidráulico dominante entre la aceleración local, el gradiente de presión y la resistencia a la fricción del lecho.
+
+<p align="center">
+  <img src={useBaseUrl('/img/theory/local-inertial.es.svg')} width="720" alt="Dos celdas vecinas vistas de lado, con la cota del lecho, la profundidad, la superficie del agua, la profundidad en la cara y la pendiente; la malla vista en planta, con las profundidades en los centros de las celdas y las descargas en las caras; y las cinco etapas de un paso de tiempo inercial local, de la superficie del agua a la actualización de continuidad" />
+</p>
+
+<p align="center">
+  <em>Figura 2. El solucionador inercial local en una cara y a lo largo de un paso de tiempo, en el orden en que lo ejecuta el código. Cada etapa indica las secciones de esta página que la describen.</em>
+</p>
 
 ---
 
@@ -677,6 +695,14 @@ El modelo de impulso total admite la misma arquitectura práctica de condiciones
 - límites impuestos del hidrograma de entrada,
 - límites del hidrograma de etapa prescritos,
 - yacimientos y estructuras de control de la curva de calificación interna.
+
+<p align="center">
+  <img src={useBaseUrl('/img/theory/boundaries-structures.es.svg')} width="720" alt="Vista en planta de una cuenca esquemática en una malla regular, con un hidrograma de entrada, un embalse detrás de una presa, una alcantarilla bajo un camino, un estanque de detención, un hidrograma de nivel, una salida y paredes cerradas, cada uno numerado y explicado a la derecha, y un recuadro con los contornos del agua subterránea en el mismo dominio" />
+</p>
+
+<p align="center">
+  <em>Figura 3. Dónde entra, sale o se controla el agua en un dominio del modelo. El terreno, los ríos, el camino y el estanque son ficticios.</em>
+</p>
 
 Para límites cerrados, el flujo de masa normal es cero, pero los efectos de la presión de la pared se tienen en cuenta en la actualización del impulso. Esto es importante para un comportamiento estable cerca de los bordes del dominio y de las celdas inactivas.
 Los flujos de salida se convierten en un sumidero de volumen y se retiran del almacenamiento de agua local, sujeto a las limitaciones de agua disponible.
