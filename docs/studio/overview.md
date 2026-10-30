@@ -1,6 +1,7 @@
 ---
 title: Overview
 ---
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # HydroPol2D Studio
 
@@ -9,6 +10,14 @@ from your own files, sets it up step by step, runs it, and shows the results. St
 layer around the model engine: it does not call MATLAB and does not duplicate the solver.
 
 This section describes Studio 0.9 (release candidate).
+
+<p align="center">
+  <img src={useBaseUrl('/img/studio/studio-journey.svg')} width="720" alt="Studio from first start to results: the license window with Activate, Home with three choices, the nine-page New model wizard, the Setup, Run, Results and Calibrate workspaces, and how edits, Save and Revert to saved work" />
+</p>
+
+<p align="center">
+  <em>Figure 1. The path through Studio 0.9. New model leads to the wizard, Open existing model to Setup and Open simulation results to Results; Cmd+1 to Cmd+4 switch between the four workspaces.</em>
+</p>
 
 ## Install and start
 

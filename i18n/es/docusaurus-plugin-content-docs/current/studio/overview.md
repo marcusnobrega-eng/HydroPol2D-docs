@@ -1,6 +1,7 @@
 ---
 title: Resumen
 ---
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # HydroPol2D Studio
 
@@ -11,6 +12,14 @@ solver.
 
 Esta sección describe Studio 0.9 (release candidate). La interfaz de Studio está en inglés, por lo
 que los nombres de botones, menús y mensajes aparecen aquí en inglés, tal como se ven en pantalla.
+
+<p align="center">
+  <img src={useBaseUrl('/img/studio/studio-journey.es.svg')} width="720" alt="Studio desde el primer uso hasta los resultados: la ventana de licencia con Activate, la pantalla Home con tres opciones, el asistente New model de nueve páginas, los espacios de trabajo Setup, Run, Results y Calibrate y cómo funcionan las ediciones, Save y Revert to saved" />
+</p>
+
+<p align="center">
+  <em>Figura 1. El recorrido por Studio 0.9. New model lleva al asistente, Open existing model a Setup y Open simulation results a Results; Cmd+1 a Cmd+4 cambian entre los cuatro espacios de trabajo.</em>
+</p>
 
 ## Instalar e iniciar {#install-and-start}
 

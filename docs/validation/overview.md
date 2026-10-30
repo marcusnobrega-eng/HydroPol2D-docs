@@ -25,9 +25,25 @@ HydroPol2D is evaluated with a validation suite that tests each computational mo
 
 Cases that are useful for diagnosis but do not provide an appropriate reference remain visible as diagnostics and are not used as acceptance evidence.
 
+<p align="center">
+  <img src={useBaseUrl('/img/validation/validation-logic.svg')} width="720" alt="Flow from a module to its validation case, then a comparison against a reference of one of five evidence types, ending as acceptance evidence or a diagnostic; below, the shared V-tilted catchment, the dedicated hydrodynamic benchmarks and two cases traced through" />
+</p>
+
+<p align="center">
+  <em>Figure 1. How a module is validated. A case counts as acceptance evidence only when it has a proper reference and meets its thresholds; otherwise it stays visible as a diagnostic.</em>
+</p>
+
 ## Shared V-tilted catchment
 
 Many hydrologic and groundwater cases use the synthetic V-tilted catchment. It provides a common DEM, soil, land-cover, LAI, groundwater, and boundary-condition setting while allowing individual processes to be assessed against their own reference. Dedicated hydrodynamic benchmarks, including the Ritter dam-break and non-breaking wave, use geometries designed for those solutions.
+
+<p align="center">
+  <img src={useBaseUrl('/img/validation/vtilted-catchment.svg')} width="720" alt="Oblique view of the V-tilted catchment: two planes sloping 0.05 toward a central two-cell channel, all falling 0.02 to the outlet on the north edge, with the common soil, land-cover, LAI and groundwater setting and the validation cases that use it" />
+</p>
+
+<p align="center">
+  <em>Figure 2. The shared V-tilted catchment, 81 by 50 cells of 20 m, with the outlet on the north edge. Several cases run on smaller grids with the same three zones, as the grey tags show.</em>
+</p>
 
 ## Validation cases
 

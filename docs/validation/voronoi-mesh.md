@@ -1,6 +1,7 @@
 ---
 title: Voronoi Mesh Validation
 ---
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # Voronoi Mesh Validation
 
@@ -12,6 +13,14 @@ The Voronoi finite-volume path is a separate mesh mode from the production
 raster D4 workflow. It uses exact polygon areas and edge topology, and can
 combine resolved 2D flow with a Neal-style subgrid channel graph for rivers
 that are narrower than the mesh.
+
+<p align="center">
+  <img src={useBaseUrl('/img/validation/grid-voronoi-subgrid.svg')} width="720" alt="Two panels compare the regular D4 grid and the Voronoi mesh: their cells and links, routing methods and optional modules; below, the subgrid options on each, with the routing each one needs" />
+</p>
+
+<p align="center">
+  <em>Figure 1. The regular grid and the Voronoi mesh, which also runs quadtrees. On the mesh, the optional modules run on the CPU (NumPy) engine, without the mode 3 classification.</em>
+</p>
 
 ## Current supported scope
 

@@ -1,6 +1,7 @@
 ---
 title: Validación de la malla de Voronoi
 ---
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # Validación de la malla de Voronoi
 
@@ -12,6 +13,14 @@ La vía de volúmenes finitos de Voronoi es un modo de malla distinto del flujo
 de trabajo ráster D4 de producción. Usa las áreas exactas de los polígonos y la
 topología de las aristas, y puede combinar el flujo 2D resuelto con un grafo de
 canales submalla al estilo de Neal para ríos más estrechos que la malla.
+
+<p align="center">
+  <img src={useBaseUrl('/img/validation/grid-voronoi-subgrid.es.svg')} width="720" alt="Dos paneles comparan la malla ráster regular D4 y la malla de Voronoi: celdas y enlaces, métodos de enrutamiento y módulos opcionales; debajo, las opciones de submalla de cada una, con el enrutamiento que exige cada opción" />
+</p>
+
+<p align="center">
+  <em>Figura 1. La malla ráster regular y la malla de Voronoi, que también ejecuta quadtrees. En la malla, los módulos opcionales se ejecutan en el motor de CPU (NumPy), sin la clasificación del modo 3.</em>
+</p>
 
 ## Alcance admitido actualmente {#current-supported-scope}
 

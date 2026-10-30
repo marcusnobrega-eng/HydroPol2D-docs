@@ -25,9 +25,25 @@ HydroPol2D se evalúa mediante una suite de validación que contrasta cada módu
 
 Los casos útiles para diagnóstico, pero sin una referencia apropiada, permanecen visibles como diagnósticos y no se usan como evidencia de aceptación.
 
+<p align="center">
+  <img src={useBaseUrl('/img/validation/validation-logic.es.svg')} width="720" alt="Flujo de un módulo a su caso de validación y a la comparación con una referencia de uno de los cinco tipos de evidencia, que termina en evidencia de aceptación o en diagnóstico; debajo, la cuenca sintética en V, los benchmarks hidrodinámicos dedicados y dos casos paso a paso" />
+</p>
+
+<p align="center">
+  <em>Figura 1. Cómo se valida un módulo. Un caso solo cuenta como evidencia de aceptación cuando tiene una referencia adecuada y cumple los umbrales; si no, sigue visible como diagnóstico.</em>
+</p>
+
 ## Cuenca sintética en V
 
 Muchos casos hidrológicos y de aguas subterráneas usan la cuenca sintética en V. Proporciona un DEM, suelo, cobertura del suelo, IAF, aguas subterráneas y condiciones de contorno comunes, mientras cada proceso se evalúa frente a su propia referencia. Los benchmarks hidrodinámicos dedicados, incluida la rotura de presa de Ritter y la onda no rompiente, usan geometrías específicas.
+
+<p align="center">
+  <img src={useBaseUrl('/img/validation/vtilted-catchment.es.svg')} width="720" alt="Vista oblicua de la cuenca en V: dos laderas con pendiente 0,05 hacia un canal central de dos celdas, todo bajando 0,02 hasta la salida en el borde norte, con la configuración común de suelo, cobertura, IAF y agua subterránea y los casos de validación que la usan" />
+</p>
+
+<p align="center">
+  <em>Figura 2. La cuenca sintética en V, de 81 por 50 celdas de 20 m, con la salida en el borde norte. Varios casos se ejecutan en mallas ráster más pequeñas con las mismas tres zonas, como indican las etiquetas grises.</em>
+</p>
 
 ## Casos de validación
 
