@@ -5405,7 +5405,7 @@ z
     </g>
    </g>
    <g id="text_22">
-    <!-- modo 1: en la malla regular y en la malla de Voronoi -->
+    <!-- modo 1: en la malla regular y en las de Voronoi y quadtree -->
     <g style="fill: #1e2226" transform="translate(24.48 443.4405) scale(0.095 -0.095)">
      <defs>
       <path id="Helvetica-Light-37" d="M 115 4608 
@@ -5454,27 +5454,33 @@ z
      <use xlink:href="#Helvetica-Light-3" transform="translate(1437.484375 0)"/>
      <use xlink:href="#Helvetica-Light-4d" transform="translate(1465.28125 0)"/>
      <use xlink:href="#Helvetica-Light-42" transform="translate(1487.484375 0)"/>
-     <use xlink:href="#Helvetica-Light-3" transform="translate(1543.078125 0)"/>
-     <use xlink:href="#Helvetica-Light-4e" transform="translate(1570.875 0)"/>
-     <use xlink:href="#Helvetica-Light-42" transform="translate(1654.171875 0)"/>
-     <use xlink:href="#Helvetica-Light-4d" transform="translate(1709.765625 0)"/>
-     <use xlink:href="#Helvetica-Light-4d" transform="translate(1731.96875 0)"/>
-     <use xlink:href="#Helvetica-Light-42" transform="translate(1754.171875 0)"/>
-     <use xlink:href="#Helvetica-Light-3" transform="translate(1809.765625 0)"/>
-     <use xlink:href="#Helvetica-Light-45" transform="translate(1837.5625 0)"/>
-     <use xlink:href="#Helvetica-Light-46" transform="translate(1898.65625 0)"/>
-     <use xlink:href="#Helvetica-Light-3" transform="translate(1954.25 0)"/>
-     <use xlink:href="#Helvetica-Light-37" transform="translate(1982.046875 0)"/>
-     <use xlink:href="#Helvetica-Light-50" transform="translate(2037.640625 0)"/>
-     <use xlink:href="#Helvetica-Light-53" transform="translate(2093.234375 0)"/>
-     <use xlink:href="#Helvetica-Light-50" transform="translate(2124.734375 0)"/>
-     <use xlink:href="#Helvetica-Light-4f" transform="translate(2180.328125 0)"/>
-     <use xlink:href="#Helvetica-Light-50" transform="translate(2235.921875 0)"/>
-     <use xlink:href="#Helvetica-Light-4a" transform="translate(2289.71875 0)"/>
+     <use xlink:href="#Helvetica-Light-54" transform="translate(1543.078125 0)"/>
+     <use xlink:href="#Helvetica-Light-3" transform="translate(1593.078125 0)"/>
+     <use xlink:href="#Helvetica-Light-45" transform="translate(1620.875 0)"/>
+     <use xlink:href="#Helvetica-Light-46" transform="translate(1681.96875 0)"/>
+     <use xlink:href="#Helvetica-Light-3" transform="translate(1737.5625 0)"/>
+     <use xlink:href="#Helvetica-Light-37" transform="translate(1765.359375 0)"/>
+     <use xlink:href="#Helvetica-Light-50" transform="translate(1820.953125 0)"/>
+     <use xlink:href="#Helvetica-Light-53" transform="translate(1876.546875 0)"/>
+     <use xlink:href="#Helvetica-Light-50" transform="translate(1908.046875 0)"/>
+     <use xlink:href="#Helvetica-Light-4f" transform="translate(1963.640625 0)"/>
+     <use xlink:href="#Helvetica-Light-50" transform="translate(2019.234375 0)"/>
+     <use xlink:href="#Helvetica-Light-4a" transform="translate(2073.03125 0)"/>
+     <use xlink:href="#Helvetica-Light-3" transform="translate(2095.234375 0)"/>
+     <use xlink:href="#Helvetica-Light-5a" transform="translate(2123.03125 0)"/>
+     <use xlink:href="#Helvetica-Light-3" transform="translate(2173.03125 0)"/>
+     <use xlink:href="#Helvetica-Light-52" transform="translate(2200.828125 0)"/>
+     <use xlink:href="#Helvetica-Light-56" transform="translate(2261.921875 0)"/>
+     <use xlink:href="#Helvetica-Light-42" transform="translate(2317.515625 0)"/>
+     <use xlink:href="#Helvetica-Light-45" transform="translate(2373.109375 0)"/>
+     <use xlink:href="#Helvetica-Light-55" transform="translate(2434.203125 0)"/>
+     <use xlink:href="#Helvetica-Light-53" transform="translate(2462 0)"/>
+     <use xlink:href="#Helvetica-Light-46" transform="translate(2493.5 0)"/>
+     <use xlink:href="#Helvetica-Light-46" transform="translate(2549.09375 0)"/>
     </g>
    </g>
    <g id="text_23">
-    <!-- modo 3: solo en la malla regular; la de Voronoi lo rechaza -->
+    <!-- modo 3: solo en la malla regular; las otras lo rechazan -->
     <g style="fill: #1e2226" transform="translate(24.48 455.6805) scale(0.095 -0.095)">
      <defs>
       <path id="Helvetica-Light-1c" d="M 1120 -192 
@@ -5546,28 +5552,25 @@ z
      <use xlink:href="#Helvetica-Light-3" transform="translate(1459.6875 0)"/>
      <use xlink:href="#Helvetica-Light-4d" transform="translate(1487.484375 0)"/>
      <use xlink:href="#Helvetica-Light-42" transform="translate(1509.6875 0)"/>
-     <use xlink:href="#Helvetica-Light-3" transform="translate(1565.28125 0)"/>
-     <use xlink:href="#Helvetica-Light-45" transform="translate(1593.078125 0)"/>
-     <use xlink:href="#Helvetica-Light-46" transform="translate(1654.171875 0)"/>
-     <use xlink:href="#Helvetica-Light-3" transform="translate(1709.765625 0)"/>
-     <use xlink:href="#Helvetica-Light-37" transform="translate(1737.5625 0)"/>
-     <use xlink:href="#Helvetica-Light-50" transform="translate(1793.15625 0)"/>
-     <use xlink:href="#Helvetica-Light-53" transform="translate(1848.75 0)"/>
-     <use xlink:href="#Helvetica-Light-50" transform="translate(1880.25 0)"/>
-     <use xlink:href="#Helvetica-Light-4f" transform="translate(1935.84375 0)"/>
-     <use xlink:href="#Helvetica-Light-50" transform="translate(1991.4375 0)"/>
-     <use xlink:href="#Helvetica-Light-4a" transform="translate(2045.234375 0)"/>
-     <use xlink:href="#Helvetica-Light-3" transform="translate(2067.4375 0)"/>
-     <use xlink:href="#Helvetica-Light-4d" transform="translate(2095.234375 0)"/>
-     <use xlink:href="#Helvetica-Light-50" transform="translate(2117.4375 0)"/>
-     <use xlink:href="#Helvetica-Light-3" transform="translate(2173.03125 0)"/>
-     <use xlink:href="#Helvetica-Light-53" transform="translate(2200.828125 0)"/>
-     <use xlink:href="#Helvetica-Light-46" transform="translate(2232.328125 0)"/>
-     <use xlink:href="#Helvetica-Light-44" transform="translate(2287.921875 0)"/>
-     <use xlink:href="#Helvetica-Light-49" transform="translate(2343.515625 0)"/>
-     <use xlink:href="#Helvetica-Light-42" transform="translate(2399.109375 0)"/>
-     <use xlink:href="#Helvetica-Light-5b" transform="translate(2454.703125 0)"/>
-     <use xlink:href="#Helvetica-Light-42" transform="translate(2504.703125 0)"/>
+     <use xlink:href="#Helvetica-Light-54" transform="translate(1565.28125 0)"/>
+     <use xlink:href="#Helvetica-Light-3" transform="translate(1615.28125 0)"/>
+     <use xlink:href="#Helvetica-Light-50" transform="translate(1643.078125 0)"/>
+     <use xlink:href="#Helvetica-Light-55" transform="translate(1698.671875 0)"/>
+     <use xlink:href="#Helvetica-Light-53" transform="translate(1726.46875 0)"/>
+     <use xlink:href="#Helvetica-Light-42" transform="translate(1759.765625 0)"/>
+     <use xlink:href="#Helvetica-Light-54" transform="translate(1815.359375 0)"/>
+     <use xlink:href="#Helvetica-Light-3" transform="translate(1865.359375 0)"/>
+     <use xlink:href="#Helvetica-Light-4d" transform="translate(1893.15625 0)"/>
+     <use xlink:href="#Helvetica-Light-50" transform="translate(1915.359375 0)"/>
+     <use xlink:href="#Helvetica-Light-3" transform="translate(1970.953125 0)"/>
+     <use xlink:href="#Helvetica-Light-53" transform="translate(1998.75 0)"/>
+     <use xlink:href="#Helvetica-Light-46" transform="translate(2030.25 0)"/>
+     <use xlink:href="#Helvetica-Light-44" transform="translate(2085.84375 0)"/>
+     <use xlink:href="#Helvetica-Light-49" transform="translate(2141.4375 0)"/>
+     <use xlink:href="#Helvetica-Light-42" transform="translate(2197.03125 0)"/>
+     <use xlink:href="#Helvetica-Light-5b" transform="translate(2252.625 0)"/>
+     <use xlink:href="#Helvetica-Light-42" transform="translate(2302.625 0)"/>
+     <use xlink:href="#Helvetica-Light-4f" transform="translate(2358.21875 0)"/>
     </g>
    </g>
    <g id="text_24">

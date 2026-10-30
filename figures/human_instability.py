@@ -6,7 +6,7 @@ friction), then the inputs and where each mode runs. Right: the two implemented 
 of flag_human_instability:
 
 - mode 1, the force-balance risk index: continuous ratio R = F_hyd / F_fric, clipped to
-  [0, 1]; it runs on the regular grid and on the Voronoi mesh;
+  [0, 1]; it runs on the regular grid and on Voronoi and quadtree meshes;
 - mode 3, the force-balance classes: 0 stable, 1 slide, 2 topple, 3 drowning, on the
   local DEM slope of each cell and the person's height. The lift lever arm uses the
   tangent of the slope angle, and a dry cell (h = 0) is stable. A mesh run refuses it.
@@ -72,7 +72,7 @@ LABELS = {
                    "from the human-risk parameters of the model",
                    r"water density $\rho_{\mathrm{w}}$, gravity $g$; DEM slope $\beta$ in mode 3"],
         "runs_title": "Where each mode runs",
-        "runs": ["mode 1: the regular grid and the Voronoi mesh",
+        "runs": ["mode 1: the regular grid, Voronoi and quadtree meshes",
                  "mode 3: the regular grid only; a mesh run refuses it",
                  "mode 2 is not implemented"],
         "m1_title": "Mode 1: force-balance risk index",
@@ -115,8 +115,8 @@ LABELS = {
                    r"densidade da água $\rho_{\mathrm{w}}$, gravidade $g$",
                    r"no modo 3, a declividade $\beta$ do DEM"],
         "runs_title": "Onde cada modo roda",
-        "runs": ["modo 1: na grade regular e na malha Voronoi",
-                 "modo 3: só na grade regular; a malha Voronoi o recusa",
+        "runs": ["modo 1: na grade regular e nas malhas Voronoi e quadtree",
+                 "modo 3: só na grade regular; as malhas o recusam",
                  "o modo 2 não está implementado"],
         "m1_title": "Modo 1: risco por equilíbrio de forças",
         "m1_names": ["peso", "empuxo", "atrito", "arrasto", "razão"],
@@ -158,8 +158,8 @@ LABELS = {
                    r"densidad del agua $\rho_{\mathrm{w}}$, gravedad $g$",
                    r"en el modo 3, la pendiente $\beta$ del DEM"],
         "runs_title": "Dónde se ejecuta cada modo",
-        "runs": ["modo 1: en la malla regular y en la malla de Voronoi",
-                 "modo 3: solo en la malla regular; la de Voronoi lo rechaza",
+        "runs": ["modo 1: en la malla regular y en las de Voronoi y quadtree",
+                 "modo 3: solo en la malla regular; las otras lo rechazan",
                  "el modo 2 no está implementado"],
         "m1_title": "Modo 1: riesgo por equilibrio de fuerzas",
         "m1_names": ["peso", "flotabilidad", "fricción", "arrastre", "razón"],
