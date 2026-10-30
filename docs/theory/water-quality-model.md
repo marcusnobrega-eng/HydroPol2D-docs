@@ -1,6 +1,7 @@
 ---
 title: Water Quality Model
 ---
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # Water Quality Model
 
@@ -14,6 +15,14 @@ The model tracks:
 - pollutant removal due to flow (wash-off),
 - redistribution between neighboring cells,
 - export through outlet boundaries.
+
+<p align="center">
+  <img src={useBaseUrl('/img/theory/water-quality.svg')} width="720" alt="Three panels. 1: the build-up curve, which rises towards the maximum C1 over the antecedent dry days and falls by wash-off during the storm. 2: one cell whose pollutant mass leaves with the water through each outflow face. 3: a grid of cells shaded by pollutant mass, with fluxes that carry the mass to the outlet, beside the mass balance and the concentration equations" />
+</p>
+
+<p align="center">
+  <em>Figure 1. The three steps of the mass-based water-quality model. Build-up in dry weather sets the starting mass, wash-off carries it out of each cell through the faces the water leaves by, and transport moves it from cell to cell to the outlet.</em>
+</p>
 
 The governing variable is:
 

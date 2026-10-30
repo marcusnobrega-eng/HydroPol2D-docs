@@ -1,6 +1,7 @@
 ---
 title: Modelo de Calidad del Agua
 ---
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # Modelo de Calidad del Agua
 
@@ -12,6 +13,14 @@ El modelo rastrea:
 - eliminación de contaminantes debido al flujo (lavado),
 - redistribución entre células vecinas,
 - exportar a través de fronteras de salida.
+
+<p align="center">
+  <img src={useBaseUrl('/img/theory/water-quality.es.svg')} width="720" alt="Tres paneles. 1: la curva de acumulación, que sube hacia el máximo C1 durante los días secos antecedentes y baja por el lavado durante la tormenta. 2: una celda cuya masa de contaminante sale con el agua por cada cara de salida. 3: una malla de celdas sombreadas según la masa de contaminante, con flujos que llevan la masa hasta la salida, junto al balance de masa y las ecuaciones de concentración" />
+</p>
+
+<p align="center">
+  <em>Figura 1. Los tres pasos del modelo de calidad del agua basado en masa. La acumulación en tiempo seco fija la masa inicial, el lavado la saca de cada celda por las caras por donde sale el agua, y el transporte la lleva de celda en celda hasta la salida.</em>
+</p>
 
 La variable gobernante es:
 $$

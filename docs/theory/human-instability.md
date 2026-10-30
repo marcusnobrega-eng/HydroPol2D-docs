@@ -1,6 +1,7 @@
 ---
 title: Human Instability
 ---
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # Human Instability
 
@@ -26,6 +27,14 @@ The human-instability module reads the hydrodynamic state from HydroPol2D:
 - and user-supplied human geometry and resistance parameters.
 
 This means the instability estimates are diagnostic products of the coupled hydrologic-hydrodynamic simulation rather than a standalone hydraulic solver.
+
+<p align="center">
+  <img src={useBaseUrl('/img/theory/human-instability.svg')} width="720" alt="Left: a person standing in water on a slope, with the depth, the speed, the slope and the drag, buoyancy, weight and friction forces, then the inputs of the module and where each mode runs. Right: the mode 1 equations with the risk scale from 0 to 1, and the mode 3 slide, topple and drowning conditions, each with a pictogram" />
+</p>
+
+<p align="center">
+  <em>Figure 1. The forces on a person in flowing water and the two implemented modes. Mode 1 gives a risk index from 0 to 1, and mode 3 gives a class (stable, slide, topple or drowning) on the regular grid only.</em>
+</p>
 
 ---
 
