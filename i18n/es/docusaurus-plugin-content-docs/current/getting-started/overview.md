@@ -1,6 +1,7 @@
 ---
 title: Resumen
 ---
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # HydroPol2D
 
@@ -18,6 +19,14 @@ El código actual incluye:
 - transporte de calidad del agua y exportación en la salida;
 - diagnósticos opcionales de inestabilidad humana.
 
+<p align="center">
+  <img src={useBaseUrl('/img/getting-started/questions-modules-outputs.es.svg')} width="720" alt="Seis filas, cada una con una pregunta, el módulo de HydroPol2D que la responde, con su estado estándar u opcional y su evidencia de validación, y la salida en mapa o serie de tiempo que la muestra, sobre una leyenda y una nota acerca de lo que muestra Results" />
+</p>
+
+<p align="center">
+  <em>Figura 1. Preguntas que HydroPol2D responde, el módulo que responde cada una, con su estado, y la salida que la muestra. El estado sigue las páginas de validación.</em>
+</p>
+
 ## Cómo avanza una simulación en HydroPol2D
 
 A nivel general, HydroPol2D avanza el sistema acoplado en este orden:
@@ -31,11 +40,27 @@ A nivel general, HydroPol2D avanza el sistema acoplado en este orden:
 
 Esa secuencia es la que conecta los módulos hidrológicos, subterráneos, hidrodinámicos y diagnósticos en un solo modelo.
 
+<p align="center">
+  <img src={useBaseUrl('/img/getting-started/time-step-order.es.svg')} width="720" alt="Seis pasos de un paso de tiempo superficial en ciclo: forzantes; nieve, dosel y suelo; recarga y ascenso capilar; nivel freático; enrutamiento superficial; calidad del agua y riesgo. Al lado, el reloj superficial con su paso de Courant y el reloj del agua subterránea con sus tres disparadores; debajo, una franja con los pasos superficiales y las actualizaciones del flujo lateral a lo largo de una simulación" />
+</p>
+
+<p align="center">
+  <em>Figura 2. El orden de un paso de tiempo superficial, el reloj superficial que fija su duración y el reloj del agua subterránea que decide cuándo corre el flujo lateral. La franja inferior muestra los dos relojes a lo largo de una simulación, sin escala.</em>
+</p>
+
 ## Interfaz de escritorio
 
 [HydroPol2D Studio](../studio/overview) es la interfaz de escritorio de HydroPol2D-Python: construye
 un modelo a partir de un mapa o de sus propios archivos, lo configura paso a paso, lo ejecuta y
 muestra los resultados.
+
+<p align="center">
+  <img src={useBaseUrl('/img/getting-started/data-to-results.es.svg')} width="720" alt="Mapas, tablas de parámetros, forzantes y configuración alimentan un caso, un archivo de modelo de HydroPol2D Studio o un libro de HydroPol2D-MATLAB; el caso se ejecuta en Studio o en MATLAB, y las salidas son mapas, series de tiempo, animaciones y un paquete de resultados" />
+</p>
+
+<p align="center">
+  <em>Figura 3. De los datos a los resultados. Las mismas entradas forman un caso, un archivo de modelo de Studio o un libro de MATLAB, y cada ejecución escribe mapas, series de tiempo y animaciones.</em>
+</p>
 
 ## Cómo leer la documentación
 

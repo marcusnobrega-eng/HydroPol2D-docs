@@ -1,6 +1,7 @@
 ---
 title: Instabilidade Humana
 ---
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # Instabilidade Humana
 
@@ -24,6 +25,14 @@ O módulo de instabilidade humana lê o estado hidrodinâmico de HydroPol2D:
 - e parâmetros de geometria e resistência humanos fornecidos pelo usuário.
 
 Isso significa que as estimativas de instabilidade são produtos de diagnóstico da simulação hidrológica-hidrodinâmica acoplada, em vez de um solucionador hidráulico independente.
+
+<p align="center">
+  <img src={useBaseUrl('/img/theory/human-instability.pt.svg')} width="720" alt="À esquerda, uma pessoa de pé na água sobre um declive, com a profundidade, a velocidade, a declividade e as forças de arrasto, empuxo, peso e atrito, seguidas das entradas do módulo e de onde cada modo roda. À direita, as equações do modo 1 com a escala de risco de 0 a 1, e as condições de deslizamento, tombamento e afogamento do modo 3, cada uma com um pictograma" />
+</p>
+
+<p align="center">
+  <em>Figura 1. As forças sobre uma pessoa no escoamento e os dois modos implementados. O modo 1 dá um índice de risco de 0 a 1, e o modo 3 dá uma classe (estável, deslizamento, tombamento ou afogamento) só na grade regular.</em>
+</p>
 
 ---
 

@@ -1,6 +1,7 @@
 ---
 title: Modelo de qualidade da água
 ---
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # Modelo de qualidade da água
 
@@ -12,6 +13,14 @@ O modelo rastreia:
 - remoção de poluentes devido ao fluxo (lavagem),
 - redistribuição entre células vizinhas,
 - exportar através dos limites de saída.
+
+<p align="center">
+  <img src={useBaseUrl('/img/theory/water-quality.pt.svg')} width="720" alt="Três painéis. 1: a curva de acúmulo, que sobe em direção ao máximo C1 ao longo dos dias secos antecedentes e cai pela lavagem durante a chuva. 2: uma célula cuja massa de poluente sai com a água por cada face de saída. 3: uma grade de células sombreadas pela massa de poluente, com fluxos que levam a massa ao exutório, ao lado do balanço de massa e das equações de concentração" />
+</p>
+
+<p align="center">
+  <em>Figura 1. As três etapas do modelo de qualidade da água baseado em massa. O acúmulo em tempo seco define a massa inicial, a lavagem a retira de cada célula pelas faces por onde a água sai, e o transporte a leva de célula em célula até o exutório.</em>
+</p>
 
 A variável governante é:
 $$

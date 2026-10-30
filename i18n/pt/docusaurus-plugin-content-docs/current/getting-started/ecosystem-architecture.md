@@ -1,12 +1,21 @@
 ---
 title: Arquitetura do ecossistema
 ---
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # Arquitetura do ecossistema
 
 O HydroPol2D usa um único pacote de malha versionado nas suas implementações em
 MATLAB e em Python. Isso evita que cada solver reconstrua a geometria ou
 interprete as propriedades da malha de forma diferente.
+
+<p align="center">
+  <img src={useBaseUrl('/img/getting-started/ecosystem.pt.svg')} width="720" alt="O HydroBathyDEM gera o pacote de malha, com o protótipo arquivado HydroPolMesh apontando para ele; o pacote contém a malha UGRID, os pesos de sobreposição com o raster, as tabelas subgrade e as camadas GeoPackage e declara os itens do contrato de malha; o HydroPol2D-Python e o HydroPol2D-MATLAB o validam ao carregar, e uma lista mostra o que os dois rejeitam" />
+</p>
+
+<p align="center">
+  <em>Figura 1. O HydroBathyDEM grava um único pacote de malha versionado, que o HydroPol2D-Python e o HydroPol2D-MATLAB validam e usam. Um pacote que falha numa verificação é rejeitado, e nenhum dos solvers reconstrói propriedades ausentes.</em>
+</p>
 
 ## Responsabilidades dos repositórios {#repository-responsibilities}
 

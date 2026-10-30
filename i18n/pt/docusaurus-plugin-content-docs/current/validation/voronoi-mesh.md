@@ -1,6 +1,7 @@
 ---
 title: Validação da malha Voronoi
 ---
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # Validação da malha Voronoi
 
@@ -12,6 +13,14 @@ O caminho de volumes finitos em malha Voronoi é um modo de malha separado do fl
 de produção raster D4. Ele usa as áreas exatas dos polígonos e a topologia das arestas,
 e pode combinar o escoamento 2D resolvido com um grafo de canais subgrade no estilo de
 Neal para rios mais estreitos que a malha.
+
+<p align="center">
+  <img src={useBaseUrl('/img/validation/grid-voronoi-subgrid.pt.svg')} width="720" alt="Dois painéis comparam a grade regular D4 e a malha Voronoi: células e ligações, métodos de roteamento e módulos opcionais; abaixo, as opções de subgrade de cada uma, com o roteamento que cada opção exige" />
+</p>
+
+<p align="center">
+  <em>Figura 1. A grade regular e a malha Voronoi, que também roda quadtrees. Na malha, os módulos opcionais rodam no motor de CPU (NumPy), sem a classificação do modo 3.</em>
+</p>
 
 ## Escopo suportado atualmente {#current-supported-scope}
 

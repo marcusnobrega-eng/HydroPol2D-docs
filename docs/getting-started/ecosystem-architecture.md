@@ -1,12 +1,21 @@
 ---
 title: Ecosystem Architecture
 ---
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # Ecosystem Architecture
 
 HydroPol2D uses one versioned mesh package across its MATLAB and Python
 implementations. This prevents each solver from rebuilding geometry or
 interpreting mesh properties differently.
+
+<p align="center">
+  <img src={useBaseUrl('/img/getting-started/ecosystem.svg')} width="720" alt="HydroBathyDEM generates the mesh package, with the archived HydroPolMesh prototype pointing to it; the package holds the UGRID mesh, raster overlap weights, subgrid tables and GeoPackage layers and declares the mesh contract items; HydroPol2D-Python and HydroPol2D-MATLAB validate it on load, and a list shows what both reject" />
+</p>
+
+<p align="center">
+  <em>Figure 1. HydroBathyDEM writes one versioned mesh package, which HydroPol2D-Python and HydroPol2D-MATLAB both validate and run on. A package that fails a check is rejected, and neither solver rebuilds missing properties.</em>
+</p>
 
 ## Repository responsibilities
 

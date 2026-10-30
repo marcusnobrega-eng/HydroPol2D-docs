@@ -1,6 +1,7 @@
 ---
 title: Modelo Hidrodinâmico
 ---
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # Modelo Hidrodinâmico
 
@@ -12,6 +13,15 @@ HydroPol2D inclui atualmente cinco famílias principais de roteamento de superf�
 - autômatos celulares.
 
 Apenas uma destas principais formulações de roteamento deve estar ativa por vez. O código atual impõe essa exclusividade da família de roteamento por meio dos sinalizadores de modelo correspondentes. O suporte D8 continua a ser uma via secundária de âmbito limitado.
+
+<p align="center">
+  <img src={useBaseUrl('/img/theory/routing-families.pt.svg')} width="720" alt="Tabela das cinco famílias de roteamento (inercial local, momento completo, difusivo D4, cinemático D4 e autômatos celulares) diante dos cinco termos da equação do momento em águas rasas, com um ponto cheio em cada termo que a família mantém e a equação que ela resolve" />
+</p>
+
+<p align="center">
+  <em>Figura 1. As cinco famílias de roteamento e os termos da equação do momento em águas rasas que cada uma mantém. Apenas uma família fica ativa em cada execução.</em>
+</p>
+
 ## 1. Roteamento de fluxo inercial local
 
 ### 1.1 Justificativa geral
@@ -78,6 +88,14 @@ onde:
 - $n$ é o coeficiente de rugosidade de Manning $[\mathrm{T}\,\mathrm{L}^{-1/3}]$
 
 Esta formulação negligencia a aceleração convectiva, mas mantém o equilíbrio hidráulico dominante entre aceleração local, gradiente de pressão e resistência ao atrito do leito.
+
+<p align="center">
+  <img src={useBaseUrl('/img/theory/local-inertial.pt.svg')} width="720" alt="Duas células vizinhas vistas de lado, com a cota do leito, a profundidade, a superfície da água, a profundidade na face e a inclinação; a grade vista de cima, com as profundidades nos centros das células e as descargas nas faces; e as cinco etapas de um passo de tempo inercial local, da superfície da água à atualização de continuidade" />
+</p>
+
+<p align="center">
+  <em>Figura 2. O solucionador inercial local em uma face e ao longo de um passo de tempo, na ordem em que o código o executa. Cada etapa indica as seções desta página que a descrevem.</em>
+</p>
 
 ---
 
@@ -673,6 +691,14 @@ O modelo full-momentum suporta a mesma arquitetura prática de condições de co
 - limites impostos do hidrograma de afluência,
 - limites prescritos do hidrograma de estágio,
 - reservatório e estruturas internas de controle da curva nominal.
+
+<p align="center">
+  <img src={useBaseUrl('/img/theory/boundaries-structures.pt.svg')} width="720" alt="Vista em planta de uma bacia esquemática em grade regular, com um hidrograma de entrada, um reservatório atrás de uma barragem, um bueiro sob uma via, uma bacia de detenção, um hidrograma de nível, um exutório e paredes fechadas, cada um numerado e explicado à direita, e um quadro com os contornos das águas subterrâneas no mesmo domínio" />
+</p>
+
+<p align="center">
+  <em>Figura 3. Onde a água entra, sai ou é controlada em um domínio do modelo. O terreno, os rios, a via e a bacia são fictícios.</em>
+</p>
 
 Para fronteiras fechadas, o fluxo de massa normal é zero, mas os efeitos da pressão de parede são contabilizados na atualização do momento. Isto é importante para um comportamento estável próximo às bordas do domínio e células inativas.
 Os fluxos de saída são convertidos em um sumidouro de volume e removidos do armazenamento de água local, sujeitos às restrições de água disponível.

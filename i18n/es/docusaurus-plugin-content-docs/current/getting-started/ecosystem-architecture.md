@@ -1,12 +1,21 @@
 ---
 title: Arquitectura del ecosistema
 ---
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # Arquitectura del ecosistema
 
 HydroPol2D usa un único paquete de malla versionado en sus implementaciones de
 MATLAB y Python. Esto evita que cada solucionador reconstruya la geometría o
 interprete de forma distinta las propiedades de la malla.
+
+<p align="center">
+  <img src={useBaseUrl('/img/getting-started/ecosystem.es.svg')} width="720" alt="HydroBathyDEM genera el paquete de malla, con el prototipo archivado HydroPolMesh apuntando a él; el paquete contiene la malla UGRID, los pesos de superposición con el ráster, las tablas de submalla y las capas GeoPackage y declara los elementos del contrato de malla; HydroPol2D-Python y HydroPol2D-MATLAB lo validan al cargarlo, y una lista muestra lo que ambos rechazan" />
+</p>
+
+<p align="center">
+  <em>Figura 1. HydroBathyDEM escribe un único paquete de malla versionado, que HydroPol2D-Python y HydroPol2D-MATLAB validan y usan. Un paquete que falla una verificación se rechaza, y ningún solucionador reconstruye las propiedades que faltan.</em>
+</p>
 
 ## Responsabilidades de los repositorios {#repository-responsibilities}
 

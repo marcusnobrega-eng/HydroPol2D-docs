@@ -1,6 +1,7 @@
 ---
 title: Modelo Hidrológico
 ---
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # Modelo Hidrológico
 
@@ -683,6 +684,14 @@ Restrições adicionais são aplicadas:
 
 Assim, a infiltração é simultaneamente **limitada pelo fornecimento**, **limitada pela capacidade** e **limitada pelo armazenamento**. No modo em camadas, a aceitação é adicionalmente limitada pelo explícito déficit de armazenamento próximo à superfície antes que a água possa continuar a escoar para baixo através das camadas vadosas mais profundas.
 
+<p align="center">
+  <img src={useBaseUrl('/img/theory/infiltration-limits.pt.svg')} width="720" alt="Três colunas de solo de uma célula, cada uma um caso em que um limite é o menor: chuva fraca sobre solo seco, limitada pelo fornecimento; lâmina alta sobre solo de baixa condutividade, limitada pela capacidade de Darcy; e lençol freático raso, limitado pelo espaço de armazenamento; sob cada coluna, a definição desse limite e a origem dos seus termos" />
+</p>
+
+<p align="center">
+  <em>Figura 1. Os três limites da infiltração, cada um num caso em que é o menor (esquema, fora de escala). A água que não infiltra fica na superfície e é roteada para as células vizinhas.</em>
+</p>
+
 ---
 
 ### 4.7 Atualização de armazenamento Vadose
@@ -709,6 +718,14 @@ A expressão escalar acima é, portanto, o resumo conceitual de uma atualizaçã
 ## 5. Acúmulo, derretimento e sublimação de neve {#5-snow-accumulation-melt-and-sublimation}
 
 Quando a modelagem de neve está ativa, o HydroPol2D acompanha o equivalente de água da neve (SWE), a densidade da neve e a profundidade física da neve em cada célula ativa da grade. Os parâmetros de neve são lidos da tabela de parâmetros LULC e atribuídos à grade a partir do `LULC_Index`. O caminho interno das forçantes meteorológicas fornece a temperatura média do ar, a temperatura mínima do ar e a velocidade do vento. Por isso, as simulações de neve exigem `flag_ETP = 1`, `flag_input_ETP_map = 0` e uma planilha meteorológica que cubra o período da simulação.
+
+<p align="center">
+  <img src={useBaseUrl('/img/theory/snow.pt.svg')} width="720" alt="À esquerda, um passo de tempo numa célula: a temperatura do ar separa a precipitação em neve e chuva; a neve forma um manto que perde degelo para a água superficial e sublimação para a atmosfera, e a chuva passa pelo armazenamento no dossel quando a interceptação está ativa. À direita, as equações da Seção 5. Embaixo, à esquerda, uma ilustração da temperatura do ar, da precipitação e do SWE com forçantes sintéticas" />
+</p>
+
+<p align="center">
+  <em>Figura 2. Chuva ou neve, armazenamento, degelo e sublimação numa célula. Só a chuva entra no armazenamento do dossel, o degelo vai direto para a água superficial, e o painel de baixo usa forçantes sintéticas, não saída do modelo.</em>
+</p>
 
 ---
 
