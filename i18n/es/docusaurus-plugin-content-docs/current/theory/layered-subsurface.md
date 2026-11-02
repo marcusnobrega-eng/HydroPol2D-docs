@@ -136,7 +136,7 @@ $$
 \Delta z = \frac{V}{\theta_{s,k} - \theta_k}
 $$
 
-donde $\theta_{s,k}$ y $\theta_k$ son el contenido de agua a saturación y el contenido de agua actual de la capa $k$. El agua que ya está en esa capa permanece en ella (MMF `UPDATEWTD`). El ascenso pasa a la capa superior solo cuando la capa actual está llena, de modo que el redondeo no puede saltar una capa sin llenar. El agua sobrante cuando el nivel freático alcanza el terreno sale a la superficie como exfiltración (afloramiento).
+donde $\theta_{s,k}$ y $\theta_k$ son el contenido de agua a saturación y el contenido de agua actual de la capa $k$. El agua que ya está en esa parte de la capa permanece allí y pasa a ser agua saturada, de modo que solo hay que llenar el espacio poroso vacío $\theta_{s,k} - \theta_k$. Es el ascenso del nivel freático del esquema de agua subterránea MMF (Miguez-Macho et al., 2007), que Noah-MP hace en la rutina `UPDATEWTD`. El ascenso pasa a la capa superior solo cuando la capa actual está llena, de modo que el redondeo no puede saltar una capa sin llenar. El agua sobrante cuando el nivel freático alcanza el terreno sale a la superficie como exfiltración (afloramiento).
 
 ### 4.2 Descenso del nivel freático {#42-falling-water-table}
 

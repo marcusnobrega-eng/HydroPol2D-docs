@@ -136,7 +136,7 @@ $$
 \Delta z = \frac{V}{\theta_{s,k} - \theta_k}
 $$
 
-A água que já estava nessa camada permanece nela (MMF `UPDATEWTD`). A elevação só passa para a camada de cima depois que a camada atual fica cheia, de modo que erros de arredondamento não pulam uma camada ainda não preenchida. A água que sobra quando o lençol atinge o terreno sai para a superfície como exfiltração (afloramento).
+A água que já estava nessa parte da camada continua lá e passa a ser água saturada, de modo que só o espaço poroso vazio $\theta_{s,k} - \theta_k$ precisa ser preenchido. É a elevação do lençol do esquema de água subterrânea MMF (Miguez-Macho et al., 2007), que o Noah-MP faz na rotina `UPDATEWTD`. A elevação só passa para a camada de cima depois que a camada atual fica cheia, de modo que erros de arredondamento não pulam uma camada ainda não preenchida. A água que sobra quando o lençol atinge o terreno sai para a superfície como exfiltração (afloramento).
 
 ### 4.2 Rebaixamento do lençol freático {#42-falling-water-table}
 

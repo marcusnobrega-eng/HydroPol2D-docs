@@ -136,7 +136,7 @@ $$
 \Delta z = \frac{V}{\theta_{s,k} - \theta_k}
 $$
 
-The water already in that slot stays (MMF `UPDATEWTD`). The rise moves into the slot above only once the current slot is full, so round-off cannot skip an unfilled slot. Water left over when the table reaches the ground leaves as exfiltration (seepage) to the surface.
+The water already in that part of the slot stays there and becomes saturated water, so only the empty pore space $\theta_{s,k} - \theta_k$ has to be filled. This is the water-table rise of the MMF groundwater scheme (Miguez-Macho et al., 2007), which Noah-MP does in its `UPDATEWTD` routine. The rise moves into the slot above only once the current slot is full, so round-off cannot skip an unfilled slot. Water left over when the table reaches the ground leaves as exfiltration (seepage) to the surface.
 
 ### 4.2 Falling water table
 
