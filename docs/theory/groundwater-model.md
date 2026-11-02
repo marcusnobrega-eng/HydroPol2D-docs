@@ -56,7 +56,7 @@ On this page, "layered vadose" means the three soil stores of the default scheme
 
 ## 2. General Conceptual Structure
 
-The groundwater model is coupled with two clocks. Vadose-zone exchange is evaluated every surface-water time step because infiltration and evapotranspiration need fast soil-moisture feedback. Saturated groundwater heads are updated less frequently, usually on a daily target time step unless stability or head-change limits require a shorter update.
+The groundwater model is coupled with two clocks. Vadose-zone exchange is evaluated every surface-water time step because infiltration and evapotranspiration need fast soil-moisture feedback. This net exchange changes the water-table heads in every surface-water step. The groundwater scheduler is always asynchronous, and only the lateral groundwater flow, when it is on, waits for it. The lateral update usually runs on a daily target interval unless stability or head-change limits require a shorter one.
 
 The logic is:
 
@@ -64,10 +64,10 @@ The logic is:
 2. determine the maximum unsaturated storage permitted by the current water table depth,
 3. compute drainage/recharge from vadose layers to groundwater during the current surface step,
 4. compute capillary rise from groundwater to the vadose layers when enabled,
-5. accumulate the net exchange volume in the groundwater scheduler,
-6. update saturated groundwater heads when the scheduler is due,
-7. solve lateral groundwater flow using a 2D Boussinesq equation when baseflow is active,
-8. compute groundwater exfiltration to the surface,
+5. change the water-table heads by the net exchange in every surface-water step,
+6. compute groundwater exfiltration to the surface where the head rises above the land surface,
+7. solve lateral groundwater flow using a 2D Boussinesq equation when lateral flow is on (`flag_baseflow = 1` in MATLAB, `vertical.groundwater_lateral_flow: true` in HydroPol2D-Python) and the scheduler is due,
+8. add the exfiltration of the lateral update to the surface,
 9. correct vadose storage if the rising water table reduces the available unsaturated storage,
 10. update surface water depth accordingly.
 
@@ -83,18 +83,22 @@ The principal variables are:
 
 ### 2.1 Asynchronous scheduler
 
-The asynchronous scheduler is always active when groundwater modeling is enabled. The principal controls are:
+The asynchronous scheduler is always active when groundwater modeling is enabled. It decides only when the lateral Boussinesq update runs. The principal controls are:
 
 | Control | Default | Meaning |
 |---|---:|---|
-| `flag_groundwater_async` | 1 | Not read: the saturated update always follows the scheduler (Section 7.1). |
-| `groundwater_target_dt_min` | 1440 | Target groundwater update interval, in minutes. |
-| `groundwater_min_dt_min` | 1 | Minimum groundwater update interval, in minutes. |
-| `groundwater_max_head_change_m` | 0.25 | Forces an update when accumulated exchange would change head by this amount. |
+| `flag_groundwater_async` | 1 | Not read: the lateral update always follows the scheduler (Section 7.1). |
+| `groundwater_target_dt_s` | 86400 | Longest interval between lateral updates, in seconds (one day). HydroPol2D-Python also reads it from a legacy workbook in minutes, as `groundwater_target_dt_min` (1440). |
+| `groundwater_min_dt_s` | 60 | Shortest interval between lateral updates and smallest Boussinesq substep, in seconds. The legacy workbook key is `groundwater_min_dt_min` (1). |
+| `groundwater_max_head_change_m` | 0.25 | HydroPol2D-Python: forces a lateral update when the water table has moved by this amount since the last one. The MATLAB default scheme does not use it (Section 7.1). |
+| `groundwater_head_tolerance_m` | 0.001 | Absolute head tolerance of the adaptive Boussinesq substeps, in metres. MATLAB also uses it in the head-change trigger. |
+| `groundwater_relative_tolerance` | 0.001 | Relative tolerance on the saturated thickness, used together with `groundwater_head_tolerance_m`. |
 | `groundwater_courant` | 0.25 | Stability factor for the Boussinesq groundwater timestep estimate. |
-| `flag_capillary_rise` | 1 | Enables simple layered capillary rise when layered soil storage is present. |
+| `flag_capillary_rise` | 1 | Enables capillary rise from the water table into the root zone when layered soil storage is present. |
 
-Pending recharge, capillary rise, and net exchange are stored as scheduler state variables. When a groundwater update runs, the accumulated net exchange depth is divided by the elapsed groundwater interval to form the recharge term passed to the saturated solver.
+In HydroPol2D-Python these settings sit in the `vertical` block, and capillary rise is `vertical.capillary_rise` (default true).
+
+The scheduler keeps the time since the last lateral update, the substep suggested by the last adaptive Boussinesq run, the number of lateral updates, and three depths per cell. The pending net exchange holds the exchange of the current step only. The local update adds it to the heads and sets it to zero in the same step. The pending recharge and the pending capillary rise are running totals since the last lateral update and are cleared when that update runs. For the head-change trigger, HydroPol2D-Python also keeps the head change applied since the last lateral update, and the MATLAB code keeps the head of that update. The Boussinesq solver receives no recharge term, because the heads already include the net exchange. Without lateral flow, the scheduler only clears these totals, in every step in MATLAB and when the trigger is due in HydroPol2D-Python.
 
 ---
 
@@ -182,7 +186,7 @@ $$
 =
 \theta_{\mathrm{r},\ell}
 +
-\frac{S_{\ell}}{z_{\ell}}
+\frac{S_{\ell}}{f_p\, z_{\ell}}
 $$
 
 $$
@@ -214,9 +218,10 @@ $$
 where:
 
 - $\theta_{\ell}$ = layer water content $[-]$
+- $f_p$ = pervious fraction of the cell $[-]$; the layer water sits in the pervious part, and $S_{\ell}$ is a depth over the whole cell
 - $S_{e,\ell}$ = layer effective saturation $[-]$
 - $K_{\ell}$ = layer unsaturated conductivity $[\mathrm{L}\,\mathrm{T}^{-1}]$
-- $\ell_v$ = Mualem pore-connectivity parameter $[-]$
+- $\ell_v$ = Mualem pore-connectivity parameter $[-]$, fixed at 0.5 in this drainage step in both codes
 
 This is the same van Genuchten-Mualem constitutive family used by the infiltration module.
 
@@ -231,7 +236,7 @@ The layered recharge pathway is computed as a downward cascade:
 Conceptually, the drainage depth from a layer over a time step can be summarized as
 
 $$
-\Delta D_{\ell} \approx K_{\ell}\,\Delta t
+\Delta D_{\ell} \approx f_p\,K_{\ell}\,\Delta t
 $$
 
 subject to:
@@ -252,40 +257,43 @@ where $\Delta S_{\rightarrow \mathrm{gw}}$ is the total transmission of water in
 
 ### 4.4 Legacy fallback formulation
 
-HydroPol2D still contains the older representative-bucket recharge closure for cases where the explicit layered storage data are unavailable. In that fallback mode, a single vadose storage state is converted to a representative water content and drained with a Darcy-like closure. That formulation should be treated as **legacy/fallback**, not the primary theory path for the current model.
+The MATLAB code still contains the older representative-bucket recharge closure for cases where the explicit layered storage data are unavailable. In that fallback mode, a single vadose storage state is converted to a representative water content and drained with a Darcy-like closure. HydroPol2D-Python has no such fallback and always uses the three layers. That formulation should be treated as **legacy/fallback**, not the primary theory path for the current model.
 
 ---
 
 ## 5. Optional Capillary Rise
 
-When `flag_capillary_rise = 1`, HydroPol2D allows shallow groundwater to move upward into available vadose storage. The current implementation is a simple layered capillary-rise rule, not a full Richards-equation solution.
+When `flag_capillary_rise = 1`, HydroPol2D allows shallow groundwater to move upward into available vadose storage. The current implementation is a storage-limited van Genuchten-Mualem transfer into the root zone, not a full Richards-equation solution.
 
 The upward exchange increases with:
 
 - shallower water-table depth,
 - larger storage deficit in the receiving layer,
-- and larger saturated conductivity in that layer.
+- and larger saturated conductivity of the root zone.
 
-Conceptually, the upward capillary transfer into layer $\ell$ is limited by
+Over a surface step $\Delta t$, the upward capillary transfer is
 
 $$
-C_{\ell}
-\le
+C_{\mathrm{up}}\,\Delta t
+=
 \min\!\left(
-S_{\ell,\mathrm{def}},\,
-K_{\mathrm{sat},\ell} f_{\mathrm{prox}}(z_{\mathrm{wt}}) f_{\mathrm{dry}}(S_{\ell})
+S_{\mathrm{def}},\;
+K_{\mathrm{sat,root}}\,K_r(g)\,\Delta t,\;
+S_{\mathrm{gw}}
 \right)
 $$
 
-where:
+with $g = \max(z_{\mathrm{wt}} - z_{\mathrm{root}}, 0)$, $S_e(g) = \left[1 + (\alpha g)^{n}\right]^{-m}$ and $K_r(g) = S_e(g)^{\ell_v}\left[1 - \left(1 - S_e(g)^{1/m}\right)^{m}\right]^2$, where:
 
-- $S_{\ell,\mathrm{def}}$ is the remaining layer storage deficit
-- $f_{\mathrm{prox}}$ is a monotonic water-table proximity factor
-- $f_{\mathrm{dry}}$ is a monotonic dryness factor
+- $S_{\mathrm{def}}$ is the deficit of the receiving layer below field capacity, $\max\!\left(S_e(h_{\mathrm{fc}})\,S_{\max} - S, 0\right)$, with $S$ and $S_{\max}$ the storage and capacity of that layer
+- $h_{\mathrm{fc}}$ is the field-capacity suction head, `capillary_field_capacity_head_m` (default 3.3 m)
+- $g$ is the gap between the water table and the bottom of the root zone $z_{\mathrm{root}}$
+- $S_{\mathrm{gw}} = S_y\,(h - z_0)$ is the groundwater stored in the cell
+- $\alpha$, $n$, $m$ and $\ell_v$ are the van Genuchten-Mualem parameters of the soil
 
-In the current code, capillary rise is evaluated first into the transmission zone, then the root zone, and only into the near-surface layer when no lower vadose storage exists.
+In the current code, capillary rise fills only the root zone, or the near-surface layer where the roots end inside it and there is no separate root zone. The transmission zone receives no capillary rise.
 
-The net vadose-groundwater exchange accumulated by the scheduler is therefore
+The net vadose-groundwater exchange of each surface-water step is therefore
 
 $$
 R_{\mathrm{net}} = R_{\mathrm{down}} - C_{\mathrm{up}}
@@ -297,7 +305,7 @@ where $C_{\mathrm{up}}$ is the total upward capillary-rise flux.
 
 ## 6. Two-Dimensional Boussinesq Groundwater Flow Model
 
-Once recharge has been computed, HydroPol2D routes groundwater laterally using the function `Boussinesq_2D_explicit`.
+After the local head update, and only when lateral flow is on and the scheduler is due, HydroPol2D routes groundwater laterally using the function `Boussinesq_2D_explicit`. HydroPol2D-Python uses the same discretization.
 
 This solver represents the saturated groundwater system through a depth-integrated unconfined flow approximation.
 
@@ -320,7 +328,7 @@ where:
 - $\mathbf{F}$ = groundwater flux vector $[\mathrm{L}^2\,\mathrm{T}^{-1}]$
 - $R$ = recharge rate $[\mathrm{L}\,\mathrm{T}^{-1}]$
 
-HydroPol2D evaluates this equation numerically by computing fluxes at cell interfaces and then updating the groundwater head explicitly.
+HydroPol2D evaluates this equation numerically by computing fluxes at cell interfaces and then updating the groundwater head explicitly. In the code the recharge term is applied separately. The net exchange changes the heads in every surface-water step (Section 7.1), and the lateral solver is called with $R = 0$ over the time elapsed since its last run.
 
 ### 6.2 Saturated thickness
 
@@ -377,7 +385,7 @@ $$
 
 ### 6.4 Conservative flux limiting
 
-To avoid numerical instability and nonphysical depletion of groundwater storage, HydroPol2D applies a flux limiter so that no cell can lose more water than it contains during a substep.
+To avoid numerical instability and nonphysical depletion of groundwater storage, HydroPol2D applies a flux limiter so that no interface can carry more water than its donor cell holds during a substep.
 
 For example, in the $x$ direction, the maximum allowed flux is
 
@@ -396,7 +404,7 @@ $$
 
 A similar expression is used in the $y$ direction.
 
-This is an important feature of the HydroPol2D groundwater solver because it guarantees local mass admissibility during explicit integration.
+Because the limit applies to each interface separately, a cell that drains through several interfaces can still fall below the aquifer base in one substep. The solver then sets the head to $z_0$, and the added water shows up as a residual in the mass-balance check of Section 14.
 
 ### 6.5 Divergence of groundwater fluxes
 
@@ -457,14 +465,15 @@ HydroPol2D uses a **two-level groundwater time-step logic**.
 
 ### 7.1 Outer asynchronous scheduler
 
-Vadose exchange is accumulated every surface-water step, but saturated groundwater heads are updated only when the groundwater scheduler is due. The groundwater update interval is the minimum of:
+Vadose exchange changes the water-table heads in every surface-water step. The groundwater scheduler is always asynchronous, and only the lateral groundwater flow, when it is on, waits for it. The lateral update runs at the end of the first surface step in which one of these conditions holds:
 
-- the user target interval,
-- the explicit groundwater stability cap,
-- the interval implied by the maximum allowed accumulated head change,
-- and the final partial interval at the end of the run.
+- the time since the last lateral update reaches $\max\!\left(\min(\Delta t_{\mathrm{target}}, \Delta t_{\mathrm{gw,stable}}, \Delta t_{\mathrm{sugg}}), \Delta t_{\min}\right)$, where $\Delta t_{\mathrm{target}}$ is `groundwater_target_dt_s`, $\Delta t_{\mathrm{gw,stable}}$ is the stability cap of Section 7.2, $\Delta t_{\mathrm{sugg}}$ is the substep suggested by the last adaptive Boussinesq run, and $\Delta t_{\min}$ is `groundwater_min_dt_s`,
+- the water table has moved far enough since the last lateral update,
+- the surface step is the last one of the run.
 
-The scheduler cannot be switched off. Neither HydroPol2D-Python nor the MATLAB code reads `flag_groundwater_async`, so a value of 0 does not force an update every surface step. A shorter `groundwater_target_dt_min` makes the updates more frequent.
+The head-change test differs between the codes. HydroPol2D-Python compares the largest head change applied since the last lateral update with `groundwater_max_head_change_m` (0.25 m). The MATLAB default scheme does not use that setting. It runs the update when, in any cell, $|h - h_{\mathrm{last}}| \ge \delta_h + \delta_r H$, where $h_{\mathrm{last}}$ is the head after the last lateral update, $\delta_h$ is `groundwater_head_tolerance_m` and $\delta_r$ is `groundwater_relative_tolerance` (both 0.001 by default). The lateral solver then advances over the whole time elapsed since its last run.
+
+The scheduler cannot be switched off. Neither HydroPol2D-Python nor the MATLAB code reads `flag_groundwater_async`, so a value of 0 does not force a lateral update every surface step. A shorter `groundwater_target_dt_s` makes the lateral updates more frequent.
 
 ### 7.2 Explicit groundwater stability cap
 
@@ -495,9 +504,9 @@ This is the cap used by the current `estimate_groundwater_stable_timestep` logic
 
 ### 7.3 Inner Boussinesq substepping
 
-When a groundwater update is triggered, the scheduler converts the accumulated net exchange depth into an average recharge rate over the elapsed groundwater interval and passes it to the saturated solver. The Boussinesq solver then advances over that interval using internal predictor-corrector substeps.
+When a lateral update is triggered, the solver receives no recharge term, because the net exchange has already changed the heads. It advances the heads over the elapsed interval with adaptive predictor-corrector substeps. Each substep is at most the stability cap of Section 7.2 and at least `groundwater_min_dt_s`. Both codes control the error by step doubling. A substep is accepted when one full step and two half steps differ by no more than $\delta_h + \delta_r H$ in every cell; otherwise it is shortened and repeated. The next substep the solver would have tried is kept as the suggested step for the next lateral update.
 
-Those internal substeps are additionally limited by a velocity-based condition of the form
+In the MATLAB code, each of these substeps is further split by a velocity-based condition of the form
 
 $$
 \Delta t_{\mathrm{inner}}
@@ -511,12 +520,14 @@ $$
 where:
 
 - $u_x, u_y$ are Darcy groundwater velocities
-- $C_v$ is the internal velocity-based safety factor
+- $C_v$ is the internal velocity-based safety factor, the same `groundwater_courant`
+
+HydroPol2D-Python takes one predictor-corrector update per substep and has no velocity condition.
 
 The result is a two-level strategy:
 
 1. an outer scheduler cap based on explicit groundwater stability and allowed head change,
-2. an inner predictor-corrector substepping loop inside the Boussinesq solver.
+2. an inner adaptive predictor-corrector substepping loop inside the Boussinesq solver.
 
 ---
 
@@ -542,7 +553,7 @@ on the selected boundary cells, where:
 
 ### 8.2 No-flow boundaries
 
-No-flow boundaries are enforced by zero-gradient conditions at the domain perimeter. In practice, HydroPol2D copies the head from the nearest valid interior neighbor to the perimeter cell, thereby enforcing a discrete Neumann condition.
+No-flow boundaries are enforced by zero-gradient conditions at the domain perimeter. In practice, HydroPol2D sets the flux to zero across every interface with a cell outside the domain and across the outer edge of the grid, unless the edge cell has a prescribed head. This is a discrete Neumann condition; the code does not copy heads into the perimeter cells.
 
 ### 8.3 Catchment mask
 
@@ -591,26 +602,30 @@ which prevents groundwater from remaining above the land surface after exfiltrat
 
 ## 10. River–Aquifer Exchange
 
-The current solver interface includes:
-
-- a river mask,
-- a river conductance term,
-- river stage,
-- river bed elevation,
-
-which are designed to support river–aquifer exchange. In the current implementation, the placeholder variable
+Both codes can exchange water between the aquifer and the river cells. The exchange is optional and off by default. The switch is `flag_river_groundwater_exchange` in MATLAB and `flags.river_groundwater_exchange` in HydroPol2D-Python. In each river cell, the exchange follows a linear riverbed law,
 
 $$
 q_{\mathrm{river}}
+=
+\frac{K_{\mathrm{bed}}\,A_{\mathrm{bed}}}{b\,A_{\mathrm{cell}}}
+\left(h - h_{\mathrm{river}}\right)
 $$
 
-is initialized and carried through the coupling interface as the river-exchange term. This means that the interface is present, but river-aquifer exchange should currently be described as a **placeholder/structural hook**, not a mature standalone theory claim on the same footing as recharge, lateral groundwater flow, capillary rise, or exfiltration.
+where:
+
+- $q_{\mathrm{river}}$ = exchange rate per unit cell area, positive from the aquifer to the river $[\mathrm{L}\,\mathrm{T}^{-1}]$
+- $K_{\mathrm{bed}}$ = riverbed hydraulic conductivity $[\mathrm{L}\,\mathrm{T}^{-1}]$
+- $A_{\mathrm{bed}}$ = riverbed area, the river width times the cell size and at most the cell area $[\mathrm{L}^2]$
+- $b$ = riverbed thickness, `riverbed_thickness_m` (default 0.5 m) $[\mathrm{L}]$
+- $h_{\mathrm{river}}$ = water-surface elevation in the river cell $[\mathrm{L}]$
+
+Each surface-water step solves this law exactly for two linked stores, the aquifer of the cell and its surface water, and limits the volume to the water the donor store holds. The exchange is added to the net exchange, so it changes the water-table head in the same step as recharge and capillary rise.
 
 ---
 
 ## 11. Saturation-Excess Correction After Water Table Rise
 
-After the Boussinesq update, HydroPol2D recomputes the water-table depth and therefore the new maximum unsaturated storage:
+After the heads change in a surface-water step, HydroPol2D recomputes the water-table depth and therefore the new maximum unsaturated storage:
 
 $$
 S_{\mathrm{UZ,max}}^{\,\mathrm{new}}
@@ -648,7 +663,7 @@ h_{\mathrm{surf}}^{\,\mathrm{old}}
 S_{\mathrm{excess}}
 $$
 
-In the layered default implementation, the same correction is applied after recomputing the admissible summed vadose-layer capacity. This is a very important part of HydroPol2D because it guarantees **mass consistency** between the vadose and saturated zones when the water table rises during a time step.
+In the layered default implementation, the correction is applied layer by layer. The three layer capacities are recomputed from the new water table, each layer keeps at most its own capacity, and the sum of the excesses goes to the surface. HydroPol2D-Python applies the correction after the local update and again after a lateral update; the MATLAB code applies it once per step, after both. This is a very important part of HydroPol2D because it guarantees **mass consistency** between the vadose and saturated zones when the water table rises during a time step.
 
 ---
 
@@ -803,9 +818,9 @@ where:
 
 - $\varepsilon_{\mathrm{gw}}$ = groundwater mass-balance error $[\mathrm{L}^3]$
 
-This quantity is stored as a groundwater diagnostic error in HydroPol2D.
+The local update of every surface-water step closes the same balance, with the net exchange as the recharge term. The lateral solver is called with $R = 0$, and its check also counts the water exchanged with fixed-head cells. The MATLAB code stores the lateral residual as a groundwater diagnostic error. HydroPol2D-Python does not store it and tracks the water balance of the whole model instead.
 
-When asynchronous groundwater is active, pending accumulated recharge and capillary exchange are not treated as model loss. They are stored as groundwater exchange-in-transit until the next saturated update consumes the scheduler volume. This distinction is important for interpreting whole-model water-balance diagnostics.
+Recharge and capillary rise do not wait in the scheduler. The net exchange changes the heads in the same surface-water step, so no exchange is in transit between lateral updates. The pending recharge and capillary-rise totals only count what has passed since the last lateral update and are not extra storage. This distinction is important for interpreting whole-model water-balance diagnostics.
 
 ---
 
@@ -814,8 +829,8 @@ When asynchronous groundwater is active, pending accumulated recharge and capill
 The HydroPol2D groundwater model combines:
 
 - a **layered vadose-zone recharge module** based on a Darcy–van Genuchten–Mualem closure,
-- **simple capillary rise** from shallow groundwater into available vadose storage,
-- an **asynchronous groundwater scheduler** for slower saturated-head updates,
+- **capillary rise** from shallow groundwater into the root zone,
+- an **asynchronous groundwater scheduler** for the slower lateral groundwater flow, while the net exchange changes the heads in every surface-water step,
 - a **2D Boussinesq groundwater flow model** for lateral saturated flow,
 - **adaptive explicit time stepping**,
 - **surface exfiltration** when groundwater rises above the ground surface,

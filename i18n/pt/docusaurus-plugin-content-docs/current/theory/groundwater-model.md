@@ -52,16 +52,16 @@ Nesta página, "vadose em camadas" se refere aos três armazenamentos de solo do
 
 ## 2. Estrutura Conceitual Geral
 
-O modelo de águas subterrâneas é acoplado a dois relógios. A troca da zona vadosa é avaliada a cada intervalo de tempo da água superficial porque a infiltração e a evapotranspiração precisam de feedback rápido da umidade do solo. As cabeceiras das águas subterrâneas saturadas são atualizadas com menos frequência, geralmente em um intervalo de tempo alvo diário, a menos que a estabilidade ou os limites de mudança de carga exijam uma atualização mais curta.
+O modelo de águas subterrâneas é acoplado a dois relógios. A troca da zona vadosa é avaliada a cada intervalo de tempo da água superficial porque a infiltração e a evapotranspiração precisam de feedback rápido da umidade do solo. Esta troca líquida altera as cargas do lençol freático a cada passo da água superficial. O programador de águas subterrâneas é sempre assíncrono, e só o fluxo lateral das águas subterrâneas, quando está ativo, espera por ele. A atualização lateral costuma seguir um intervalo alvo diário, a menos que os limites de estabilidade ou de variação de carga exijam um intervalo menor.
 A lógica é:
 1. calcular a posição do lençol freático a partir da atual altura da água subterrânea;
 2. determinar o armazenamento não saturado máximo permitido pela profundidade atual do lençol freático;
 3. calcular a drenagem/recarga das camadas vadosas para as águas subterrâneas durante a atual etapa de superfície;
 4. calcular a ascensão capilar das águas subterrâneas para as camadas vadosas quando ativado,
-5. acumular o volume líquido de troca no programador de águas subterrâneas,
-6. atualizar as cabeças saturadas de água subterrânea quando o cronograma for devido,
-7. resolver o fluxo lateral de águas subterrâneas usando uma equação 2D Boussinesq quando o fluxo de base está ativo;
-8. calcular a exfiltração de águas subterrâneas para a superfície;
+5. alterar as cargas do lençol freático pela troca líquida a cada passo da água superficial,
+6. calcular a exfiltração das águas subterrâneas para a superfície onde a carga ultrapassa a superfície do terreno,
+7. resolver o fluxo lateral de águas subterrâneas usando uma equação 2D Boussinesq quando o fluxo lateral está ativo (`flag_baseflow = 1` no MATLAB, `vertical.groundwater_lateral_flow: true` no HydroPol2D-Python) e a atualização é devida pelo programador;
+8. somar à superfície a exfiltração da atualização lateral;
 9. armazenamento vadoso correto se o aumento do lençol freático reduzir o armazenamento insaturado disponível,
 10. atualizar a profundidade da água superficial em conformidade.
 
@@ -76,17 +76,21 @@ As principais variáveis ​​são:
 
 ### 2.1 Agendador assíncrono {#21-asynchronous-scheduler}
 
-O agendador assíncrono fica sempre ativo quando a modelagem de águas subterrâneas está habilitada. Os principais controles são:
+O agendador assíncrono fica sempre ativo quando a modelagem de águas subterrâneas está habilitada. Ele decide apenas quando a atualização lateral de Boussinesq é executada. Os principais controles são:
 | Controlar | Padrão | Significado |
 |---|---:|---|
-| `flag_groundwater_async` | 1 | Não é lido: a atualização saturada sempre segue o agendador (Seção 7.1). |
-| `groundwater_target_dt_min` | 1440 | Intervalo alvo de atualização das águas subterrâneas, em minutos. |
-| `groundwater_min_dt_min` | 1 | Intervalo mínimo de atualização das águas subterrâneas, em minutos. |
-| `groundwater_max_head_change_m` | 0,25 | Força uma atualização quando o câmbio acumulado mudaria a cabeça nesse valor. |
+| `flag_groundwater_async` | 1 | Não é lido: a atualização lateral sempre segue o agendador (Seção 7.1). |
+| `groundwater_target_dt_s` | 86400 | Intervalo máximo entre atualizações laterais, em segundos (um dia). O HydroPol2D-Python também lê esse valor de uma planilha antiga em minutos, como `groundwater_target_dt_min` (1440). |
+| `groundwater_min_dt_s` | 60 | Intervalo mínimo entre atualizações laterais e menor subpasso de Boussinesq, em segundos. Na planilha antiga, a chave é `groundwater_min_dt_min` (1). |
+| `groundwater_max_head_change_m` | 0,25 | HydroPol2D-Python: força uma atualização lateral quando o lençol freático variou esse valor desde a última. O esquema padrão do MATLAB não usa essa configuração (Seção 7.1). |
+| `groundwater_head_tolerance_m` | 0,001 | Tolerância absoluta de carga dos subpassos adaptativos de Boussinesq, em metros. O MATLAB também a usa no gatilho de variação de carga. |
+| `groundwater_relative_tolerance` | 0,001 | Tolerância relativa sobre a espessura saturada, usada junto com `groundwater_head_tolerance_m`. |
 | `groundwater_courant` | 0,25 | Fator de estabilidade para a estimativa do intervalo de tempo das águas subterrâneas Boussinesq. |
-| `flag_capillary_rise` | 1 | Permite a ascensão capilar em camadas simples quando o armazenamento em camadas do solo está presente. |
+| `flag_capillary_rise` | 1 | Ativa a ascensão capilar do lençol freático para a zona radicular quando o armazenamento em camadas do solo está presente. |
 
-A recarga pendente, a ascensão capilar e a troca líquida são armazenadas como variáveis ​​de estado do escalonador. Quando uma atualização das águas subterrâneas é executada, a profundidade líquida de troca acumulada é dividida pelo intervalo decorrido das águas subterrâneas para formar o termo de recarga passado para o solucionador saturado.
+No HydroPol2D-Python, essas configurações ficam no bloco `vertical`, e a ascensão capilar é `vertical.capillary_rise` (padrão true).
+
+O agendador guarda o tempo desde a última atualização lateral, o subpasso sugerido pela última execução adaptativa de Boussinesq, o número de atualizações laterais e três lâminas por célula. A troca líquida pendente guarda apenas a troca do passo atual. A atualização local a soma às cargas e a zera no mesmo passo. A recarga pendente e a ascensão capilar pendente são totais acumulados desde a última atualização lateral e são zeradas quando essa atualização é executada. Para o gatilho de variação de carga, o HydroPol2D-Python também guarda a variação de carga aplicada desde a última atualização lateral, e o código MATLAB guarda a carga dessa atualização. O solucionador de Boussinesq não recebe termo de recarga, porque as cargas já incluem a troca líquida. Sem fluxo lateral, o agendador apenas zera esses totais, a cada passo no MATLAB e quando o gatilho é acionado no HydroPol2D-Python.
 
 ---
 
@@ -157,7 +161,7 @@ $$
 \theta_{\ell}
 =
 \theta_{\mathrm{r},\ell}+
-\frac{S_{\ell}}{z_{\ell}}
+\frac{S_{\ell}}{f_p\, z_{\ell}}
 $$
 $$
 S_{e,\ell}
@@ -183,9 +187,10 @@ m_{\ell} = 1 -\frac{1}{n_{\ell}}
 $$
 onde:
 - $\theta_{\ell}$ = teor de água da camada $[-]$
+- $f_p$ = fração permeável da célula $[-]$; a água da camada fica na parte permeável, e $S_{\ell}$ é uma lâmina sobre a célula inteira
 - $S_{e,\ell}$ = saturação efetiva da camada $[-]$
 - $K_{\ell}$ = condutividade insaturada da camada $[\mathrm{L}\,\mathrm{T}^{-1}]$
-- $\ell_v$ = Parâmetro de conectividade de poros Mualem $[-]$
+- $\ell_v$ = Parâmetro de conectividade de poros Mualem $[-]$, fixado em 0,5 nesta etapa de drenagem nos dois códigos
 
 Esta é a mesma família constitutiva van Genuchten-Mualem usada pelo módulo de infiltração.
 ### 4.3 Cascata de drenagem descendente
@@ -197,7 +202,7 @@ O caminho de recarga em camadas é calculado como uma cascata descendente:
 
 Conceitualmente, a profundidade de drenagem de uma camada ao longo de um intervalo de tempo pode ser resumida como
 $$
-\Delta D_{\ell} \approx K_{\ell}\,\Delta t
+\Delta D_{\ell} \approx f_p\,K_{\ell}\,\Delta t
 $$
 sujeito a:
 - água disponível na camada doadora,
@@ -213,34 +218,37 @@ $$
 onde $\Delta S_{\rightarrow \mathrm{gw}}$ é a transmissão total de água para as águas subterrâneas durante a atual etapa de superfície. A drenagem direta da zona próxima à superfície ou radicular para as águas subterrâneas ocorre apenas quando as camadas vadosas inferiores estão ausentes.
 ### 4.4 Formulação substituta legada
 
-HydroPol2D ainda contém o antigo fechamento de recarga de balde representativo para casos em que os dados explícitos de armazenamento em camadas não estão disponíveis. Nesse modo de fallback, um único estado de armazenamento vadoso é convertido em um conteúdo representativo de água e drenado com um fechamento semelhante ao Darcy. Essa formulação deve ser tratada como **legado/substituto**, e não como o caminho teórico principal para o modelo atual.
+O código MATLAB ainda contém o antigo fechamento de recarga de balde representativo para casos em que os dados explícitos de armazenamento em camadas não estão disponíveis. Nesse modo de fallback, um único estado de armazenamento vadoso é convertido em um conteúdo representativo de água e drenado com um fechamento semelhante ao Darcy. O HydroPol2D-Python não tem essa alternativa e sempre usa as três camadas. Essa formulação deve ser tratada como **legado/substituto**, e não como o caminho teórico principal para o modelo atual.
 
 ---
 
 ## 5. Ascensão Capilar Opcional
 
-Quando `flag_capillary_rise = 1`, HydroPol2D permite que águas subterrâneas rasas subam para o armazenamento vadoso disponível. A implementação atual é uma simples regra de ascensão capilar em camadas, e não uma solução completa da equação de Richards.
+Quando `flag_capillary_rise = 1`, HydroPol2D permite que águas subterrâneas rasas subam para o armazenamento vadoso disponível. A implementação atual é uma transferência de van Genuchten-Mualem para a zona radicular, limitada pelo armazenamento disponível, e não uma solução completa da equação de Richards.
 A troca ascendente aumenta com:
 - profundidade mais rasa do lençol freático,
 - maior déficit de armazenamento na camada receptora,
-- e maior condutividade saturada nessa camada.
+- e maior condutividade saturada da zona radicular.
 
-Conceitualmente, a transferência capilar ascendente para a camada $\ell$ é limitada por
+Em um passo de superfície $\Delta t$, a transferência capilar ascendente é
 $$
-C_{\ell}
-\le
+C_{\mathrm{up}}\,\Delta t
+=
 \min\!\left(
-S_{\ell,\mathrm{def}},\,
-K_{\mathrm{sat},\ell} f_{\mathrm{prox}}(z_{\mathrm{wt}}) f_{\mathrm{dry}}(S_{\ell})
+S_{\mathrm{def}},\;
+K_{\mathrm{sat,root}}\,K_r(g)\,\Delta t,\;
+S_{\mathrm{gw}}
 \right)
 $$
-onde:
-- $S_{\ell,\mathrm{def}}$ é o déficit de armazenamento da camada restante
-- $f_{\mathrm{prox}}$ é um fator monotônico de proximidade do lençol freático
-- $f_{\mathrm{dry}}$ é um fator de secura monotônico
+com $g = \max(z_{\mathrm{wt}} - z_{\mathrm{root}}, 0)$, $S_e(g) = \left[1 + (\alpha g)^{n}\right]^{-m}$ e $K_r(g) = S_e(g)^{\ell_v}\left[1 - \left(1 - S_e(g)^{1/m}\right)^{m}\right]^2$, onde:
+- $S_{\mathrm{def}}$ é o déficit da camada receptora abaixo da capacidade de campo, $\max\!\left(S_e(h_{\mathrm{fc}})\,S_{\max} - S, 0\right)$, com $S$ e $S_{\max}$ o armazenamento e a capacidade dessa camada
+- $h_{\mathrm{fc}}$ é a sucção da capacidade de campo, `capillary_field_capacity_head_m` (padrão 3,3 m)
+- $g$ é a distância entre o lençol freático e a base da zona radicular $z_{\mathrm{root}}$
+- $S_{\mathrm{gw}} = S_y\,(h - z_0)$ é a água subterrânea armazenada na célula
+- $\alpha$, $n$, $m$ e $\ell_v$ são os parâmetros de van Genuchten-Mualem do solo
 
-No código atual, a ascensão capilar é avaliada primeiro na zona de transmissão, depois na zona raiz e apenas na camada próxima à superfície quando não existe armazenamento vadoso inferior.
-A troca líquida vadose-água subterrânea acumulada pelo programador é, portanto,
+No código atual, a ascensão capilar preenche apenas a zona radicular, ou a camada próxima à superfície quando as raízes terminam dentro dela e não existe uma zona radicular separada. A zona de transmissão não recebe ascensão capilar.
+A troca líquida vadose-água subterrânea de cada passo da água superficial é, portanto,
 $$
 R_{\mathrm{net}} = R_{\mathrm{down}} - C_{\mathrm{up}}
 $$
@@ -250,7 +258,7 @@ onde $C_{\mathrm{up}}$ é o fluxo de ascensão capilar ascendente total.
 
 ## 6. Modelo bidimensional de fluxo de águas subterrâneas Boussinesq
 
-Uma vez calculada a recarga, HydroPol2D direciona as águas subterrâneas lateralmente usando a função `Boussinesq_2D_explicit`.
+Depois da atualização local da carga, e só quando o fluxo lateral está ativo e a atualização é devida pelo agendador, HydroPol2D direciona as águas subterrâneas lateralmente usando a função `Boussinesq_2D_explicit`. O HydroPol2D-Python usa a mesma discretização.
 Este solucionador representa o sistema de águas subterrâneas saturadas através de uma aproximação de fluxo não confinado integrada em profundidade.
 ### 6.1 Equação governante
 
@@ -267,7 +275,7 @@ onde:
 - $\mathbf{F}$ = vetor de fluxo de águas subterrâneas $[\mathrm{L}^2\,\mathrm{T}^{-1}]$
 - $R$ = taxa de recarga $[\mathrm{L}\,\mathrm{T}^{-1}]$
 
-HydroPol2D avalia esta equação numericamente calculando os fluxos nas interfaces das células e, em seguida, atualizando explicitamente a altura da água subterrânea.
+HydroPol2D avalia esta equação numericamente calculando os fluxos nas interfaces das células e, em seguida, atualizando explicitamente a altura da água subterrânea. No código, o termo de recarga é aplicado separadamente. A troca líquida altera as cargas a cada passo da água superficial (Seção 7.1), e o solucionador lateral é chamado com $R = 0$ ao longo do tempo decorrido desde sua última execução.
 ### 6.2 Espessura saturada
 
 A espessura saturada ativa é definida como
@@ -309,7 +317,7 @@ H_y = \frac{H_j + H_{j+1}}{2}
 $$
 ### 6.4 Limitação conservadora de fluxo
 
-Para evitar instabilidade numérica e esgotamento não físico do armazenamento de água subterrânea, HydroPol2D aplica um limitador de fluxo para que nenhuma célula possa perder mais água do que contém durante uma subetapa.
+Para evitar instabilidade numérica e esgotamento não físico do armazenamento de água subterrânea, HydroPol2D aplica um limitador de fluxo para que nenhuma interface possa transportar mais água do que a célula doadora contém durante uma subetapa.
 Por exemplo, na direção $x$, o fluxo máximo permitido é
 $$
 F_{x,\max}
@@ -322,7 +330,7 @@ F_x \leftarrow \operatorname{sign}(F_x)\,\min\left(|F_x|,\,F_{x,\max}\right)
 $$
 
 Uma expressão semelhante é usada na direção $y$.
-Esta é uma característica importante do solucionador de águas subterrâneas HydroPol2D porque garante a admissibilidade da massa local durante a integração explícita.
+Como o limite vale para cada interface separadamente, uma célula que drena por várias interfaces ainda pode ficar abaixo da base do aquífero em uma subetapa. O solucionador então fixa a carga em $z_0$, e a água acrescentada aparece como resíduo na verificação do balanço de massa da Seção 14.
 ### 6.5 Divergência dos fluxos de águas subterrâneas
 
 A divergência do campo de fluxo é então calculada a partir dos fluxos de interface como
@@ -370,13 +378,14 @@ Este procedimento preditor-corretor melhora a estabilidade e reduz a difusão nu
 HydroPol2D usa uma **lógica de passo de tempo de águas subterrâneas de dois níveis**.
 ### 7.1 Agendador assíncrono externo
 
-A troca vadose é acumulada a cada etapa da água superficial, mas as alturas saturadas das águas subterrâneas são atualizadas apenas quando o cronograma das águas subterrâneas é devido. O intervalo de atualização das águas subterrâneas é o mínimo de:
-- o intervalo alvo do usuário,
-- o limite explícito de estabilidade das águas subterrâneas,
-- o intervalo implícito na mudança de carga acumulada máxima permitida,
-- e o intervalo parcial final no final da corrida.
+A troca vadose altera as cargas do lençol freático a cada passo da água superficial. O programador de águas subterrâneas é sempre assíncrono, e só o fluxo lateral das águas subterrâneas, quando está ativo, espera por ele. A atualização lateral é executada ao final do primeiro passo de superfície em que vale uma destas condições:
+- o tempo desde a última atualização lateral chega a $\max\!\left(\min(\Delta t_{\mathrm{target}}, \Delta t_{\mathrm{gw,stable}}, \Delta t_{\mathrm{sugg}}), \Delta t_{\min}\right)$, em que $\Delta t_{\mathrm{target}}$ é `groundwater_target_dt_s`, $\Delta t_{\mathrm{gw,stable}}$ é o limite de estabilidade da Seção 7.2, $\Delta t_{\mathrm{sugg}}$ é o subpasso sugerido pela última execução adaptativa de Boussinesq e $\Delta t_{\min}$ é `groundwater_min_dt_s`,
+- o lençol freático variou o suficiente desde a última atualização lateral,
+- o passo de superfície é o último da simulação.
 
-O agendador não pode ser desligado. Nem o HydroPol2D-Python nem o código MATLAB leem `flag_groundwater_async`, então o valor 0 não força uma atualização a cada passo da superfície. Um `groundwater_target_dt_min` menor deixa as atualizações mais frequentes.
+O teste de variação de carga difere entre os códigos. O HydroPol2D-Python compara a maior variação de carga aplicada desde a última atualização lateral com `groundwater_max_head_change_m` (0,25 m). O esquema padrão do MATLAB não usa essa configuração. Ele executa a atualização quando, em alguma célula, $|h - h_{\mathrm{last}}| \ge \delta_h + \delta_r H$, em que $h_{\mathrm{last}}$ é a carga após a última atualização lateral, $\delta_h$ é `groundwater_head_tolerance_m` e $\delta_r$ é `groundwater_relative_tolerance` (ambos 0,001 por padrão). O solucionador lateral então avança por todo o tempo decorrido desde sua última execução.
+
+O agendador não pode ser desligado. Nem o HydroPol2D-Python nem o código MATLAB leem `flag_groundwater_async`, então o valor 0 não força uma atualização lateral a cada passo da superfície. Um `groundwater_target_dt_s` menor deixa as atualizações laterais mais frequentes.
 ### 7.2 Limite explícito de estabilidade das águas subterrâneas
 
 O limite externo do escalonador é baseado em uma estimativa de difusividade explícita para a equação Boussinesq não confinada:
@@ -401,8 +410,8 @@ onde:
 Este é o limite usado pela lógica `estimate_groundwater_stable_timestep` atual.
 ### 7.3 Subpasso interno Boussinesq
 
-Quando uma atualização das águas subterrâneas é acionada, o programador converte a profundidade líquida de troca acumulada em uma taxa média de recarga ao longo do intervalo decorrido das águas subterrâneas e passa-a para o solucionador saturado. O solucionador Boussinesq então avança nesse intervalo usando subetapas internas do preditor-corretor.
-Essas subetapas internas são adicionalmente limitadas por uma condição baseada na velocidade da forma
+Quando uma atualização lateral é acionada, o solucionador não recebe termo de recarga, porque a troca líquida já alterou as cargas. Ele avança as cargas ao longo do intervalo decorrido com subetapas adaptativas de preditor-corretor. Cada subetapa é no máximo o limite de estabilidade da Seção 7.2 e no mínimo `groundwater_min_dt_s`. Os dois códigos controlam o erro por duplicação de passo. Uma subetapa é aceita quando um passo inteiro e dois meios passos diferem no máximo $\delta_h + \delta_r H$ em todas as células; caso contrário, ela é encurtada e repetida. A próxima subetapa que o solucionador tentaria fica guardada como passo sugerido para a próxima atualização lateral.
+No código MATLAB, cada uma dessas subetapas é ainda dividida por uma condição baseada na velocidade da forma
 $$
 \Delta t_{\mathrm{inner}}
 \le
@@ -412,11 +421,13 @@ $$
 $$
 onde:
 - $u_x, u_y$ são velocidades das águas subterrâneas de Darcy
-- $C_v$ é o fator de segurança interno baseado na velocidade
+- $C_v$ é o fator de segurança interno baseado na velocidade, o mesmo `groundwater_courant`
+
+O HydroPol2D-Python faz uma única atualização de preditor-corretor por subetapa e não tem condição de velocidade.
 
 O resultado é uma estratégia de dois níveis:
 1. um limite externo do programador baseado na estabilidade explícita das águas subterrâneas e na mudança de carga permitida,
-2. um loop de subetapa preditor-corretor interno dentro do solucionador Boussinesq.
+2. um loop interno de subetapas adaptativas de preditor-corretor dentro do solucionador Boussinesq.
 
 ---
 
@@ -438,7 +449,7 @@ nas células de limite selecionadas, onde:
 
 ### 8.2 Limites sem fluxo
 
-Os limites sem fluxo são impostos por condições de gradiente zero no perímetro do domínio. Na prática, HydroPol2D copia a cabeça do vizinho interior válido mais próximo para a célula do perímetro, aplicando assim uma condição discreta de Neumann.
+Os limites sem fluxo são impostos por condições de gradiente zero no perímetro do domínio. Na prática, HydroPol2D zera o fluxo em toda interface com uma célula fora do domínio e na borda externa da grade, a menos que a célula da borda tenha carga prescrita. Esta é uma condição discreta de Neumann; o código não copia cargas para as células do perímetro.
 ### 8.3 Máscara de captação
 
 Todos os cálculos de águas subterrâneas estão restritos ao domínio computacional válido. As células fora da máscara de captação são definidas como `NaN`.
@@ -476,23 +487,27 @@ o que evita que as águas subterrâneas permaneçam acima da superfície da terr
 
 ## 10. Intercâmbio Rio-Aquífero
 
-A interface do solucionador atual inclui:
-- uma máscara de rio,
-- um termo de condutância do rio,
-- estágio do rio,
-- elevação do leito do rio,
-
-que são projetados para apoiar a troca rio-aquífero. Na implementação atual, a variável de espaço reservado
+Os dois códigos podem trocar água entre o aquífero e as células de rio. A troca é opcional e fica desligada por padrão. A chave é `flag_river_groundwater_exchange` no MATLAB e `flags.river_groundwater_exchange` no HydroPol2D-Python. Em cada célula de rio, a troca segue uma lei linear do leito,
 $$
 q_{\mathrm{river}}
+=
+\frac{K_{\mathrm{bed}}\,A_{\mathrm{bed}}}{b\,A_{\mathrm{cell}}}
+\left(h - h_{\mathrm{river}}\right)
 $$
-é inicializado e transportado pela interface de acoplamento como o termo de troca de rio. Isto significa que a interface está presente, mas a troca rio-aquífero deve atualmente ser descrita como um **espaço reservado/gancho estrutural**, e não uma reivindicação de teoria autônoma madura no mesmo nível que recarga, fluxo lateral de águas subterrâneas, ascensão capilar ou exfiltração.
+onde:
+- $q_{\mathrm{river}}$ = taxa de troca por unidade de área da célula, positiva do aquífero para o rio $[\mathrm{L}\,\mathrm{T}^{-1}]$
+- $K_{\mathrm{bed}}$ = condutividade hidráulica do leito do rio $[\mathrm{L}\,\mathrm{T}^{-1}]$
+- $A_{\mathrm{bed}}$ = área do leito, a largura do rio vezes o tamanho da célula, no máximo a área da célula $[\mathrm{L}^2]$
+- $b$ = espessura do leito, `riverbed_thickness_m` (padrão 0,5 m) $[\mathrm{L}]$
+- $h_{\mathrm{river}}$ = elevação da superfície da água na célula de rio $[\mathrm{L}]$
+
+Cada passo da água superficial resolve essa lei de forma exata para dois armazenamentos ligados, o aquífero da célula e a sua água superficial, e limita o volume à água que o armazenamento doador contém. A troca é somada à troca líquida e, assim, altera a carga do lençol freático no mesmo passo que a recarga e a ascensão capilar.
 
 ---
 
 ## 11. Correção do excesso de saturação após elevação do lençol freático {#11-saturation-excess-correction-after-water-table-rise}
 
-Após a atualização do Boussinesq, o HydroPol2D recalcula a profundidade do lençol freático e, portanto, o novo armazenamento máximo não saturado:
+Depois que as cargas mudam em um passo da água superficial, o HydroPol2D recalcula a profundidade do lençol freático e, portanto, o novo armazenamento máximo não saturado:
 $$
 S_{\mathrm{UZ,max}}^{\,\mathrm{new}}
 =
@@ -521,7 +536,7 @@ h_{\mathrm{surf}}^{\,\mathrm{new}}
 h_{\mathrm{surf}}^{\,\mathrm{old}}+
 S_{\mathrm{excess}}
 $$
-Na implementação padrão em camadas, a mesma correção é aplicada após recalcular a capacidade somada admissível da camada vadose. Esta é uma parte muito importante do HydroPol2D porque garante a **consistência de massa** entre as zonas vadosa e saturada quando o lençol freático sobe durante um intervalo de tempo.
+Na implementação padrão em camadas, a correção é aplicada camada por camada. As três capacidades são recalculadas a partir do novo lençol freático, cada camada guarda no máximo a sua própria capacidade, e a soma dos excessos vai para a superfície. O HydroPol2D-Python aplica a correção após a atualização local e de novo após uma atualização lateral; o código MATLAB a aplica uma vez por passo, depois das duas. Esta é uma parte muito importante do HydroPol2D porque garante a **consistência de massa** entre as zonas vadosa e saturada quando o lençol freático sobe durante um intervalo de tempo.
 
 ---
 
@@ -660,8 +675,9 @@ $$
 onde:
 - $\varepsilon_{\mathrm{gw}}$ = erro de balanço de massa da água subterrânea $[\mathrm{L}^3]$
 
-Esta quantidade é armazenada como erro de diagnóstico de águas subterrâneas em HydroPol2D.
-Quando a água subterrânea assíncrona está ativa, a recarga acumulada e a troca capilar pendentes não são tratadas como perda de modelo. Eles são armazenados como troca de água subterrânea em trânsito até que a próxima atualização saturada consuma o volume do escalonador. Esta distinção é importante para interpretar o diagnóstico do balanço hídrico de todo o modelo.
+A atualização local de cada passo da água superficial fecha o mesmo balanço, com a troca líquida como termo de recarga. O solucionador lateral é chamado com $R = 0$, e a sua verificação também conta a água trocada com as células de carga prescrita. O código MATLAB guarda o resíduo lateral como erro de diagnóstico de águas subterrâneas. O HydroPol2D-Python não o guarda e acompanha o balanço hídrico do modelo inteiro.
+
+A recarga e a ascensão capilar não ficam esperando no agendador. A troca líquida altera as cargas no mesmo passo da água superficial, e por isso nenhuma troca fica em trânsito entre atualizações laterais. Os totais pendentes de recarga e de ascensão capilar só contam o que passou desde a última atualização lateral e não são armazenamento adicional. Esta distinção é importante para interpretar o diagnóstico do balanço hídrico de todo o modelo.
 
 ---
 
@@ -669,8 +685,8 @@ Quando a água subterrânea assíncrona está ativa, a recarga acumulada e a tro
 
 O modelo de águas subterrâneas HydroPol2D combina:
 - um **módulo de recarga de zona vadose em camadas** baseado em um fechamento Darcy – van Genuchten – Mualem,
-- **simples ascensão capilar** das águas subterrâneas rasas para o armazenamento vadoso disponível,
-- um **programador assíncrono de águas subterrâneas** para atualizações mais lentas de carga saturada,
+- **ascensão capilar** das águas subterrâneas rasas para a zona radicular,
+- um **programador assíncrono de águas subterrâneas** para o fluxo lateral mais lento, enquanto a troca líquida altera as cargas a cada passo da água superficial,
 - um **modelo 2D Boussinesq de fluxo de águas subterrâneas** para fluxo lateral saturado,
 - **passo de tempo explícito adaptativo**,
 - **exfiltração superficial** quando a água subterrânea sobe acima da superfície do solo,
