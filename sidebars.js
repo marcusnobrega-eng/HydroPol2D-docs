@@ -94,7 +94,6 @@ const sidebars = {
       label: 'Examples',
       items: [
         'Examples/RainfallRunoff',
-        'Examples/RainfallRunoffReal',
         'Examples/RainfallRunoffRealLidar'
       ],
     },

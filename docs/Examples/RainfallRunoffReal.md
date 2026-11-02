@@ -1,5 +1,8 @@
 ---
 title: San Francisquito Catchment - Observed Rainfall Example
+# Hidden until the observed-event inputs are in the MATLAB repository; the page described the
+# 100 mm/h design storm (its 75 mm came from a summary bug fixed on 2026-11-02).
+draft: true
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
