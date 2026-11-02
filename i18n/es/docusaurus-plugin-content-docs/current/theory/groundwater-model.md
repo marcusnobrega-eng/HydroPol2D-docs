@@ -1,6 +1,7 @@
 ---
 title: Modelo de aguas subterráneas
 ---
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # Modelo de aguas subterráneas
 
@@ -29,10 +30,10 @@ Esta estructura permite que HydroPol2D represente el acoplamiento dinámico entr
 
 
 <p align="center">
-  <img src={require('../assets/figures/aquifer/aquifer_schematics.png').default} width="700" />
+  <img src={useBaseUrl('/img/theory/groundwater-model.es.svg')} width="720" alt="Tres celdas escalonadas de la ladera al río, con capas de suelo, nivel freático, flujo lateral, exfiltración, intercambio con el río y acuífero profundo" />
 </p>
 <p align="center">
-  <em>Figura 1. Representación conceptual del componente acuífero en HydroPol2D.</em>
+  <em>Figura 1. El esquema predeterminado de agua subterránea en tres celdas. La recarga y el ascenso capilar mueven el nivel freático h en cada paso superficial. El flujo lateral de Boussinesq sigue el reloj del agua subterránea. La exfiltración y el exceso de saturación devuelven agua donde h alcanza el terreno.</em>
 </p>
 
 ### 1.1 Dos esquemas de subsuelo {#11-two-subsurface-schemes}

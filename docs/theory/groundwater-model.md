@@ -1,6 +1,7 @@
 ---
 title: Groundwater Model
 ---
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # Groundwater Model
 
@@ -32,11 +33,11 @@ This structure allows HydroPol2D to represent dynamic coupling between:
 
 
 <p align="center">
-  <img src={require('../assets/figures/aquifer/aquifer_schematics.png').default} width="700" />
+  <img src={useBaseUrl('/img/theory/groundwater-model.svg')} width="720" alt="Three stepped cells from a hillside to a river, with soil layers, water table, lateral flow, exfiltration, river exchange and a deep aquifer" />
 </p>
 
 <p align="center">
-  <em>Figure 1. Conceptual representation of the aquifer component in HydroPol2D.</em>
+  <em>Figure 1. The default groundwater scheme on three model cells. Recharge and capillary rise move the water table h every surface step. Lateral Boussinesq flow runs on the groundwater clock. Exfiltration and saturation excess return water where h reaches the ground.</em>
 </p>
 
 ### 1.1 Two subsurface schemes
