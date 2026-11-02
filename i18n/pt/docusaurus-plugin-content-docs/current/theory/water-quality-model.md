@@ -64,15 +64,17 @@ $$
 
 ## 3. Acoplamento hidrodinâmico
 
-O modelo de qualidade da água utiliza vazões hidrodinâmicas:
+O modelo de qualidade da água usa a vazão $Q$ $[\mathrm{L}^3\,\mathrm{T}^{-1}]$, em $\mathrm{m^3/s}$, que sai de uma célula por cada face no passo de roteamento. O Python toma $Q$ diretamente das vazões nas faces calculadas pelo solver de roteamento.
+
+O MATLAB guarda as vazões de saída de uma célula da grade como taxas de lâmina sobre a área da célula
 $$
 q_{\mathrm{out}} = \{ q_{\mathrm{left}}, q_{\mathrm{right}}, q_{\mathrm{up}}, q_{\mathrm{down}}, q_{\mathrm{outlet}} \}
 $$
-com unidades:
+com unidades
 $$
 [\mathrm{L}\,\mathrm{T}^{-1}] \quad (\mathrm{mm/h})
 $$
-Estes são convertidos internamente em fluxo volumétrico:
+e converte cada uma em vazão antes de calcular a lavagem
 $$
 Q = \frac{q_{\mathrm{out}}}{1000 \cdot 3600} \cdot A_{\mathrm{cell}}
 \quad [\mathrm{L}^3\,\mathrm{T}^{-1}]
@@ -86,6 +88,8 @@ Duas formulações de lavagem são implementadas.
 ---
 
 ### 4.1 Modelo de lavagem da curva de classificação
+
+Este modo existe apenas no MATLAB, e apenas na grade regular, pois uma simulação do MATLAB em malha o recusa. O Python tem apenas o modo baseado em massa da seção 4.2.
 
 Quando `flag_wq_model = 1`, a lavagem é:
 $$
@@ -125,12 +129,14 @@ Esta formulação assume:
 
 ## 5. Fluxos direcionais de poluentes
 
-Os fluxos de poluentes são calculados para cada direção:
+Os fluxos de poluentes são calculados para cada direção pela qual a água sai da célula. Na grade regular, as direções são
 - esquerda
-- certo
+- direita
 - acima
 - abaixo
-- tomada
+- exutório
+
+O MATLAB trata o exutório como uma quinta direção das células de exutório. O Python leva a vazão do exutório pelas faces na borda da grade, de modo que ali o fluxo no exutório é o fluxo por uma face de contorno. Em uma malha de Voronoi ou quadtree, os dois códigos usam cada aresta pela qual a água sai da célula, e uma aresta no contorno do domínio exporta o poluente para fora do modelo.
 
 A saída total de poluentes de uma célula é:
 $$
@@ -163,29 +169,22 @@ Esta formulação é responsável por:
 
 ## 7. Time stepping adaptativo (recurso crítico)
 
-Para garantir a estabilidade e evitar massa negativa, HydroPol2D calcula um **passo de tempo mínimo admissível**:
+Para garantir a estabilidade e evitar massa negativa, HydroPol2D divide o passo de tempo hidráulico em $n$ **subpassos** iguais:
 $$
-\Delta t_{\min}
-=
-\min \left(\frac{B_t}{|dW|}
-\right)
+n = \max\!\left(1,\;\left\lceil \Delta t \,\max\!\left(\frac{W_{\mathrm{out,tot}}}{B_t}\right) \right\rceil\right)
+\qquad
+\Delta t_i = \frac{\Delta t}{n}
 $$
 onde:
-- apenas as células que perdem massa são consideradas,
-- valores muito pequenos são excluídos.
+- o máximo é tomado sobre as células que contêm poluente ($B_t > 0$),
+- $W_{\mathrm{out,tot}}/B_t$ é a taxa bruta de saída de uma célula no início do passo, sem o fluxo de entrada $[\mathrm{T}^{-1}]$,
+- $\lceil\cdot\rceil$ arredonda para o inteiro seguinte.
 
-Se:
-$$
-\Delta t_{\min} <\Delta t
-$$
-o modelo divide o passo de tempo em subetapas:
-$$
-\Delta t = \sum \Delta t_i
-$$
-e atualiza a massa poluente iterativamente:
+Em cada subpasso a lavagem é calculada de novo a partir da massa atual. Uma célula cuja saída removeria mais do que ela contém tem suas saídas reduzidas na proporção necessária para que $W_{\mathrm{out,tot}}\,\Delta t_i \le B_t$. A massa é então atualizada:
 $$
 B_t^{i+1} = B_t^i - dW \cdot \Delta t_i
 $$
+O Python e o MATLAB usam esse mesmo esquema. Os subpassos ocorrem dentro do passo hidráulico, de modo que o modelo de qualidade da água não encurta o passo de tempo do modelo.
 Isso garante:
 - nenhuma massa poluente negativa,
 - estabilidade numérica,
@@ -214,12 +213,15 @@ $$
 A concentração de poluentes é calculada como:
 $$
 C =
-\frac{W_{\mathrm{out,tot}}}{Q_{\mathrm{tot}} \cdot A_{\mathrm{cell}}}
-\cdot 10^6
+1000 \cdot \frac{W_{\mathrm{out,tot}}}{Q_{\mathrm{tot}}}
 \quad [\mathrm{mg/L}]
 $$
 onde:
-- $Q_{\mathrm{tot}}$ = vazão total de água $[\mathrm{L}\,\mathrm{T}^{-1}]$
+- $W_{\mathrm{out,tot}}$ = saída total de poluente da célula $[\mathrm{kg\,s^{-1}}]$
+- $Q_{\mathrm{tot}}$ = vazão total de água que sai da célula $[\mathrm{m^3\,s^{-1}}]$
+- o fator 1000 converte $\mathrm{kg\,m^{-3}}$ em $\mathrm{mg/L}$
+
+O Python calcula $C$ dessa forma e define $C = 0$ em uma célula da qual não sai água. Na grade regular, o MATLAB calcula a mesma razão a partir das taxas de lâmina da seção 3, como $C = 10^6\, W_{\mathrm{out,tot}} / (q_{\mathrm{out,tot}}\, A_{\mathrm{cell}})$, com $W_{\mathrm{out,tot}}$ em kg/h, a taxa total de saída $q_{\mathrm{out,tot}}$ em mm/h e $A_{\mathrm{cell}}$ em m². Ele usa no mínimo 10 mm/h para $q_{\mathrm{out,tot}}$ (seção 12).
 
 ---
 
@@ -228,14 +230,15 @@ onde:
 A concentração de saída é calculada como:
 $$
 C_{\mathrm{out}} =
+1000 \cdot
 \frac{
 \sum W_{\mathrm{out, outlet}}
 }{
-\sum Q_{\mathrm{outlet}} \cdot A_{\mathrm{cell}}
+\sum Q_{\mathrm{outlet}}
 }
-\cdot 1000
 \quad [\mathrm{mg/L}]
 $$
+onde as somas percorrem as faces pelas quais a água sai do domínio, $W_{\mathrm{out,outlet}}$ é o fluxo de poluente por uma dessas faces, em média no passo de tempo $[\mathrm{kg\,s^{-1}}]$, e $Q_{\mathrm{outlet}}$ é a vazão de água por ela $[\mathrm{m^3\,s^{-1}}]$. Na grade regular, o MATLAB calcula a mesma razão como a massa de poluente que chega ao exutório no passo de tempo, em kg, dividida pelo volume de água do exutório no passo, em litros, vezes $10^6$.
 ---
 
 ## 11. Massa lavada total
@@ -256,12 +259,12 @@ O modelo impõe:
 $$
 b < b_{\min} \Rightarrow W_{\mathrm{out}} = 0
 $$
-- limite mínimo de fluxo:
+- uma vazão mínima para a concentração na célula, só no MATLAB e só na grade regular:
 
 $$
-q_{\mathrm{out}} \ge 10 \quad [\mathrm{mm/h}]
+q_{\mathrm{out,tot}} \ge 10 \quad [\mathrm{mm/h}]
 $$
-para evitar instabilidade numérica.
+O MATLAB aplica esse piso apenas à taxa total de saída no denominador da concentração na célula da seção 9, para que uma célula com saída muito pequena não mostre uma concentração muito alta. Ele não altera a lavagem, o balanço de massa nem a concentração no exutório. O Python não tem esse piso, e suas células das quais não sai água têm $C = 0$.
 
 ---
 

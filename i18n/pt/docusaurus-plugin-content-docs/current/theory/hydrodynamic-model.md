@@ -115,29 +115,18 @@ Na face leste entre as células $i$ e $i+1$, a elevação do leito da face é co
 $$
 z_{\mathrm{f},x} = \max\!\left(z_i,\;z_{i+1}\right)
 $$
-e as elevações da superfície da água reconstruídas hidrostaticamente são
+A declividade da superfície livre na face é calculada diretamente a partir das elevações da superfície da água das duas células
 $$
-\eta_{\mathrm{L},x}^{\ast} = \max\!\left(\eta_i,\;z_{\mathrm{f},x}\right)
-\qquad
-\eta_{\mathrm{R},x}^{\ast} = \max\!\left(\eta_{i+1},\;z_{\mathrm{f},x}\right)
-$$
-A inclinação da superfície livre na face é então calculada como
-$$
-S_x = \frac{\eta_{\mathrm{R},x}^{\ast} - \eta_{\mathrm{L},x}^{\ast}}{\Delta x}
+S_x = \frac{\eta_{i+1} - \eta_i}{\Delta x}
 $$
 Da mesma forma, para uma face norte-sul,
 $$
 z_{\mathrm{f},y} = \max\!\left(z_j,\;z_{j+1}\right)
 $$
 $$
-\eta_{\mathrm{S},y}^{\ast} = \max\!\left(\eta_j,\;z_{\mathrm{f},y}\right)
-\qquad
-\eta_{\mathrm{N},y}^{\ast} = \max\!\left(\eta_{j+1},\;z_{\mathrm{f},y}\right)
+S_y = \frac{\eta_j - \eta_{j+1}}{\Delta x}
 $$
-$$
-S_y = \frac{\eta_{\mathrm{S},y}^{\ast} - \eta_{\mathrm{N},y}^{\ast}}{\Delta x}
-$$
-Esta reconstrução hidrostática é essencial perto de frentes úmidas-secas porque evita profundidades negativas não físicas e garante que o gradiente de pressão seja avaliado apenas sobre a porção molhada hidraulicamente conectada da interface. Em termos práticos, é um dos principais ingredientes estabilizadores da implementação inercial local do HydroPol2D.
+A elevação do leito na face $z_{\mathrm{f}}$ não entra na declividade. Ela entra na profundidade da face da seção 1.4, e é ali que a reconstrução hidrostática atua perto das frentes de molhamento e secagem. Uma face só conduz escoamento quando a mais alta das duas superfícies da água fica acima do mais alto dos dois leitos, de modo que o gradiente de pressão atua apenas sobre a parte molhada da face. O Python e o MATLAB calculam a declividade dessa forma. O solver do MATLAB também contém uma declividade calculada com as elevações reconstruídas $\eta^{\ast} = \max(\eta,\;z_{\mathrm{f}})$ de cada lado da face, mas essa opção está desligada no código.
 
 ---
 
@@ -289,14 +278,14 @@ HydroPol2D contém diversas proteções explícitas para evitar roteamento não 
 Um rosto é suprimido se:
 - a profundidade efetiva da face é zero,
 - uma das células vizinhas está fora do domínio válido,
-- ou a profundidade da célula local está abaixo de um limite operacional mínimo.
+- ou a profundidade de escoamento na face não passa de uma profundidade operacional mínima.
 
 Em termos de código, HydroPol2D zera:
 - inclinação do rosto,
 - profundidade eficaz,
 - e largura efetiva da face
 
-sempre que um rosto está seco ou inválido. Em seguida, aplica uma lógica adicional para águas rasas com base em uma profundidade operacional mínima $h_{\min}$. Se a profundidade atual da célula estiver abaixo de $h_{\min}$, os fluxos de faces vizinhas serão zerados para suprimir movimentos espúrios em células quase secas. No caso padrão, o código usa $h_{\min}=10^{-6}\,\mathrm{m}$, embora possa ser definido como zero quando hidrogramas de afluência estão sendo impostos.
+sempre que um rosto está seco ou inválido. Em seguida, aplica uma profundidade operacional mínima $h_{\min}$ $[\mathrm{L}]$ para suprimir movimentos espúrios em faces quase secas. O Python testa a profundidade de escoamento na face $H_{\mathrm{f}}$ da seção 1.4, e uma face com $H_{\mathrm{f}} \le h_{\min}$ não conduz vazão. O padrão é $h_{\min}=10^{-3}\,\mathrm{m}$ (1 mm), como no LISFLOOD-FP, e o valor pode ser ajustado entre 0 e 0,01 m. O MATLAB mantém um teste sobre a profundidade da célula, que zera as faces de uma célula mais rasa que $h_{\min}$, mas o solver em grade define $h_{\min}=0$ com ou sem hidrogramas de afluência. Assim, o teste nunca atua no MATLAB, e uma face só deixa de conduzir escoamento quando $H_{\mathrm{f}}=0$.
 Esta lógica húmida-seca é uma das razões pelas quais o modelo permanece robusto nas fases de expansão e recessão das cheias.
 
 ---
@@ -332,7 +321,7 @@ Esta contabilidade é necessária porque HydroPol2D acopla os fluxos hidrodinâm
 
 ### 1.10 Limites de fluxo físico
 
-HydroPol2D impõe duas restrições físicas adicionais após a atualização inercial.
+HydroPol2D pode impor uma restrição física adicional após a atualização inercial. Nem o Python nem o MATLAB limitam a velocidade a um máximo fixo. O Python ignora uma velocidade máxima definida em um projeto antigo e avisa que essa opção foi descontinuada.
 #### 1.10.1 Limite de fluxo crítico
 
 Se o limitador de fluxo crítico estiver ativo, a magnitude da descarga da unidade é limitada por
@@ -341,18 +330,6 @@ $$
 $$
 
 Isto evita que o solucionador inercial produza velocidades que excedam a condição crítica local.
-#### 1.10.2 Limite máximo de velocidade
-
-HydroPol2D também impõe um limite rígido de velocidade máxima, atualmente definido como
-$$
-u_{\max} = 10 \;\mathrm{m\,s}^{-1}
-$$
-O limite de descarga unitária correspondente é
-$$
-|q| \le H_{\mathrm{f}}\,u_{\max}
-$$
-
-Esta é uma salvaguarda numérica pragmática contra picos isolados causados ​​por profundidade abrupta ou descontinuidades de taludes.
 
 ---
 
@@ -548,7 +525,7 @@ O solucionador suporta:
 - controles de saída,
 - controles de reservatório,
 - manuseio frontal molhado-seco,
-- limites de fluxo crítico e velocidade.
+- um limite opcional de escoamento crítico.
 
 Isso o torna o principal motor hidrodinâmico do HydroPol2D para roteamento de fluxo de superfície com base física.
 
@@ -644,7 +621,7 @@ Essa memória de momento é o que torna o modelo um verdadeiro solucionador de o
 O solucionador de momento total inclui diversas proteções numéricas para simulação de inundação raster:
 - as células secas e inativas são tratadas como paredes sólidas;
 - células muito rasas são limpas para evitar velocidades indefinidas;
-- o momento é limitado por uma velocidade máxima admissível;
+- nenhum dos dois códigos limita a velocidade a um máximo fixo, e o Python ignora uma velocidade máxima definida em um projeto antigo;
 - O atrito Manning é aplicado com uma atualização implícita semi-implícita ou exata;
 - um limitador de drenagem evita que o fluxo facial remova mais água do que a disponível.
 

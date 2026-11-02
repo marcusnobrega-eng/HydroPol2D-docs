@@ -135,18 +135,10 @@ $$
 z_{\mathrm{f},x} = \max\!\left(z_i,\;z_{i+1}\right)
 $$
 
-and the hydrostatically reconstructed water surface elevations are
+The free-surface slope at the face is computed directly from the water surface elevations of the two cells
 
 $$
-\eta_{\mathrm{L},x}^{\ast} = \max\!\left(\eta_i,\;z_{\mathrm{f},x}\right)
-\qquad
-\eta_{\mathrm{R},x}^{\ast} = \max\!\left(\eta_{i+1},\;z_{\mathrm{f},x}\right)
-$$
-
-The free-surface slope at the face is then computed as
-
-$$
-S_x = \frac{\eta_{\mathrm{R},x}^{\ast} - \eta_{\mathrm{L},x}^{\ast}}{\Delta x}
+S_x = \frac{\eta_{i+1} - \eta_i}{\Delta x}
 $$
 
 Similarly, for a north–south face,
@@ -156,16 +148,10 @@ z_{\mathrm{f},y} = \max\!\left(z_j,\;z_{j+1}\right)
 $$
 
 $$
-\eta_{\mathrm{S},y}^{\ast} = \max\!\left(\eta_j,\;z_{\mathrm{f},y}\right)
-\qquad
-\eta_{\mathrm{N},y}^{\ast} = \max\!\left(\eta_{j+1},\;z_{\mathrm{f},y}\right)
+S_y = \frac{\eta_j - \eta_{j+1}}{\Delta x}
 $$
 
-$$
-S_y = \frac{\eta_{\mathrm{S},y}^{\ast} - \eta_{\mathrm{N},y}^{\ast}}{\Delta x}
-$$
-
-This hydrostatic reconstruction is essential near wet–dry fronts because it prevents nonphysical negative depths and ensures that the pressure gradient is evaluated only over the hydraulically connected wetted portion of the interface. In practical terms, it is one of the key stabilizing ingredients of the HydroPol2D local inertial implementation. 
+The face bed elevation $z_{\mathrm{f}}$ does not enter the slope. It enters the face depth of section 1.4, and that is where the hydrostatic reconstruction acts near wet–dry fronts. A face carries flow only when the higher of the two water surfaces stands above the higher of the two beds, so the pressure gradient acts only across the wetted part of the face. Python and MATLAB both compute the slope this way. The MATLAB solver also contains a slope built from the reconstructed elevations $\eta^{\ast} = \max(\eta,\;z_{\mathrm{f}})$ on each side of the face, but that option is switched off in the code. 
 
 ---
 
@@ -345,7 +331,7 @@ A face is suppressed if:
 
 - the effective face depth is zero,
 - one of the neighboring cells is outside the valid domain,
-- or the local cell depth is below a minimum operative threshold.
+- or the face flow depth is not above a minimum operative depth.
 
 In code terms, HydroPol2D zeroes:
 
@@ -353,7 +339,7 @@ In code terms, HydroPol2D zeroes:
 - effective depth,
 - and effective face width
 
-whenever a face is dry or invalid. It then applies an additional shallow-water logic based on a minimum operative depth $h_{\min}$. If the current cell depth is below $h_{\min}$, neighboring face fluxes are zeroed to suppress spurious motion in nearly dry cells. In the standard case, the code uses $h_{\min}=10^{-6}\,\mathrm{m}$, although this can be set to zero when inflow hydrographs are being imposed. 
+whenever a face is dry or invalid. It then applies a minimum operative depth $h_{\min}$ $[\mathrm{L}]$ to suppress spurious motion across nearly dry faces. Python tests the face flow depth $H_{\mathrm{f}}$ of section 1.4, and a face with $H_{\mathrm{f}} \le h_{\min}$ carries no discharge. The default is $h_{\min}=10^{-3}\,\mathrm{m}$ (1 mm), as in LISFLOOD-FP, and it can be set between 0 and 0.01 m. MATLAB keeps a test on the cell depth, which zeroes the faces of a cell shallower than $h_{\min}$, but its grid solver sets $h_{\min}=0$ with or without inflow hydrographs. The test therefore never acts in MATLAB, and a face stops carrying flow only when $H_{\mathrm{f}}=0$. 
 
 This wet–dry logic is one of the reasons the model remains robust in flood expansion and recession phases.
 
@@ -397,7 +383,7 @@ This bookkeeping is necessary because HydroPol2D couples the hydrodynamic fluxes
 
 ### 1.10 Physical flow limits
 
-HydroPol2D imposes two additional physical constraints after the inertial update.
+HydroPol2D can impose one additional physical constraint after the inertial update. Neither Python nor MATLAB caps the velocity at a fixed maximum. Python ignores a maximum velocity set in an older project and warns that it is retired.
 
 #### 1.10.1 Critical-flow limit
 
@@ -408,22 +394,6 @@ $$
 $$
 
 This prevents the inertial solver from producing velocities that exceed the local critical condition. 
-
-#### 1.10.2 Maximum velocity limit
-
-HydroPol2D also imposes a hard maximum velocity threshold, currently set to
-
-$$
-u_{\max} = 10 \;\mathrm{m\,s}^{-1}
-$$
-
-The corresponding unit-discharge bound is
-
-$$
-|q| \le H_{\mathrm{f}}\,u_{\max}
-$$
-
-This is a pragmatic numerical safeguard against isolated spikes caused by abrupt depth or slope discontinuities. 
 
 ---
 
@@ -643,7 +613,7 @@ The solver supports:
 - outlet controls,
 - reservoir controls,
 - wet–dry front handling,
-- critical-flow and velocity limits.
+- an optional critical-flow limit.
 
 This makes it the main hydrodynamic engine of HydroPol2D for physically based surface-flow routing. 
 
@@ -759,7 +729,7 @@ The full-momentum solver includes several numerical protections for raster flood
 
 - dry and inactive cells are treated as solid walls;
 - very shallow cells are cleaned to avoid undefined velocities;
-- momentum is limited by a maximum admissible velocity;
+- the velocity is not capped at a fixed maximum in either code, and Python ignores a maximum velocity set in an older project;
 - Manning friction is applied with a semi-implicit or exact implicit update;
 - a draining limiter prevents a face flux from removing more water than is available.
 

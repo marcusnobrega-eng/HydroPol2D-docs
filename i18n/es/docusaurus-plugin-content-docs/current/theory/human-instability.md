@@ -143,7 +143,7 @@ $$
 En el mapa de salida, la diapositiva corresponde al código `1`.
 ### 3.3 Umbral de derrumbe
 
-El módulo también calcula un momento de vuelco a partir de la resistencia, la flotabilidad y la geometría del cuerpo. El vuelco se clasifica cuando el momento motriz supera al momento resistente:
+El módulo también calcula un momento de vuelco $M$ a partir del arrastre $D$, la sustentación $L$, la flotabilidad $B_n$ y la componente del peso a lo largo de la pendiente $W_p$, cada uno con un brazo de palanca definido por la geometría del cuerpo, el centroide sumergido y la pendiente. El momento resistente $M_{\mathrm{res}}$ proviene de la componente normal del peso $W_n$. El vuelco se clasifica cuando el momento motriz supera al momento resistente:
 $$
 \text{topple if } M > M_{\mathrm{res}}
 $$

@@ -64,15 +64,17 @@ $$
 
 ## 3. Acoplamiento hidrodinámico
 
-El modelo de calidad del agua utiliza flujos de salida hidrodinámicos:
+El modelo de calidad del agua usa el caudal $Q$ $[\mathrm{L}^3\,\mathrm{T}^{-1}]$, en $\mathrm{m^3/s}$, que sale de una celda por cada cara en el paso de tránsito. Python toma $Q$ directamente de los caudales en las caras calculados por el solver de tránsito.
+
+MATLAB guarda los caudales de salida de una celda de la malla regular como tasas de lámina sobre el área de la celda
 $$
 q_{\mathrm{out}} = \{ q_{\mathrm{left}}, q_{\mathrm{right}}, q_{\mathrm{up}}, q_{\mathrm{down}}, q_{\mathrm{outlet}} \}
 $$
-con unidades:
+con unidades
 $$
 [\mathrm{L}\,\mathrm{T}^{-1}] \quad (\mathrm{mm/h})
 $$
-Estos se convierten internamente a flujo volumétrico:
+y convierte cada una en caudal antes de calcular el lavado
 $$
 Q = \frac{q_{\mathrm{out}}}{1000 \cdot 3600} \cdot A_{\mathrm{cell}}
 \quad [\mathrm{L}^3\,\mathrm{T}^{-1}]
@@ -86,6 +88,8 @@ Se implementan dos formulaciones de lavado.
 ---
 
 ### 4.1 Modelo de lavado de curva de clasificación
+
+Este modo existe solo en MATLAB, y solo en la malla regular, ya que una simulación de MATLAB en malla no estructurada lo rechaza. Python tiene solo el modo basado en masa de la sección 4.2.
 
 Cuando `flag_wq_model = 1`, el lavado es:
 $$
@@ -125,12 +129,14 @@ Esta formulación supone:
 
 ## 5. Flujos direccionales de contaminantes
 
-Los flujos de contaminantes se calculan para cada dirección:
+Los flujos de contaminantes se calculan para cada dirección por la que el agua sale de la celda. En la malla regular, las direcciones son
 - izquierda
-- bien
+- derecha
 - arriba
 - abajo
 - salida
+
+MATLAB trata la salida como una quinta dirección de las celdas de salida. Python lleva el caudal de salida por las caras del borde de la malla, de modo que allí el flujo en la salida es el flujo por una cara de contorno. En una malla de Voronoi o quadtree, ambos códigos usan cada arista por la que el agua sale de la celda, y una arista en el contorno del dominio exporta el contaminante fuera del modelo.
 
 La salida total de contaminantes de una celda es:
 $$
@@ -163,30 +169,22 @@ Esta formulación representa:
 
 ## 7. Pasos de tiempo adaptativos (característica crítica)
 
-Para garantizar la estabilidad y evitar la masa negativa, HydroPol2D calcula un **paso de tiempo mínimo permitido**:
+Para garantizar la estabilidad y evitar la masa negativa, HydroPol2D divide el paso de tiempo hidráulico en $n$ **subpasos** iguales:
 $$
-\Delta t_{\min}
-=
-\min \left(
-\frac{B_t}{|dW|}
-\right)
+n = \max\!\left(1,\;\left\lceil \Delta t \,\max\!\left(\frac{W_{\mathrm{out,tot}}}{B_t}\right) \right\rceil\right)
+\qquad
+\Delta t_i = \frac{\Delta t}{n}
 $$
 dónde:
-- sólo se consideran las células que pierden masa,
-- Se excluyen los valores muy pequeños.
+- el máximo se toma sobre las celdas que contienen contaminante ($B_t > 0$),
+- $W_{\mathrm{out,tot}}/B_t$ es la tasa bruta de salida de una celda al inicio del paso, sin el flujo de entrada $[\mathrm{T}^{-1}]$,
+- $\lceil\cdot\rceil$ redondea al entero siguiente.
 
-Si:
-$$
-\Delta t_{\min} < \Delta t
-$$
-el modelo divide el paso de tiempo en subpasos:
-$$
-\Delta t = \sum \Delta t_i
-$$
-y actualiza la masa contaminante de forma iterativa:
+En cada subpaso el lavado se calcula de nuevo a partir de la masa actual. Una celda cuya salida retiraría más de lo que contiene tiene sus salidas reducidas en la proporción necesaria para que $W_{\mathrm{out,tot}}\,\Delta t_i \le B_t$. La masa se actualiza entonces:
 $$
 B_t^{i+1} = B_t^i - dW \cdot \Delta t_i
 $$
+Python y MATLAB usan este mismo esquema. Los subpasos ocurren dentro del paso hidráulico, de modo que el modelo de calidad del agua no acorta el paso de tiempo del modelo.
 Esto asegura:
 - sin masa contaminante negativa,
 - estabilidad numérica,
@@ -215,12 +213,15 @@ $$
 La concentración de contaminantes se calcula como:
 $$
 C =
-\frac{W_{\mathrm{out,tot}}}{Q_{\mathrm{tot}} \cdot A_{\mathrm{cell}}}
-\cdot 10^6
+1000 \cdot \frac{W_{\mathrm{out,tot}}}{Q_{\mathrm{tot}}}
 \quad [\mathrm{mg/L}]
 $$
 dónde:
-- $Q_{\mathrm{tot}}$ = salida total de agua $[\mathrm{L}\,\mathrm{T}^{-1}]$
+- $W_{\mathrm{out,tot}}$ = salida total de contaminante de la celda $[\mathrm{kg\,s^{-1}}]$
+- $Q_{\mathrm{tot}}$ = caudal total de agua que sale de la celda $[\mathrm{m^3\,s^{-1}}]$
+- el factor 1000 convierte $\mathrm{kg\,m^{-3}}$ en $\mathrm{mg/L}$
+
+Python calcula $C$ de esta forma y fija $C = 0$ en una celda de la que no sale agua. En la malla regular, MATLAB calcula la misma razón a partir de las tasas de lámina de la sección 3, como $C = 10^6\, W_{\mathrm{out,tot}} / (q_{\mathrm{out,tot}}\, A_{\mathrm{cell}})$, con $W_{\mathrm{out,tot}}$ en kg/h, la tasa total de salida $q_{\mathrm{out,tot}}$ en mm/h y $A_{\mathrm{cell}}$ en m². Usa como mínimo 10 mm/h para $q_{\mathrm{out,tot}}$ (sección 12).
 
 ---
 
@@ -229,14 +230,15 @@ dónde:
 La concentración de salida se calcula como:
 $$
 C_{\mathrm{out}} =
+1000 \cdot
 \frac{
 \sum W_{\mathrm{out, outlet}}
 }{
-\sum Q_{\mathrm{outlet}} \cdot A_{\mathrm{cell}}
+\sum Q_{\mathrm{outlet}}
 }
-\cdot 1000
 \quad [\mathrm{mg/L}]
 $$
+donde las sumas recorren las caras por las que el agua sale del dominio, $W_{\mathrm{out,outlet}}$ es el flujo de contaminante por una de esas caras, promediado en el paso de tiempo $[\mathrm{kg\,s^{-1}}]$, y $Q_{\mathrm{outlet}}$ es el caudal de agua por ella $[\mathrm{m^3\,s^{-1}}]$. En la malla regular, MATLAB calcula la misma razón como la masa de contaminante que llega a la salida en el paso de tiempo, en kg, dividida por el volumen de agua de la salida en el paso, en litros, por $10^6$.
 ---
 
 ## 11. Masa total lavada
@@ -257,12 +259,12 @@ El modelo impone:
 $$
 b < b_{\min} \Rightarrow W_{\mathrm{out}} = 0
 $$
-- umbral de flujo mínimo:
+- un caudal mínimo para la concentración en la celda, solo en MATLAB y solo en la malla regular:
 
 $$
-q_{\mathrm{out}} \ge 10 \quad [\mathrm{mm/h}]
+q_{\mathrm{out,tot}} \ge 10 \quad [\mathrm{mm/h}]
 $$
-para evitar la inestabilidad numérica.
+MATLAB aplica este mínimo solo a la tasa total de salida en el denominador de la concentración en la celda de la sección 9, para que una celda con muy poca salida no muestre una concentración muy alta. No altera el lavado, el balance de masa ni la concentración en la salida. Python no tiene este mínimo, y sus celdas de las que no sale agua tienen $C = 0$.
 
 ---
 

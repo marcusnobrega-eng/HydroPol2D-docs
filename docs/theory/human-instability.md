@@ -172,7 +172,7 @@ In the output map, slide corresponds to code `1`.
 
 ### 3.3 Toppling threshold
 
-The module also computes an overturning moment from drag, buoyancy, and body geometry. Toppling is classified when the driving moment exceeds the resisting moment:
+The module also computes an overturning moment $M$ from the drag $D$, the lift $L$, the buoyancy $B_n$ and the downslope weight component $W_p$, each with a lever arm set by the body geometry, the submerged centroid and the slope. The resisting moment $M_{\mathrm{res}}$ comes from the normal weight component $W_n$. Toppling is classified when the driving moment exceeds the resisting moment:
 
 $$
 \text{topple if } M > M_{\mathrm{res}}

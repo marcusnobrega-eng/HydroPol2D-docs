@@ -115,29 +115,18 @@ En la cara este entre las celdas $i$ y $i+1$, la elevación del lecho de la cara
 $$
 z_{\mathrm{f},x} = \max\!\left(z_i,\;z_{i+1}\right)
 $$
-y las elevaciones de la superficie del agua reconstruidas hidrostáticamente son
+La pendiente de la superficie libre en la cara se calcula directamente a partir de las elevaciones de la superficie del agua de las dos celdas
 $$
-\eta_{\mathrm{L},x}^{\ast} = \max\!\left(\eta_i,\;z_{\mathrm{f},x}\right)
-\qquad
-\eta_{\mathrm{R},x}^{\ast} = \max\!\left(\eta_{i+1},\;z_{\mathrm{f},x}\right)
-$$
-La pendiente de la superficie libre en la cara se calcula entonces como
-$$
-S_x = \frac{\eta_{\mathrm{R},x}^{\ast} - \eta_{\mathrm{L},x}^{\ast}}{\Delta x}
+S_x = \frac{\eta_{i+1} - \eta_i}{\Delta x}
 $$
 De manera similar, para una cara norte-sur,
 $$
 z_{\mathrm{f},y} = \max\!\left(z_j,\;z_{j+1}\right)
 $$
 $$
-\eta_{\mathrm{S},y}^{\ast} = \max\!\left(\eta_j,\;z_{\mathrm{f},y}\right)
-\qquad
-\eta_{\mathrm{N},y}^{\ast} = \max\!\left(\eta_{j+1},\;z_{\mathrm{f},y}\right)
+S_y = \frac{\eta_j - \eta_{j+1}}{\Delta x}
 $$
-$$
-S_y = \frac{\eta_{\mathrm{S},y}^{\ast} - \eta_{\mathrm{N},y}^{\ast}}{\Delta x}
-$$
-Esta reconstrucción hidrostática es esencial cerca de frentes húmedos-secos porque evita profundidades negativas no físicas y garantiza que el gradiente de presión se evalúe solo sobre la porción mojada de la interfaz conectada hidráulicamente. En términos prácticos, es uno de los ingredientes estabilizadores clave de la implementación inercial local HydroPol2D.
+La elevación del lecho en la cara $z_{\mathrm{f}}$ no entra en la pendiente. Entra en la profundidad de la cara de la sección 1.4, y es allí donde actúa la reconstrucción hidrostática cerca de los frentes de mojado y secado. Una cara solo conduce flujo cuando la más alta de las dos superficies del agua queda por encima del más alto de los dos lechos, de modo que el gradiente de presión actúa solo sobre la parte mojada de la cara. Python y MATLAB calculan la pendiente de esta forma. El solver de MATLAB también contiene una pendiente calculada con las elevaciones reconstruidas $\eta^{\ast} = \max(\eta,\;z_{\mathrm{f}})$ a cada lado de la cara, pero esa opción está desactivada en el código.
 
 ---
 
@@ -293,14 +282,14 @@ HydroPol2D contiene varias protecciones explícitas para evitar el enrutamiento 
 Una cara se suprime si:
 - la profundidad efectiva de la cara es cero,
 - una de las celdas vecinas está fuera del dominio válido,
-- o la profundidad de la celda local está por debajo de un umbral operativo mínimo.
+- o la profundidad de flujo en la cara no supera una profundidad operativa mínima.
 
 En términos de código, HydroPol2D pone a cero:
 - pendiente de la cara,
 - profundidad efectiva,
 - y ancho de cara efectivo
 
-siempre que la cara esté seca o inválida. Luego aplica una lógica adicional de aguas poco profundas basada en una profundidad operativa mínima $h_{\min}$. Si la profundidad de la celda actual está por debajo de $h_{\min}$, los flujos de las caras vecinas se ponen a cero para suprimir el movimiento espurio en celdas casi secas. En el caso estándar, el código usa $h_{\min}=10^{-6}\,\mathrm{m}$, aunque esto se puede establecer en cero cuando se imponen hidrogramas de entrada.
+siempre que la cara esté seca o inválida. Luego aplica una profundidad operativa mínima $h_{\min}$ $[\mathrm{L}]$ para suprimir el movimiento espurio en caras casi secas. Python evalúa la profundidad de flujo en la cara $H_{\mathrm{f}}$ de la sección 1.4, y una cara con $H_{\mathrm{f}} \le h_{\min}$ no conduce caudal. El valor por defecto es $h_{\min}=10^{-3}\,\mathrm{m}$ (1 mm), como en LISFLOOD-FP, y se puede ajustar entre 0 y 0,01 m. MATLAB conserva una prueba sobre la profundidad de la celda, que anula las caras de una celda menos profunda que $h_{\min}$, pero su solver en malla regular fija $h_{\min}=0$ con o sin hidrogramas de entrada. Por eso la prueba nunca actúa en MATLAB, y una cara solo deja de conducir flujo cuando $H_{\mathrm{f}}=0$.
 Esta lógica húmedo-seco es una de las razones por las que el modelo sigue siendo sólido en las fases de expansión y recesión de las inundaciones.
 
 ---
@@ -336,7 +325,7 @@ Esta contabilidad es necesaria porque HydroPol2D acopla los flujos hidrodinámic
 
 ### 1.10 Límites de flujo físico
 
-HydroPol2D impone dos restricciones físicas adicionales después de la actualización inercial.
+HydroPol2D puede imponer una restricción física adicional después de la actualización inercial. Ni Python ni MATLAB limitan la velocidad a un máximo fijo. Python ignora una velocidad máxima definida en un proyecto antiguo y avisa que esa opción se retiró.
 #### 1.10.1 Límite de flujo crítico
 
 Si el limitador de flujo crítico está activo, la magnitud de la descarga unitaria está limitada por
@@ -345,18 +334,6 @@ $$
 $$
 
 Esto evita que el solucionador inercial produzca velocidades que excedan la condición crítica local.
-#### 1.10.2 Límite de velocidad máxima
-
-HydroPol2D también impone un umbral de velocidad máximo estricto, actualmente establecido en
-$$
-u_{\max} = 10 \;\mathrm{m\,s}^{-1}
-$$
-El límite de descarga unitaria correspondiente es
-$$
-|q| \le H_{\mathrm{f}}\,u_{\max}
-$$
-
-Esta es una salvaguardia numérica pragmática contra picos aislados causados ​​por profundidades abruptas o discontinuidades de pendiente.
 
 ---
 
@@ -552,7 +529,7 @@ El solucionador admite:
 - controles de salida,
 - controles de depósito,
 - manejo frontal mojado-seco,
-- Límites críticos de flujo y velocidad.
+- un límite opcional de flujo crítico.
 
 Esto lo convierte en el principal motor hidrodinámico de HydroPol2D para el enrutamiento físico del flujo superficial.
 
@@ -648,7 +625,7 @@ Esta memoria de impulso es lo que hace que el modelo sea un verdadero solucionad
 El solucionador de momento completo incluye varias protecciones numéricas para la simulación de inundaciones ráster:
 - las células secas e inactivas se tratan como paredes sólidas;
 - se limpian celdas muy poco profundas para evitar velocidades indefinidas;
-- el impulso está limitado por una velocidad máxima admisible;
+- ninguno de los dos códigos limita la velocidad a un máximo fijo, y Python ignora una velocidad máxima definida en un proyecto antiguo;
 - La fricción Manning se aplica con una actualización semiimplícita o implícita exacta;
 - un limitador de drenaje evita que un fundente frontal elimine más agua de la disponible.
 

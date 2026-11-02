@@ -143,7 +143,7 @@ $$
 No mapa de saída, o slide corresponde ao código `1`.
 ### 3.3 Limiar de tombamento
 
-O módulo também calcula um momento de capotamento a partir do arrasto, da flutuabilidade e da geometria do corpo. O tombamento é classificado quando o momento motriz excede o momento resistente:
+O módulo também calcula um momento de tombamento $M$ a partir do arrasto $D$, da sustentação $L$, do empuxo $B_n$ e da componente do peso ao longo da encosta $W_p$, cada um com um braço de alavanca definido pela geometria do corpo, pelo centroide submerso e pela declividade. O momento resistente $M_{\mathrm{res}}$ vem da componente normal do peso $W_n$. O tombamento é classificado quando o momento motriz excede o momento resistente:
 $$
 \text{topple if } M > M_{\mathrm{res}}
 $$

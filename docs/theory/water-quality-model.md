@@ -78,19 +78,21 @@ $$
 
 ## 3. Hydrodynamic coupling
 
-The water quality model uses hydrodynamic outflows:
+The water quality model uses the discharge $Q$ $[\mathrm{L}^3\,\mathrm{T}^{-1}]$, in $\mathrm{m^3/s}$, that leaves a cell through each face in the routing step. Python takes $Q$ directly from the face discharges of the routing solver.
+
+MATLAB stores the outflows of a grid cell as depth rates over the cell area
 
 $$
 q_{\mathrm{out}} = \{ q_{\mathrm{left}}, q_{\mathrm{right}}, q_{\mathrm{up}}, q_{\mathrm{down}}, q_{\mathrm{outlet}} \}
 $$
 
-with units:
+with units
 
 $$
 [\mathrm{L}\,\mathrm{T}^{-1}] \quad (\mathrm{mm/h})
 $$
 
-These are converted internally to volumetric flow:
+and converts each one to a discharge before the wash-off is computed
 
 $$
 Q = \frac{q_{\mathrm{out}}}{1000 \cdot 3600} \cdot A_{\mathrm{cell}}
@@ -106,6 +108,8 @@ Two wash-off formulations are implemented.
 ---
 
 ### 4.1 Rating-curve wash-off model
+
+This mode exists only in MATLAB, and only on the regular grid, since a MATLAB mesh run refuses it. Python has only the mass-based mode of section 4.2.
 
 When `flag_wq_model = 1`, the wash-off is:
 
@@ -155,13 +159,15 @@ This formulation assumes:
 
 ## 5. Directional pollutant fluxes
 
-Pollutant fluxes are computed for each direction:
+Pollutant fluxes are computed for each direction through which water leaves the cell. On the regular grid the directions are
 
 - left
 - right
 - up
 - down
 - outlet
+
+MATLAB treats the outlet as a fifth direction of the outlet cells. Python carries the outlet flow on the faces at the edge of the grid, so there the outlet flux is the flux through a boundary face. On a Voronoi or quadtree mesh, both codes use every edge through which water leaves the cell, and an edge on the domain boundary exports the pollutant out of the model.
 
 The total pollutant outflow from a cell is:
 
@@ -203,38 +209,27 @@ This formulation accounts for:
 
 ## 7. Adaptive time stepping (critical feature)
 
-To ensure stability and avoid negative mass, HydroPol2D computes a **minimum admissible time step**:
+To ensure stability and avoid negative mass, HydroPol2D splits the hydraulic time step into $n$ equal **sub-steps**:
 
 $$
-\Delta t_{\min}
-=
-\min \left(
-\frac{B_t}{|dW|}
-\right)
+n = \max\!\left(1,\;\left\lceil \Delta t \,\max\!\left(\frac{W_{\mathrm{out,tot}}}{B_t}\right) \right\rceil\right)
+\qquad
+\Delta t_i = \frac{\Delta t}{n}
 $$
 
 where:
 
-- only cells losing mass are considered,
-- very small values are excluded.
+- the maximum runs over the cells that hold pollutant ($B_t > 0$),
+- $W_{\mathrm{out,tot}}/B_t$ is the gross outflow rate of a cell at the start of the step, without the incoming flux $[\mathrm{T}^{-1}]$,
+- $\lceil\cdot\rceil$ rounds up to the next integer.
 
-If:
-
-$$
-\Delta t_{\min} < \Delta t
-$$
-
-the model splits the time step into sub-steps:
-
-$$
-\Delta t = \sum \Delta t_i
-$$
-
-and updates pollutant mass iteratively:
+In each sub-step the wash-off is computed again from the current mass. A cell whose outflow would remove more than it holds has its outflows scaled down so that $W_{\mathrm{out,tot}}\,\Delta t_i \le B_t$. The mass is then updated:
 
 $$
 B_t^{i+1} = B_t^i - dW \cdot \Delta t_i
 $$
+
+Python and MATLAB both use this scheme. The sub-steps run inside the hydraulic step, so the water quality model does not shorten the model time step.
 
 This ensures:
 
@@ -270,14 +265,17 @@ Pollutant concentration is computed as:
 
 $$
 C =
-\frac{W_{\mathrm{out,tot}}}{Q_{\mathrm{tot}} \cdot A_{\mathrm{cell}}}
-\cdot 10^6
+1000 \cdot \frac{W_{\mathrm{out,tot}}}{Q_{\mathrm{tot}}}
 \quad [\mathrm{mg/L}]
 $$
 
 where:
 
-- $Q_{\mathrm{tot}}$ = total water outflow $[\mathrm{L}\,\mathrm{T}^{-1}]$
+- $W_{\mathrm{out,tot}}$ = total pollutant outflow of the cell $[\mathrm{kg\,s^{-1}}]$
+- $Q_{\mathrm{tot}}$ = total water discharge that leaves the cell $[\mathrm{m^3\,s^{-1}}]$
+- the factor 1000 converts $\mathrm{kg\,m^{-3}}$ to $\mathrm{mg/L}$
+
+Python computes $C$ this way and sets $C = 0$ in a cell that no water leaves. On the regular grid, MATLAB computes the same ratio from the depth rates of section 3, as $C = 10^6\, W_{\mathrm{out,tot}} / (q_{\mathrm{out,tot}}\, A_{\mathrm{cell}})$ with $W_{\mathrm{out,tot}}$ in kg/h, the total outflow rate $q_{\mathrm{out,tot}}$ in mm/h and $A_{\mathrm{cell}}$ in m². It uses no less than 10 mm/h for $q_{\mathrm{out,tot}}$ (section 12).
 
 ---
 
@@ -287,14 +285,16 @@ The outlet concentration is computed as:
 
 $$
 C_{\mathrm{out}} =
+1000 \cdot
 \frac{
 \sum W_{\mathrm{out, outlet}}
 }{
-\sum Q_{\mathrm{outlet}} \cdot A_{\mathrm{cell}}
+\sum Q_{\mathrm{outlet}}
 }
-\cdot 1000
 \quad [\mathrm{mg/L}]
 $$
+
+where the sums run over the faces through which water leaves the domain, $W_{\mathrm{out,outlet}}$ is the pollutant flux through such a face averaged over the time step $[\mathrm{kg\,s^{-1}}]$, and $Q_{\mathrm{outlet}}$ is the water discharge through it $[\mathrm{m^3\,s^{-1}}]$. On the regular grid, MATLAB computes the same ratio as the pollutant mass that reaches the outlet in the time step, in kg, divided by the outlet water volume of the step, in litres, times $10^6$.
 
 ---
 
@@ -320,13 +320,13 @@ $$
 b < b_{\min} \Rightarrow W_{\mathrm{out}} = 0
 $$
 
-- minimum flow threshold:
+- a minimum flow for the cell concentration, in MATLAB on the regular grid only:
 
 $$
-q_{\mathrm{out}} \ge 10 \quad [\mathrm{mm/h}]
+q_{\mathrm{out,tot}} \ge 10 \quad [\mathrm{mm/h}]
 $$
 
-to avoid numerical instability.
+MATLAB applies this floor only to the total outflow rate in the denominator of the cell concentration of section 9, so a cell with very little outflow does not report a very large concentration. It does not change the wash-off, the mass balance or the outlet concentration. Python has no such floor, and its cells that no water leaves have $C = 0$.
 
 ---
 
