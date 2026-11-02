@@ -62,7 +62,7 @@ Not all terms are active simultaneously. Their activation depends on the selecte
 
 ## 2. Canopy Interception, Throughfall, and Stemflow
 
-HydroPol2D represents canopy interception using a storage-based interception model in which gross precipitation is partitioned into:
+HydroPol2D represents canopy interception using a storage-based interception model in which the precipitation that reaches the canopy is partitioned into:
 
 - canopy storage,
 - throughfall,
@@ -71,13 +71,15 @@ HydroPol2D represents canopy interception using a storage-based interception mod
 
 The interception routine receives:
 
-- gross precipitation $P_{\mathrm{gross}}$,
+- gross precipitation $P_{\mathrm{gross}}$ when snow modeling is off, and only the rainfall $P_{\mathrm{rain}}$ of Section 5.1 when it is on,
 - potential evaporation $E_{\mathrm{p}}$,
 - leaf area index $\mathrm{LAI}$,
 - previous canopy storage $S_{\mathrm{can,prev}}$,
 - canopy storage coefficient $C_{\mathrm{can}}$,
 
 and returns updated canopy storage $S_{\mathrm{can}}$, throughfall $T_{\mathrm{f}}$, evaporation from intercepted water $E_{\mathrm{can}}$, and stemflow $F_{\mathrm{stem}}$.
+
+With snow modeling on, the snow module splits the precipitation before the canopy. The snowfall goes to the snowpack, the melt goes straight to the surface, and $P_{\mathrm{rain}}$ takes the place of $P_{\mathrm{gross}}$ in the equations of this section.
 
 This interception step controls how much of the atmospheric water input is temporarily retained by vegetation and how much is transferred to the ground surface during the current time step.
 
@@ -226,7 +228,7 @@ $$
 P_{\mathrm{int}} = \Delta P_{\mathrm{agg}}
 $$
 
-where $\Delta P_{\mathrm{agg}}$ is the aggregated rainfall depth over the model time step.
+where $\Delta P_{\mathrm{agg}}$ is the aggregated rainfall depth over the model time step. With snow modeling on, $P_{\mathrm{int}}$ is only the rain part of $\Delta P_{\mathrm{agg}}$, the $P_{\mathrm{rain}}$ of Section 5.1.
 
 ---
 
@@ -531,7 +533,7 @@ The final infiltration rate is determined as the minimum among these competing l
 
 The current implementation represents the soil and shallow groundwater column with four conceptual zones:
 
-- a near-surface layer, with a default target thickness of $0.10\,\mathrm{m}$;
+- a near-surface layer, with a default target thickness of $0.05\,\mathrm{m}$ (HydroPol2D-Python takes it from the soil-table length $L_{\mathrm{top}}$ of Section 4.5, and the MATLAB code fixes it at $0.05\,\mathrm{m}$);
 - a root-zone layer, whose depth is assigned from land use / land cover;
 - a transmission-zone layer, which occupies any remaining vadose thickness below the root zone;
 - a groundwater zone, whose top is the current water-table depth.
@@ -720,7 +722,7 @@ If $\ell$ is not provided, a default value of $\ell = 0.5$ is used.
 
 The infiltration capacity represents the maximum flux that can be transmitted into the soil given the current hydraulic state. In the current code, this is not based on a single $K(\theta)$ value alone. Instead, HydroPol2D uses:
 
-- a representative bucket suction based on the current vadose storage,
+- a representative bucket suction $\psi_{\mathrm{m}}$ based on the current storage of the near-surface layer, so that $\theta$ and $\psi_{\mathrm{m}}$ below are those of that layer (only the legacy single-store fallback uses the whole vadose storage of Section 4.2),
 - a within-step near-surface wetting predictor,
 - and a weighted near-surface conductivity that blends saturated entry conductivity with the conductivity of the wetted top layer.
 
@@ -784,7 +786,7 @@ $$
 where:
 
 - $I_{\mathrm{cap}}$ is infiltration capacity $[\mathrm{L}\,\mathrm{T}^{-1}]$
-- $h_{\mathrm{pond}}$ is surface ponding head $[\mathrm{L}]$
+- $h_{\mathrm{pond}}$ is surface ponding head, equal to $d_{\mathrm{eff}}$ of Section 4.6 $[\mathrm{L}]$
 - $L_{\mathrm{top}}$ is near-surface resistance length (default $\approx 0.05\,\mathrm{m}$)
 - $\Delta h_{\mathrm{max}}$ is maximum driving head difference (typically $1\,\mathrm{m}$)
 
@@ -794,11 +796,13 @@ This formulation accounts for both gravity-driven and capillary-driven infiltrat
 
 ### 4.6 Supply-limited and storage-limited infiltration
 
-The water available for infiltration is determined from the effective surface water depth. When interception is inactive:
+The water available for infiltration is determined from the effective surface water depth. It is the ponded depth at the start of the step plus the water that reaches the ground during the step,
 
 $$
-d_{\mathrm{eff}} = d
+d_{\mathrm{eff}} = d + P_{\mathrm{eff}} + M_{\mathrm{snow}}
 $$
+
+where $P_{\mathrm{eff}}$ is this step's rain on the ground from Section 2.5 (the throughfall $T_{\mathrm{f}}$ when interception is on, the rain itself when it is off) and $M_{\mathrm{snow}}$ is this step's snowmelt, zero when snow modeling is off.
 
 The corresponding supply-limited infiltration rate is
 
@@ -994,8 +998,10 @@ If the LULC raster contains a valid code that is absent from the LULC, soil, or 
 ### 5.7 Surface-water update under snow conditions
 
 $$
-d_t=d_p+M_{\mathrm{snow}}+P_{\mathrm{rain}}
+d_t=d_p+M_{\mathrm{snow}}+P_{\mathrm{eff}}
 $$
+
+where $P_{\mathrm{eff}}$ is the rain that reaches the ground (Section 2.5) when $P_{\mathrm{rain}}$ is the input. With interception on, it is the throughfall $T_{\mathrm{f}}$ that the canopy releases from $P_{\mathrm{rain}}$. With interception off, $P_{\mathrm{eff}}=P_{\mathrm{rain}}$.
 
 If snow modeling is off,
 
@@ -1071,7 +1077,7 @@ When `flag_capillary_rise = 1`, shallow groundwater can return water upward into
 - larger storage deficit in the receiving layer,
 - and larger layer conductivity.
 
-The net vadose-groundwater exchange accumulated by the groundwater scheduler is therefore
+The net vadose-groundwater exchange of each surface-water step is therefore
 
 $$
 R_{\mathrm{net}} = R_{\mathrm{down}} - C_{\mathrm{up}}
@@ -1082,7 +1088,7 @@ where:
 - $R_{\mathrm{down}}$ is total downward recharge from layered drainage
 - $C_{\mathrm{up}}$ is upward capillary-rise exchange
 
-This net exchange is accumulated every surface-water step, while the saturated groundwater heads can be updated on a slower asynchronous schedule.
+This net exchange changes the water-table heads in every surface-water step. The groundwater scheduler is always asynchronous, and only the lateral groundwater flow, when it is on, waits for it. HydroPol2D-Python and the MATLAB code no longer read the `flag_groundwater_async` setting.
 
 ### 6.4 Saturation excess and groundwater exfiltration
 

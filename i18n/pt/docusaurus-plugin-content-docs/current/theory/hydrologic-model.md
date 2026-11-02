@@ -57,20 +57,23 @@ Nem todos os termos estão ativos simultaneamente. Sua ativação depende da con
 
 ## 2. Interceptação do dossel, passagem e fluxo do tronco
 
-HydroPol2D representa a interceptação do dossel usando um modelo de interceptação baseado em armazenamento no qual a precipitação bruta é particionada em:
+HydroPol2D representa a interceptação do dossel usando um modelo de interceptação baseado em armazenamento no qual a precipitação que chega ao dossel é particionada em:
 - armazenamento do dossel,
 - queda,
 - evaporação do dossel,
 - e fluxo de tronco.
 
 A rotina de interceptação recebe:
-- precipitação bruta $P_{\mathrm{gross}}$,
+- precipitação bruta $P_{\mathrm{gross}}$ com a modelagem de neve desligada, e só a chuva $P_{\mathrm{rain}}$ da Seção 5.1 com ela ligada,
 - evaporação potencial $E_{\mathrm{p}}$,
 - índice de área foliar $\mathrm{LAI}$,
 - armazenamento anterior do dossel $S_{\mathrm{can,prev}}$,
 - coeficiente de armazenamento do dossel $C_{\mathrm{can}}$,
 
 e retorna armazenamento de dossel atualizado $S_{\mathrm{can}}$, passagem $T_{\mathrm{f}}$, evaporação da água interceptada $E_{\mathrm{can}}$ e fluxo de tronco $F_{\mathrm{stem}}$.
+
+Com a modelagem de neve ligada, o módulo de neve separa a precipitação antes do dossel. A neve vai para o manto de neve, o degelo vai direto para a superfície, e $P_{\mathrm{rain}}$ toma o lugar de $P_{\mathrm{gross}}$ nas equações desta seção.
+
 Esta etapa de interceptação controla quanto da entrada de água atmosférica é temporariamente retida pela vegetação e quanto é transferido para a superfície do solo durante o intervalo de tempo atual.
 ### 2.1 Armazenamento máximo do dossel
 
@@ -178,7 +181,7 @@ Para aplicações validadas, a precipitação que entra no módulo de intercepta
 $$
 P_{\mathrm{int}} = \Delta P_{\mathrm{agg}}
 $$
-onde $\Delta P_{\mathrm{agg}}$ é a profundidade agregada da precipitação ao longo do intervalo de tempo do modelo.
+onde $\Delta P_{\mathrm{agg}}$ é a profundidade agregada da precipitação ao longo do intervalo de tempo do modelo. Com a modelagem de neve ligada, $P_{\mathrm{int}}$ é só a parte de chuva de $\Delta P_{\mathrm{agg}}$, o $P_{\mathrm{rain}}$ da Seção 5.1.
 
 ---
 
@@ -438,7 +441,7 @@ A taxa de infiltração final é determinada como a mínima entre esses limites 
 ### Estrutura vadosa em camadas atual
 
 A implementação atual representa o solo e a coluna de águas subterrâneas rasas com quatro zonas conceituais:
-- uma camada próxima à superfície, com uma espessura alvo padrão de $0.10\,\mathrm{m}$;
+- uma camada próxima à superfície, com uma espessura alvo padrão de $0.05\,\mathrm{m}$ (o HydroPol2D-Python a toma do comprimento $L_{\mathrm{top}}$ da tabela de solos, da Seção 4.5, e o código MATLAB a fixa em $0.05\,\mathrm{m}$);
 - uma camada de zona radicular, cuja profundidade é atribuída a partir do uso/cobertura do solo;
 - uma camada de zona de transmissão, que ocupa qualquer espessura vadosa remanescente abaixo da zona radicular;
 - uma zona de águas subterrâneas, cujo topo é a profundidade atual do lençol freático.
@@ -594,7 +597,7 @@ Se $\ell$ não for fornecido, um valor padrão de $\ell = 0.5$ será usado.
 ### 4.5 Capacidade de infiltração baseada em Darcy
 
 A capacidade de infiltração representa o fluxo máximo que pode ser transmitido ao solo dado o estado hidráulico atual. No código atual, isso não se baseia apenas em um único valor $K(\theta)$. Em vez disso, HydroPol2D usa:
-- uma sucção de balde representativa com base no armazenamento vadose atual,
+- uma sucção de balde representativa $\psi_{\mathrm{m}}$ com base no armazenamento atual da camada próxima à superfície, de modo que $\theta$ e $\psi_{\mathrm{m}}$ abaixo são os dessa camada (só a formulação de fallback herdada, de armazenamento único, usa todo o armazenamento vadoso da Seção 4.2),
 - um preditor de umedecimento próximo à superfície,
 - e uma condutividade próxima da superfície ponderada que combina a condutividade de entrada saturada com a condutividade da camada superior molhada.
 
@@ -648,7 +651,7 @@ L_{\mathrm{top}}
 $$
 onde:
 - $I_{\mathrm{cap}}$ é a capacidade de infiltração $[\mathrm{L}\,\mathrm{T}^{-1}]$
-- $h_{\mathrm{pond}}$ é a cabeça da superfície $[\mathrm{L}]$
+- $h_{\mathrm{pond}}$ é a cabeça da superfície, igual a $d_{\mathrm{eff}}$ da Seção 4.6 $[\mathrm{L}]$
 - $L_{\mathrm{top}}$ é o comprimento da resistência próxima à superfície (padrão $\approx 0.05\,\mathrm{m}$)
 - $\Delta h_{\mathrm{max}}$ é a diferença máxima da cabeça motriz (normalmente $1\,\mathrm{m}$)
 
@@ -658,10 +661,12 @@ Esta formulação é responsável pela infiltração impulsionada pela gravidade
 
 ### 4.6 Infiltração limitada por fornecimento e armazenamento limitado
 
-A água disponível para infiltração é determinada a partir da profundidade efetiva da água superficial. Quando a interceptação está inativa:
+A água disponível para infiltração é determinada a partir da profundidade efetiva da água superficial. Ela é a lâmina acumulada no início do passo mais a água que chega ao solo durante o passo,
 $$
-d_{\mathrm{eff}} = d
+d_{\mathrm{eff}} = d + P_{\mathrm{eff}} + M_{\mathrm{snow}}
 $$
+onde $P_{\mathrm{eff}}$ é a chuva deste passo que chega ao solo, da Seção 2.5 (o throughfall $T_{\mathrm{f}}$ com a interceptação ativa, a própria chuva com ela inativa), e $M_{\mathrm{snow}}$ é o degelo deste passo, zero com a modelagem de neve desligada.
+
 A taxa de infiltração correspondente com fornecimento limitado é
 $$
 i_{\mathrm{sup}} = \frac{d_{\mathrm{eff}}}{\Delta t_{\mathrm{h}}}
@@ -839,8 +844,10 @@ Se o raster LULC contiver um código válido que não esteja na tabela LULC, de 
 ### 5.7 Atualização da água superficial em condições de neve {#57-surface-water-update-under-snow-conditions}
 
 $$
-d_t=d_p+M_{\mathrm{snow}}+P_{\mathrm{rain}}
+d_t=d_p+M_{\mathrm{snow}}+P_{\mathrm{eff}}
 $$
+
+onde $P_{\mathrm{eff}}$ é a chuva que chega ao solo (Seção 2.5) quando a entrada é $P_{\mathrm{rain}}$. Com a interceptação ativa, é o throughfall $T_{\mathrm{f}}$ que o dossel libera a partir de $P_{\mathrm{rain}}$. Com a interceptação inativa, $P_{\mathrm{eff}}=P_{\mathrm{rain}}$.
 
 Se a modelagem de neve estiver desativada,
 
@@ -904,7 +911,7 @@ Quando `flag_capillary_rise = 1`, as águas subterrâneas rasas podem devolver a
 - maior déficit de armazenamento na camada receptora,
 - e condutividade de camada maior.
 
-A troca líquida vadose-água subterrânea acumulada pelo programador de águas subterrâneas é, portanto,
+A troca líquida vadose-água subterrânea de cada passo da água superficial é, portanto,
 $$
 R_{\mathrm{net}} = R_{\mathrm{down}} - C_{\mathrm{up}}
 $$
@@ -912,7 +919,7 @@ onde:
 - $R_{\mathrm{down}}$ é a recarga total para baixo da drenagem em camadas
 - $C_{\mathrm{up}}$ é uma troca de ascensão capilar ascendente
 
-Esta troca líquida é acumulada a cada passo da água superficial, enquanto as cabeceiras saturadas das águas subterrâneas podem ser atualizadas em um cronograma assíncrono mais lento.
+Esta troca líquida altera as cargas do lençol freático a cada passo da água superficial. O programador de águas subterrâneas é sempre assíncrono, e só o fluxo lateral das águas subterrâneas, quando está ativo, espera por ele. O HydroPol2D-Python e o código MATLAB não leem mais a configuração `flag_groundwater_async`.
 ### 6.4 Excesso de saturação e exfiltração de águas subterrâneas
 
 Após a atualização das águas subterrâneas, HydroPol2D recalcula a capacidade vadosa usando a posição atualizada do lençol freático. Qualquer água que não caiba mais na zona não saturada retorna à superfície como excesso de saturação:
