@@ -65,7 +65,11 @@ function CouplingPill({ icon, text }) {
 export default function Home() {
   const {i18n, siteConfig} = useDocusaurusContext();
   const currentLocale = i18n.currentLocale;
-  const siteBaseUrl = siteConfig.baseUrl;
+  // In the pt and es builds baseUrl already ends in the locale; the language links need the site root.
+  const siteBaseUrl =
+    currentLocale === i18n.defaultLocale
+      ? siteConfig.baseUrl
+      : siteConfig.baseUrl.replace(new RegExp(`${currentLocale}/$`), '');
   const logoUrl = useBaseUrl('/img/logo.svg');
   const docsUrl = useBaseUrl('/manual/getting-started/overview');
   const validationUrl = useBaseUrl('/manual/validation/overview');
