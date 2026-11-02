@@ -30,7 +30,7 @@ HydroPol2D couples:
 | Diffusive and kinematic D4 routing | [Hydrodynamic Model](./hydrodynamic-model) | Optional + validated in controlled benchmarks |
 | Cellular automata routing | [Hydrodynamic Model](./hydrodynamic-model) | Optional + validated for conservation and routing bookkeeping |
 | Human instability modes `1` and `3` | [Human Instability](./human-instability) | Optional + validated in controlled benchmarks |
-| River-aquifer exchange interface | [Groundwater Model](./groundwater-model) | Interface present, not yet a mature standalone theory claim |
+| River-aquifer exchange | [Groundwater Model](./groundwater-model#10-riveraquifer-exchange) | Implemented in Python and MATLAB + controlled groundwater tests |
 
 ## Theory map
 

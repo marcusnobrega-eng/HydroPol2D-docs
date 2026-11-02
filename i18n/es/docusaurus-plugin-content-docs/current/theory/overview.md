@@ -30,7 +30,7 @@ HydroPol2D acopla:
 | Enrutamientos diffusive y kinematic D4 | [Hydrodynamic Model](./hydrodynamic-model) | Opcionales + validados en benchmarks controlados |
 | Cellular automata | [Hydrodynamic Model](./hydrodynamic-model) | Opcional + validado para conservación y bookkeeping |
 | Inestabilidad humana, modos `1` y `3` | [Human Instability](./human-instability) | Opcional + validada en benchmarks controlados |
-| Interfaz río-acuífero | [Groundwater Model](./groundwater-model) | Interfaz presente, todavía sin una afirmación teórica madura independiente |
+| Intercambio río-acuífero | [Modelo de aguas subterráneas](./groundwater-model) | Implementado en Python y MATLAB + pruebas controladas de agua subterránea |
 
 ## Mapa de la teoría
 

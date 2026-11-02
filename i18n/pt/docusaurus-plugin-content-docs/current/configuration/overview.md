@@ -24,7 +24,7 @@ A configuração pública deve refletir o modelo implementado:
 | Capacidade | Principais controles públicos | Estado atual |
 |---|---|---|
 | Núcleo hidrológico | `flag_infiltration`, controles de ET, chuva e neve, tabelas de solo e LULC | Padrão + validado |
-| Recarga subterrânea em camadas e agendador assíncrono | `flag_groundwater_modeling`, `groundwater_target_dt_min`, `groundwater_min_dt_min`, `groundwater_max_head_change_m`, `groundwater_courant` | Padrão + validado |
+| Recarga subterrânea em camadas e agendador assíncrono | `flag_groundwater_modeling`, `groundwater_target_dt_s`, `groundwater_min_dt_s`, `groundwater_max_head_change_m`, `groundwater_courant` | Padrão + validado |
 | Ascensão capilar | `flag_capillary_rise` | Opcional + validada em benchmarks controlados |
 | Subsuperfície em camadas | `flag_layered_subsurface`, `flag_implicit_water_table_flux` | Opcional + testes controlados e paridade Python-MATLAB |
 | Estresse hídrico radicular de Feddes | `flag_feddes` | Opcional + testes de consistência |
