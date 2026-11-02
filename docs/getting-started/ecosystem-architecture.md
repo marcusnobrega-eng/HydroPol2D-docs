@@ -21,9 +21,9 @@ interpreting mesh properties differently.
 
 | Component | Responsibility | Candidate version |
 |---|---|---|
-| HydroBathyDEM | Production generator for regular and Voronoi meshes, terrain products, conservative raster overlap, subgrid tables, UGRID, GeoPackage inspection layers, and mesh QA. | `0.3.0rc1` |
-| HydroPol2D-Python | Python model engine and Studio. It validates and consumes the mesh package; it does not regenerate hydraulic mesh geometry. | `0.8.0rc1` |
-| HydroPol2D-MATLAB | MATLAB reference implementation and compatible consumer of the same mesh package. | `1.18.0-rc1` |
+| HydroBathyDEM | Production generator for regular and Voronoi meshes, terrain products, conservative raster overlap, subgrid tables, UGRID, GeoPackage inspection layers, and mesh QA. | `0.4.0rc1` |
+| HydroPol2D-Python | Python model engine and Studio. It validates and consumes the mesh package; it does not regenerate hydraulic mesh geometry. | `0.9.0rc2` |
+| HydroPol2D-MATLAB | MATLAB reference implementation and compatible consumer of the same mesh package. | `1.19.0-rc1` |
 | HydroPolMesh | Archived migration prototype. Useful validated capabilities are being retained in HydroBathyDEM; it is not a production runtime dependency. | prototype |
 
 The stable MATLAB `v1.17.0` release remains the numerical reference while the
@@ -40,10 +40,10 @@ Mesh contract `1.0` requires the package to declare:
 - conservative raster-to-cell overlap weights;
 - compatible cell-level and face-level subgrid tables when subgrid routing is enabled.
 
-Both solvers reject malformed indices, zero-length faces, negative areas,
-missing units or CRS, undefined CFL widths, non-conservative overlap, and
-incompatible subgrid tables. They do not silently reconstruct missing mesh
-properties.
+Both solvers reject malformed indices, zero-length faces, zero or negative
+areas, missing units or CRS, undefined CFL widths, non-conservative overlap,
+incompatible subgrid tables, and a missing contract version. They do not
+silently reconstruct missing mesh properties.
 
 ## Subgrid formulations
 

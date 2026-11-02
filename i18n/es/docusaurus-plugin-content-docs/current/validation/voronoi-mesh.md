@@ -31,9 +31,12 @@ canales submalla al estilo de Neal para ríos más estrechos que la malla.
 | Difusivo explícito | sí | no | validación de humo (smoke) en CPU aprobada |
 | Momento completo | sí | no | validación con benchmark en CPU aprobada |
 
-La ejecución en GPU está bloqueada de forma intencionada. Las mallas a escala de
-la India tampoco están validadas todavía. Ninguna de las dos debe deducirse de
-los resultados controlados en CPU.
+Estos resultados provienen de ejecuciones en CPU. En HydroPol2D-Python, un motor
+de malla en JAX también ejecuta casos en malla en una GPU CUDA; HydroPol2D-MATLAB
+todavía detiene una simulación de Voronoi que solicita la GPU. Las mallas a
+escala de la India tampoco están validadas todavía. Ni los resultados en GPU ni
+el comportamiento a escala de la India deben deducirse de los resultados
+controlados en CPU.
 
 Las opciones públicas de submalla distinguen el canal de Neal en la malla
 estructurada, las tablas de consulta estructuradas y las relaciones de submalla

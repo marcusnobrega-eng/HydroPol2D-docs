@@ -19,7 +19,8 @@ O HydroPol2D acopla:
 
 | Capacidade | Caminho teórico principal | Estado atual |
 |---|---|---|
-| Núcleo hidrológico: interceptação, ET, infiltração, neve, armazenamento vadoso em camadas | [Hydrologic Model](./hydrologic-model) | Padrão + validado |
+| Núcleo hidrológico: interceptação, ET, infiltração, armazenamento vadoso em camadas | [Hydrologic Model](./hydrologic-model) | Padrão + validado |
+| Acúmulo, derretimento e sublimação de neve | [Hydrologic Model](./hydrologic-model#5-snow-accumulation-melt-and-sublimation) | Opcional (desligado até ser ativado) + validado |
 | Recarga subterrânea, agendador assíncrono, ascensão capilar e fluxo lateral de Boussinesq | [Groundwater Model](./groundwater-model) | Padrão + validado |
 | Subsuperfície em camadas de solo sobre regolito | [Subsuperfície em Camadas](./layered-subsurface) | Opcional + paridade dos kernels e testes controlados na bacia em V |
 | Estresse de Feddes na absorção de água pelas raízes | [Modelo Hidrológico](./hydrologic-model#35-feddes-root-water-uptake-stress) | Opcional + testes de consistência |
@@ -73,11 +74,11 @@ A teoria de qualidade da água documenta o buildup, o washoff, o transporte e a 
 
 Em alto nível, o HydroPol2D avança o sistema acoplado:
 
-1. aplicando chuva, inflow e forçantes meteorológicas;
+1. aplicando a chuva e as forçantes meteorológicas;
 2. atualizando interceptação, neve, evapotranspiração, infiltração e armazenamento vadoso;
 3. acumulando recarga e troca capilar para o groundwater;
-4. atualizando a família de roteamento ativa;
-5. atualizando as cargas subterrâneas quando o agendador assíncrono entra em ação;
-6. devolvendo exfiltração, excesso de saturação e diagnósticos opcionais ao estado acoplado.
+4. alterando as cargas do lençol freático a cada passo da água superficial pela troca líquida e devolvendo a exfiltração e o excesso de saturação à superfície; o agendador da água subterrânea é sempre assíncrono, e só o fluxo lateral da água subterrânea, quando está ativo, espera por ele;
+5. aplicando os hidrogramas de entrada e atualizando a família de roteamento ativa;
+6. atualizando a qualidade da água e os diagnósticos opcionais.
 
 Essa estrutura sequencial é o que conecta as páginas individuais de teoria em um único modelo.

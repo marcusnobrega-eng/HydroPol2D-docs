@@ -31,9 +31,11 @@ Neal para rios mais estreitos que a malha.
 | Difusivo explícito | sim | não | Validação preliminar (smoke) em CPU aprovada |
 | Momento completo | sim | não | Validação por benchmark em CPU aprovada |
 
-A execução em GPU está bloqueada de propósito. As malhas na escala da Índia também ainda
-não foram validadas. Nenhuma das duas coisas deve ser inferida a partir dos resultados
-controlados em CPU.
+Esses resultados vêm de execuções em CPU. No HydroPol2D-Python, um motor de malha em JAX
+também roda casos em malha numa GPU CUDA; o HydroPol2D-MATLAB ainda interrompe uma
+simulação Voronoi que pede a GPU. As malhas na escala da Índia também ainda não foram
+validadas. Nem os resultados em GPU nem o comportamento na escala da Índia devem ser
+inferidos a partir dos resultados controlados em CPU.
 
 As opções públicas de subgrade distinguem o canal de Neal na grade estruturada, as
 tabelas de consulta estruturadas e as relações subgrade Voronoi. Ativar uma delas não

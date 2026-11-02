@@ -21,9 +21,9 @@ interprete as propriedades da malha de forma diferente.
 
 | Componente | Responsabilidade | Versão candidata |
 |---|---|---|
-| HydroBathyDEM | Gerador de produção das malhas regulares e Voronoi, dos produtos de terreno, da sobreposição conservativa com os rasters, das tabelas subgrade, do UGRID, das camadas de inspeção em GeoPackage e do QA da malha. | `0.3.0rc1` |
-| HydroPol2D-Python | Motor do modelo em Python e Studio. Ele valida e consome o pacote de malha; não regenera a geometria hidráulica da malha. | `0.8.0rc1` |
-| HydroPol2D-MATLAB | Implementação de referência em MATLAB e consumidor compatível do mesmo pacote de malha. | `1.18.0-rc1` |
+| HydroBathyDEM | Gerador de produção das malhas regulares e Voronoi, dos produtos de terreno, da sobreposição conservativa com os rasters, das tabelas subgrade, do UGRID, das camadas de inspeção em GeoPackage e do QA da malha. | `0.4.0rc1` |
+| HydroPol2D-Python | Motor do modelo em Python e Studio. Ele valida e consome o pacote de malha; não regenera a geometria hidráulica da malha. | `0.9.0rc2` |
+| HydroPol2D-MATLAB | Implementação de referência em MATLAB e consumidor compatível do mesmo pacote de malha. | `1.19.0-rc1` |
 | HydroPolMesh | Protótipo de migração arquivado. As funcionalidades úteis já validadas estão sendo mantidas no HydroBathyDEM; ele não é uma dependência de execução em produção. | protótipo |
 
 A versão estável `v1.17.0` do MATLAB continua sendo a referência numérica enquanto as
@@ -40,9 +40,9 @@ O contrato de malha `1.0` exige que o pacote declare:
 - pesos conservativos de sobreposição entre o raster e as células;
 - tabelas subgrade compatíveis, no nível das células e das faces, quando o roteamento subgrade está ativado.
 
-Os dois solvers rejeitam índices malformados, faces de comprimento zero, áreas negativas,
-unidades ou CRS ausentes, larguras de CFL indefinidas, sobreposição não conservativa e
-tabelas subgrade incompatíveis. Eles não reconstroem silenciosamente as propriedades da
+Os dois solvers rejeitam índices malformados, faces de comprimento zero, áreas nulas ou
+negativas, unidades ou CRS ausentes, larguras de CFL indefinidas, sobreposição não
+conservativa, tabelas subgrade incompatíveis e a ausência da versão do contrato. Eles não reconstroem silenciosamente as propriedades da
 malha que estiverem faltando.
 
 ## Formulações subgrade {#subgrid-formulations}

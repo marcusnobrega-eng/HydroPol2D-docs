@@ -14,7 +14,7 @@ Esta documentación describe el modelo tal como está implementado hoy. También
 El código actual incluye:
 
 - intercepción del dosel, evapotranspiración, nieve, infiltración y almacenamiento vadoso en capas;
-- recarga subterránea, ascenso capilar, actualizaciones asíncronas del groundwater saturado y flujo bidimensional de Boussinesq cuando el baseflow está activo;
+- recarga subterránea, ascenso capilar, actualización del nivel freático en cada paso y flujo lateral bidimensional de Boussinesq con un calendario asíncrono cuando el baseflow está activo;
 - enrutamiento superficial con las opciones local inertial, full momentum, diffusive D4, kinematic D4 y cellular automata;
 - transporte de calidad del agua y exportación en la salida;
 - diagnósticos opcionales de inestabilidad humana.
@@ -31,12 +31,12 @@ El código actual incluye:
 
 A nivel general, HydroPol2D avanza el sistema acoplado en este orden:
 
-1. aplica lluvia, caudales de entrada y forzantes meteorológicos;
+1. aplica la lluvia y los forzantes meteorológicos;
 2. actualiza intercepción, nieve, evapotranspiración, infiltración y almacenamiento vadoso;
 3. acumula recarga e intercambio capilar para el groundwater;
-4. enruta el agua superficial con la familia de enrutamiento seleccionada;
-5. actualiza las cargas subterráneas cuando actúa el programador de groundwater;
-6. devuelve exfiltración, exceso de saturación, calidad del agua y diagnósticos opcionales al estado en evolución.
+4. actualiza el nivel freático en cada paso, devuelve la exfiltración y el exceso de saturación a la superficie y ejecuta el flujo subterráneo lateral cuando el programador del agua subterránea lo indica;
+5. añade los hidrogramas de entrada y enruta el agua superficial con la familia de enrutamiento seleccionada;
+6. actualiza la calidad del agua y los diagnósticos opcionales de riesgo.
 
 Esa secuencia es la que conecta los módulos hidrológicos, subterráneos, hidrodinámicos y diagnósticos en un solo modelo.
 

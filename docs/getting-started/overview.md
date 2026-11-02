@@ -14,7 +14,7 @@ This documentation describes the model as it is currently implemented. It also d
 The current codebase includes:
 
 - canopy interception, evapotranspiration, snow, infiltration, and layered vadose storage;
-- groundwater recharge, capillary rise, asynchronous saturated-groundwater updates, and 2D Boussinesq flow when baseflow is active;
+- groundwater recharge, capillary rise, water-table updates in every step, and 2D Boussinesq lateral flow on an asynchronous schedule when baseflow is active;
 - surface routing with local inertial, full momentum, diffusive D4, kinematic D4, and cellular automata options;
 - water-quality transport and outlet export;
 - optional human-instability diagnostics.
@@ -31,12 +31,12 @@ The current codebase includes:
 
 At a high level, HydroPol2D advances the coupled system in this order:
 
-1. apply rainfall, inflow, and meteorological forcing;
+1. apply rainfall and meteorological forcing;
 2. update interception, snow, evapotranspiration, infiltration, and vadose storage;
 3. accumulate recharge and capillary exchange for groundwater;
-4. route surface water with the selected routing family;
-5. update groundwater heads when the groundwater scheduler is due;
-6. return exfiltration, saturation excess, water quality, and optional hazard diagnostics to the evolving state.
+4. update the water table every step, return exfiltration and saturation excess to the surface, and run lateral groundwater flow when the groundwater scheduler is due;
+5. add inflow hydrographs and route surface water with the selected routing family;
+6. update water quality and optional hazard diagnostics.
 
 This sequencing is what links the hydrologic, groundwater, routing, and diagnostic modules into one model.
 

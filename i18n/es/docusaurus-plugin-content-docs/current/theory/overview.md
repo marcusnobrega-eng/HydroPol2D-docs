@@ -19,7 +19,8 @@ HydroPol2D acopla:
 
 | Capacidad | Ruta teórica principal | Estado actual |
 |---|---|---|
-| Núcleo hidrológico: intercepción, ET, infiltración, nieve, almacenamiento vadoso en capas | [Hydrologic Model](./hydrologic-model) | Predeterminado + validado |
+| Núcleo hidrológico: intercepción, ET, infiltración, almacenamiento vadoso en capas | [Hydrologic Model](./hydrologic-model) | Predeterminado + validado |
+| Acumulación, fusión y sublimación de nieve | [Hydrologic Model](./hydrologic-model#5-snow-accumulation-melt-and-sublimation) | Opcional (apagado hasta que se active) + validado |
 | Recarga subterránea, programador asíncrono, ascenso capilar y flujo lateral de Boussinesq | [Groundwater Model](./groundwater-model) | Predeterminado + validado |
 | Subsuelo en capas de suelo sobre regolito | [Subsuelo en Capas](./layered-subsurface) | Opcional + paridad de núcleos y pruebas controladas en la cuenca en V |
 | Estrés de Feddes en la absorción de agua por las raíces | [Modelo hidrológico](./hydrologic-model#35-feddes-root-water-uptake-stress) | Opcional + pruebas de consistencia |
@@ -73,11 +74,11 @@ La teoría de calidad del agua documenta el buildup, el washoff, el transporte y
 
 A nivel general, HydroPol2D avanza el sistema acoplado:
 
-1. aplicando lluvia, inflow y forzantes meteorológicos;
+1. aplicando la lluvia y los forzantes meteorológicos;
 2. actualizando intercepción, nieve, evapotranspiración, infiltración y almacenamiento vadoso;
 3. acumulando recarga e intercambio capilar para el groundwater;
-4. actualizando la familia de enrutamiento activa;
-5. actualizando las cargas subterráneas cuando actúa el programador asíncrono;
-6. devolviendo exfiltración, exceso de saturación y diagnósticos opcionales al estado acoplado.
+4. cambiando las cargas del nivel freático en cada paso del agua superficial según el intercambio neto y devolviendo la exfiltración y el exceso de saturación a la superficie; el programador del agua subterránea es siempre asíncrono, y solo el flujo lateral del agua subterránea, cuando está activo, lo espera;
+5. aplicando los hidrogramas de entrada y actualizando la familia de enrutamiento activa;
+6. actualizando la calidad del agua y los diagnósticos opcionales.
 
 Esa estructura secuencial es la que conecta las páginas individuales de teoría en un solo modelo.

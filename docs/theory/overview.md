@@ -19,7 +19,8 @@ HydroPol2D couples:
 
 | Capability | Canonical theory path | Current status |
 |---|---|---|
-| Hydrologic core: interception, ET, infiltration, snow, layered vadose storage | [Hydrologic Model](./hydrologic-model) | Default + validated |
+| Hydrologic core: interception, ET, infiltration, layered vadose storage | [Hydrologic Model](./hydrologic-model) | Default + validated |
+| Snow accumulation, melt and sublimation | [Hydrologic Model](./hydrologic-model#5-snow-accumulation-melt-and-sublimation) | Optional (off unless turned on) + validated |
 | Groundwater recharge, async scheduler, capillary rise, Boussinesq lateral flow | [Groundwater Model](./groundwater-model) | Default + validated |
 | Layered soil-over-regolith subsurface | [Layered Subsurface](./layered-subsurface) | Optional + kernel parity and controlled V-tilted tests |
 | Feddes root-water-uptake stress | [Hydrologic Model](./hydrologic-model#35-feddes-root-water-uptake-stress) | Optional + consistency tests |
@@ -73,11 +74,11 @@ Water-quality theory documents constituent buildup, washoff, transport, and expo
 
 At a high level, HydroPol2D advances the coupled system by:
 
-1. applying rainfall, inflow, and meteorological forcing;
+1. applying rainfall and meteorological forcing;
 2. updating interception, snow, evapotranspiration, infiltration, and vadose storage;
 3. accumulating recharge and capillary exchange for groundwater;
-4. updating the active routing family;
-5. updating groundwater heads when the asynchronous scheduler is due;
-6. feeding exfiltration, saturation excess, and optional diagnostics back into the coupled state.
+4. changing the water-table heads in every surface-water step by the net exchange and returning exfiltration and saturation excess to the surface; the groundwater scheduler is always asynchronous, and only the lateral groundwater flow, when it is on, waits for it;
+5. applying inflow hydrographs and updating the active routing family;
+6. updating water quality and optional diagnostics.
 
 This sequential structure is what connects the individual theory pages into one model.

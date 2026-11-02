@@ -21,9 +21,9 @@ interprete de forma distinta las propiedades de la malla.
 
 | Componente | Responsabilidad | Versión candidata |
 |---|---|---|
-| HydroBathyDEM | Generador de producción de mallas regulares y de Voronoi, productos de terreno, superposición conservativa de rásteres, tablas de submalla, UGRID, capas de inspección en GeoPackage y control de calidad de la malla. | `0.3.0rc1` |
-| HydroPol2D-Python | Motor del modelo en Python y Studio. Valida y utiliza el paquete de malla; no regenera la geometría hidráulica de la malla. | `0.8.0rc1` |
-| HydroPol2D-MATLAB | Implementación de referencia en MATLAB que utiliza de forma compatible el mismo paquete de malla. | `1.18.0-rc1` |
+| HydroBathyDEM | Generador de producción de mallas regulares y de Voronoi, productos de terreno, superposición conservativa de rásteres, tablas de submalla, UGRID, capas de inspección en GeoPackage y control de calidad de la malla. | `0.4.0rc1` |
+| HydroPol2D-Python | Motor del modelo en Python y Studio. Valida y utiliza el paquete de malla; no regenera la geometría hidráulica de la malla. | `0.9.0rc2` |
+| HydroPol2D-MATLAB | Implementación de referencia en MATLAB que utiliza de forma compatible el mismo paquete de malla. | `1.19.0-rc1` |
 | HydroPolMesh | Prototipo de migración archivado. Las capacidades útiles ya validadas se están conservando en HydroBathyDEM; no es una dependencia de ejecución en producción. | prototipo |
 
 La versión estable `v1.17.0` de MATLAB sigue siendo la referencia numérica
@@ -42,8 +42,9 @@ El contrato de malla `1.0` exige que el paquete declare:
 - tablas de submalla compatibles a nivel de celda y de cara cuando el enrutamiento con submalla está activado.
 
 Ambos solucionadores rechazan índices mal formados, caras de longitud cero,
-áreas negativas, unidades o CRS ausentes, anchos CFL no definidos, superposición
-no conservativa y tablas de submalla incompatibles. No reconstruyen de forma
+áreas nulas o negativas, unidades o CRS ausentes, anchos CFL no definidos,
+superposición no conservativa, tablas de submalla incompatibles y la ausencia de
+la versión del contrato. No reconstruyen de forma
 silenciosa las propiedades de la malla que faltan.
 
 ## Formulaciones de submalla {#subgrid-formulations}

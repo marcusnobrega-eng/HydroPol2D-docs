@@ -31,8 +31,11 @@ that are narrower than the mesh.
 | Explicit diffusive | yes | no | CPU smoke validation passed |
 | Full momentum | yes | no | CPU benchmark validation passed |
 
-GPU execution is intentionally blocked. India-scale meshes are also not yet
-validated. Neither should be inferred from the controlled CPU results.
+These results come from CPU runs. In HydroPol2D-Python, a JAX mesh engine also
+runs mesh cases on a CUDA GPU; HydroPol2D-MATLAB still stops a Voronoi run that
+asks for the GPU. India-scale meshes are also not yet validated. Neither GPU
+results nor India-scale behavior should be inferred from the controlled CPU
+results.
 
 The public subgrid selections distinguish the structured-grid Neal channel,
 structured lookup tables, and Voronoi subgrid relations. Enabling one does not
