@@ -1,6 +1,7 @@
 ---
 title: Forçantes Opcionais
 ---
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # Forçantes Opcionais
 
@@ -28,6 +29,15 @@ Use uma fonte de chuva por vez. Uma série que as chaves do caso não leem pode 
 
 ## Chuva {#rainfall}
 
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/rain-series.png')}><img src={useBaseUrl('/img/workbook/rain-series.png')} width="746" style={{maxWidth: '100%', height: 'auto'}} alt="A aba Rain series da planilha do caso" /></a>
+</p>
+
+<p align="center">
+  <em>A aba Rain series da planilha do exemplo Stanford. Clique na imagem para abri-la em tamanho real.</em>
+</p>
+
+
 ### Série uniforme {#uniform-series}
 
 A aba Rain series contém um único pluviômetro, com a intensidade de chuva (mm/h) ao longo do tempo. A chuva é aplicada de forma uniforme sobre o domínio. A aba é lida quando a chuva está ativa e não há chuva de projeto, mapas, satélite nem chuva espacial selecionados.
@@ -41,6 +51,15 @@ Antes de 2026-10-29, o MATLAB lia os tempos de chuva, vazão de entrada e mapas 
 ### Pluviômetros {#rain-gauges}
 
 A aba Rain gauges contém vários pluviômetros, interpolados para cada célula por ponderação pelo inverso da distância. Ela é lida quando `flag_spatial_rainfall = 1` e não há mapas de chuva. Cada pluviômetro ocupa uma coluna, com o seu índice, nome e coordenadas (m, na projeção do DEM) e, em seguida, a intensidade (mm/h) em cada tempo (min) da coluna B.
+
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/rain-gauges.png')}><img src={useBaseUrl('/img/workbook/rain-gauges.png')} width="1700" style={{maxWidth: '100%', height: 'auto'}} alt="A aba Rain gauges da planilha do caso" /></a>
+</p>
+
+<p align="center">
+  <em>A aba Rain gauges da planilha do exemplo Stanford. Clique na imagem para abri-la em tamanho real. O caso Stanford não usa esta aba; ela mantém as colunas do modelo.</em>
+</p>
+
 
 ### Mapas de chuva {#rainfall-maps}
 
@@ -76,6 +95,15 @@ em que $i$ é a intensidade (mm/h), $\mathrm{RP}$ é o período de retorno (anos
 
 Com `flag_ETP = 1` e sem mapas de ET, o HydroPol2D calcula a evapotranspiração por Penman–Monteith a partir de dados meteorológicos diários de uma ou mais estações, interpolados para a grade por ponderação pelo inverso da distância. Na aba Climate stations, a linha 2 nomeia o bloco de cada estação (índice e coordenadas leste e norte em m), a linha 3 traz os cabeçalhos das colunas e cada linha a partir da linha 4 corresponde a um dia. As variáveis típicas são temperatura do ar, radiação, umidade relativa e velocidade do vento.
 
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/climate-stations.png')}><img src={useBaseUrl('/img/workbook/climate-stations.png')} width="1700" style={{maxWidth: '100%', height: 'auto'}} alt="A aba Climate stations da planilha do caso" /></a>
+</p>
+
+<p align="center">
+  <em>A aba Climate stations da planilha do exemplo Stanford. Clique na imagem para abri-la em tamanho real. O caso Stanford não usa esta aba; ela mantém as colunas do modelo.</em>
+</p>
+
+
 ### Mapas de evaporação e transpiração {#evaporation-and-transpiration-maps}
 
 Com `flag_input_ETP_map = 1`, o modelo lê duas listas da aba Rain and ET, Transpiration maps e Evaporation maps. Cada linha traz o tempo em dias desde a data inicial e o caminho de um GeoTIFF em mm/dia. As duas listas devem ter os mesmos tempos. Os fluxos são aplicados diretamente à água superficial e à umidade do solo, de modo que nenhuma forçante meteorológica é necessária.
@@ -92,11 +120,29 @@ Em `General_Data.xlsx`, as listas de chuva, transpiração e evaporação compar
 
 A aba Inflow hydrographs, lida quando `flag_inflow = 1`, comporta até 50 postos. Cada posto é um bloco de cinco colunas, com o tempo (min), a vazão (m³/s) e as coordenadas leste e norte (m) de cada célula por onde a vazão entra, uma célula por linha. A vazão é distribuída entre essas células. Mantenha os 50 blocos, mesmo os vazios.
 
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/inflow-hydrographs.png')}><img src={useBaseUrl('/img/workbook/inflow-hydrographs.png')} width="1700" style={{maxWidth: '100%', height: 'auto'}} alt="A aba Inflow hydrographs da planilha do caso" /></a>
+</p>
+
+<p align="center">
+  <em>A aba Inflow hydrographs da planilha do exemplo Stanford. Clique na imagem para abri-la em tamanho real. O caso Stanford não usa esta aba; os nomes de postos do modelo foram omitidos da imagem.</em>
+</p>
+
+
 Os hidrogramas de entrada representam contornos de montante, vazões afluentes de rios e descargas por ruptura de barragem ou controladas.
 
 ### Hidrogramas de nível {#stage-hydrographs}
 
 A aba Stage hydrographs, lida quando `flag_stage_hydrograph = 1`, tem o mesmo arranjo, com o tempo (min), a profundidade da água (m) e as coordenadas leste e norte (m) de cada célula do contorno. Todas as células de um contorno recebem a mesma profundidade imposta. Mantenha os 50 blocos, mesmo os vazios.
+
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/stage-hydrographs.png')}><img src={useBaseUrl('/img/workbook/stage-hydrographs.png')} width="1700" style={{maxWidth: '100%', height: 'auto'}} alt="A aba Stage hydrographs da planilha do caso" /></a>
+</p>
+
+<p align="center">
+  <em>A aba Stage hydrographs da planilha do exemplo Stanford. Clique na imagem para abri-la em tamanho real. O caso Stanford não usa esta aba; ela mantém as colunas do modelo.</em>
+</p>
+
 
 Os hidrogramas de nível representam controle de jusante, remanso e outras restrições hidráulicas.
 

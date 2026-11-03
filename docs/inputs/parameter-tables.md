@@ -1,6 +1,7 @@
 ---
 title: Parameter Tables
 ---
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # Parameter Tables
 
@@ -48,6 +49,15 @@ For mapped classes, raster values and table indices must match exactly. When a v
 ## LULC Parameter Table
 
 The LULC table defines surface-related properties controlling flow resistance, interception, imperviousness, pollutant-related behavior, and root-zone depth when layered soil storage is active.
+
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/land-use-classes.png')}><img src={useBaseUrl('/img/workbook/land-use-classes.png')} width="1481" style={{maxWidth: '100%', height: 'auto'}} alt="The Land use classes tab of the case workbook" /></a>
+</p>
+
+<p align="center">
+  <em>The Land use classes tab of the Stanford example workbook. Click the picture to open it full size.</em>
+</p>
+
 
 ### Example structure
 
@@ -109,6 +119,15 @@ The degree-day, sublimation, and compaction terms are rates. HydroPol2D multipli
 ## Soil Parameter Table
 
 The soil table defines the base hydraulic properties used to estimate infiltration, layered vadose storage, recharge, and groundwater behavior.
+
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/soil-classes.png')}><img src={useBaseUrl('/img/workbook/soil-classes.png')} width="1481" style={{maxWidth: '100%', height: 'auto'}} alt="The Soil classes tab of the case workbook" /></a>
+</p>
+
+<p align="center">
+  <em>The Soil classes tab of the Stanford example workbook. Click the picture to open it full size.</em>
+</p>
+
 
 ### Example structure
 
@@ -203,6 +222,15 @@ In HydroPol2D, most practical modifications to model behavior are made by editin
 
 The Human instability tab (was `human_risk.xlsx`) has one column of values per method. The model reads the values by position, so keep every cell in place. See [Human Instability](../theory/human-instability) for the equations.
 
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/human-instability.png')}><img src={useBaseUrl('/img/workbook/human-instability.png')} width="1252" style={{maxWidth: '100%', height: 'auto'}} alt="The Human instability tab of the case workbook" /></a>
+</p>
+
+<p align="center">
+  <em>The Human instability tab of the Stanford example workbook. Click the picture to open it full size.</em>
+</p>
+
+
 | Column | Read when | Values |
 |---|---|---|
 | Method No. 1 (column B) | `flag_human_instability = 1` | one representative person, 9 values |
@@ -243,6 +271,15 @@ The model derives each body's width $w = \sqrt{16\,m / (3\pi \rho_{\mathrm{w}}\,
 ## Mesh Table {#mesh-table}
 
 The Mesh tab (was `Voronoi_Settings.xlsx`) is read only when `flag_voronoi = 1`. Its mesh-compatibility values must match the metadata of the prepared mesh: the preflight check stops a run whose workbook names a different mesh. The tab selects a prepared mesh; it never builds or changes one.
+
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/mesh.png')}><img src={useBaseUrl('/img/workbook/mesh.png')} width="1700" style={{maxWidth: '100%', height: 'auto'}} alt="The Mesh tab of the case workbook" /></a>
+</p>
+
+<p align="center">
+  <em>The Mesh tab of the Stanford example workbook. Click the picture to open it full size.</em>
+</p>
+
 
 | Section | Parameter | Template | Unit | Used when | Description |
 |---|---|---|---|---|---|
@@ -325,6 +362,15 @@ This means that the local inertial solver is locally modified by the control str
 ### Input Table Structure
 
 Internal boundary conditions are defined in the Control structures tab of the case workbook (`BC_Control_structure.xlsx` in the older layout), read when `flag_reservoir = 1`. Each row is one structure. The outflow is $Q = k_1 (h - h_{0,1})^{k_2}$ to the cell $(x_{d,1}, y_{d,1})$ and $Q = k_3 (h - h_{0,2})^{k_4}$ to the cell $(x_{d,2}, y_{d,2})$, with coordinates in the DEM projection.
+
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/control-structures.png')}><img src={useBaseUrl('/img/workbook/control-structures.png')} width="1700" style={{maxWidth: '100%', height: 'auto'}} alt="The Control structures tab of the case workbook" /></a>
+</p>
+
+<p align="center">
+  <em>The Control structures tab of the Stanford example workbook. Click the picture to open it full size.</em>
+</p>
+
 
 #### Table structure
 

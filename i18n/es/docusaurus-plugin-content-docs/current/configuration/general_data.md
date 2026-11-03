@@ -1,6 +1,7 @@
 ---
 title: Parámetros del libro del caso
 ---
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # Parámetros del libro del caso
 
@@ -18,6 +19,15 @@ Los casos antiguos, con `General_Data.xlsx`, su hoja `Flags` y libros de Excel s
 ---
 
 ## El libro de un vistazo {#the-workbook-at-a-glance}
+
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/start-here.png')}><img src={useBaseUrl('/img/workbook/start-here.png')} width="997" style={{maxWidth: '100%', height: 'auto'}} alt="La pestaña Start here del libro del caso" /></a>
+</p>
+
+<p align="center">
+  <em>La pestaña Start here del libro del ejemplo Stanford. Haga clic en la imagen para abrirla en tamaño completo.</em>
+</p>
+
 
 | Grupo | Pestañas |
 |---|---|
@@ -49,6 +59,15 @@ Las tablas siguientes se generan a partir del catálogo que construye el libro d
 ### Run control {#tab-run-control}
 
 Período de simulación, paso de tiempo, rendimiento y lo que registra el modelo.
+
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/run-control.png')}><img src={useBaseUrl('/img/workbook/run-control.png')} width="1193" style={{maxWidth: '100%', height: 'auto'}} alt="La pestaña Run control del libro del caso" /></a>
+</p>
+
+<p align="center">
+  <em>La pestaña Run control del libro del ejemplo Stanford. Haga clic en la imagen para abrirla en tamaño completo.</em>
+</p>
+
 
 #### Simulation period {#simulation-period}
 
@@ -113,6 +132,15 @@ Período de simulación, paso de tiempo, rendimiento y lo que registra el modelo
 
 Rutas a los mapas GeoTIFF. Los mapas opcionales se dejan vacíos para usar las tablas de clases o los escalares.
 
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/input-maps.png')}><img src={useBaseUrl('/img/workbook/input-maps.png')} width="1619" style={{maxWidth: '100%', height: 'auto'}} alt="La pestaña Input maps del libro del caso" /></a>
+</p>
+
+<p align="center">
+  <em>La pestaña Input maps del libro del ejemplo Stanford. Haga clic en la imagen para abrirla en tamaño completo.</em>
+</p>
+
+
 #### Required maps {#required-maps}
 
 | Parámetro | Clave | Unidad | Predeterminado | Se usa cuando | Descripción |
@@ -173,6 +201,15 @@ Rutas a los mapas GeoTIFF. Los mapas opcionales se dejan vacíos para usar las t
 ### Soil and groundwater {#tab-soil-and-groundwater}
 
 Infiltración, evapotranspiración, agua subterránea, subsuelo en capas y acuífero profundo. Cada mapa está debajo del valor que sobrescribe.
+
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/soil-and-groundwater.png')}><img src={useBaseUrl('/img/workbook/soil-and-groundwater.png')} width="1524" style={{maxWidth: '100%', height: 'auto'}} alt="La pestaña Soil and groundwater del libro del caso" /></a>
+</p>
+
+<p align="center">
+  <em>La pestaña Soil and groundwater del libro del ejemplo Stanford. Haga clic en la imagen para abrirla en tamaño completo.</em>
+</p>
+
 
 #### Infiltration and evapotranspiration {#infiltration-and-evapotranspiration}
 
@@ -301,6 +338,15 @@ Se muestra en gris mientras `flag_deep_aquifer` vale 0.
 
 Esquema de enrutamiento, salidas, canales de río, tratamiento del terreno y estructuras.
 
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/surface-flow.png')}><img src={useBaseUrl('/img/workbook/surface-flow.png')} width="1193" style={{maxWidth: '100%', height: 'auto'}} alt="La pestaña Surface flow del libro del caso" /></a>
+</p>
+
+<p align="center">
+  <em>La pestaña Surface flow del libro del ejemplo Stanford. Haga clic en la imagen para abrirla en tamaño completo.</em>
+</p>
+
+
 #### Routing scheme {#routing-scheme}
 
 | Parámetro | Clave | Unidad | Predeterminado | Se usa cuando | Descripción |
@@ -378,6 +424,15 @@ Esquema de enrutamiento, salidas, canales de río, tratamiento del terreno y est
 
 Origen de la lluvia y de la evapotranspiración, y listas de archivos de mapas.
 
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/rain-and-et.png')}><img src={useBaseUrl('/img/workbook/rain-and-et.png')} width="1653" style={{maxWidth: '100%', height: 'auto'}} alt="La pestaña Rain and ET del libro del caso" /></a>
+</p>
+
+<p align="center">
+  <em>La pestaña Rain and ET del libro del ejemplo Stanford. Haga clic en la imagen para abrirla en tamaño completo. La imagen termina en los títulos de columna de la primera lista de mapas.</em>
+</p>
+
+
 #### Rainfall source {#rainfall-source}
 
 | Parámetro | Clave | Unidad | Predeterminado | Se usa cuando | Descripción |
@@ -404,6 +459,15 @@ Origen de la lluvia y de la evapotranspiración, y listas de archivos de mapas.
 
 Tormentas sintéticas a partir de una relación IDF local i = K RP^a / (b + duration)^c.
 
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/design-storm.png')}><img src={useBaseUrl('/img/workbook/design-storm.png')} width="1193" style={{maxWidth: '100%', height: 'auto'}} alt="La pestaña Design storm del libro del caso" /></a>
+</p>
+
+<p align="center">
+  <em>La pestaña Design storm del libro del ejemplo Stanford. Haga clic en la imagen para abrirla en tamaño completo.</em>
+</p>
+
+
 #### Hyetograph {#hyetograph}
 
 | Parámetro | Clave | Unidad | Predeterminado | Se usa cuando | Descripción |
@@ -426,6 +490,15 @@ Tormentas sintéticas a partir de una relación IDF local i = K RP^a / (b + dura
 ### Water quality {#tab-water-quality}
 
 Build-up y wash-off de contaminantes.
+
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/water-quality.png')}><img src={useBaseUrl('/img/workbook/water-quality.png')} width="1331" style={{maxWidth: '100%', height: 'auto'}} alt="La pestaña Water quality del libro del caso" /></a>
+</p>
+
+<p align="center">
+  <em>La pestaña Water quality del libro del ejemplo Stanford. Haga clic en la imagen para abrirla en tamaño completo.</em>
+</p>
+
 
 #### Water quality {#water-quality}
 
@@ -453,6 +526,15 @@ Se muestra en gris mientras `flag_waterquality` vale 0.
 ### Risk and gauges {#tab-risk-and-gauges}
 
 Riesgo de inestabilidad humana y puntos de observación.
+
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/risk-and-gauges.png')}><img src={useBaseUrl('/img/workbook/risk-and-gauges.png')} width="1193" style={{maxWidth: '100%', height: 'auto'}} alt="La pestaña Risk and gauges del libro del caso" /></a>
+</p>
+
+<p align="center">
+  <em>La pestaña Risk and gauges del libro del ejemplo Stanford. Haga clic en la imagen para abrirla en tamaño completo.</em>
+</p>
+
 
 #### Human instability {#human-instability}
 

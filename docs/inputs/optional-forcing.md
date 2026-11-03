@@ -1,6 +1,7 @@
 ---
 title: Optional Forcing
 ---
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # Optional Forcing
 
@@ -28,6 +29,15 @@ Use one rainfall source at a time. A series that the case's switches do not read
 
 ## Rainfall {#rainfall}
 
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/rain-series.png')}><img src={useBaseUrl('/img/workbook/rain-series.png')} width="746" style={{maxWidth: '100%', height: 'auto'}} alt="The Rain series tab of the case workbook" /></a>
+</p>
+
+<p align="center">
+  <em>The Rain series tab of the Stanford example workbook. Click the picture to open it full size.</em>
+</p>
+
+
 ### Uniform series {#uniform-series}
 
 The Rain series tab holds one gauge: rainfall intensity (mm/h) over time. The rain is applied uniformly over the domain. The tab is read when rainfall is on and no design storm, map, satellite or spatial rainfall is chosen.
@@ -41,6 +51,15 @@ Before 2026-10-29, MATLAB read the times of rain, inflow and ET maps as interval
 ### Rain gauges {#rain-gauges}
 
 The Rain gauges tab holds several gauges, interpolated to every cell by inverse distance weighting. It is read when `flag_spatial_rainfall = 1` and no rainfall maps are given. Each gauge is one column: its index, name and coordinates (m, in the DEM projection), then its intensity (mm/h) at each time (min) of column B.
+
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/rain-gauges.png')}><img src={useBaseUrl('/img/workbook/rain-gauges.png')} width="1700" style={{maxWidth: '100%', height: 'auto'}} alt="The Rain gauges tab of the case workbook" /></a>
+</p>
+
+<p align="center">
+  <em>The Rain gauges tab of the Stanford example workbook. Click the picture to open it full size. The Stanford case does not use this tab; it keeps the template's columns.</em>
+</p>
+
 
 ### Rainfall maps {#rainfall-maps}
 
@@ -76,6 +95,15 @@ where $i$ is the intensity (mm/h), $\mathrm{RP}$ the return period (years) and $
 
 With `flag_ETP = 1` and no ET maps, HydroPol2D computes evapotranspiration with Penman–Monteith from daily weather at one or more stations, interpolated to the grid by inverse distance weighting. On the Climate stations tab, row 2 names each station block (index, easting and northing in m), row 3 heads its columns, and each row from row 4 is one day. Typical variables are air temperature, radiation, relative humidity and wind speed.
 
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/climate-stations.png')}><img src={useBaseUrl('/img/workbook/climate-stations.png')} width="1700" style={{maxWidth: '100%', height: 'auto'}} alt="The Climate stations tab of the case workbook" /></a>
+</p>
+
+<p align="center">
+  <em>The Climate stations tab of the Stanford example workbook. Click the picture to open it full size. The Stanford case does not use this tab; it keeps the template's columns.</em>
+</p>
+
+
 ### Evaporation and transpiration maps {#evaporation-and-transpiration-maps}
 
 With `flag_input_ETP_map = 1`, the model reads two lists on the Rain and ET tab, Transpiration maps and Evaporation maps. Each row is the time in days since the start date and the path of a GeoTIFF in mm/day. Both lists must have the same times. The fluxes are applied directly to surface water and soil moisture, so no meteorological forcing is needed.
@@ -92,11 +120,29 @@ In `General_Data.xlsx` the rainfall, transpiration and evaporation lists share o
 
 The Inflow hydrographs tab, read when `flag_inflow = 1`, holds up to 50 gauges. Each gauge is a block of five columns: time (min), flow (m³/s), and the easting and northing (m) of each cell the flow enters, one cell per row. The flow is spread over those cells. Keep all 50 blocks, even empty ones.
 
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/inflow-hydrographs.png')}><img src={useBaseUrl('/img/workbook/inflow-hydrographs.png')} width="1700" style={{maxWidth: '100%', height: 'auto'}} alt="The Inflow hydrographs tab of the case workbook" /></a>
+</p>
+
+<p align="center">
+  <em>The Inflow hydrographs tab of the Stanford example workbook. Click the picture to open it full size. The Stanford case does not use this tab; the template's gauge names are left out of the picture.</em>
+</p>
+
+
 Inflow hydrographs represent upstream boundaries, river inflow, and dam-break or controlled releases.
 
 ### Stage hydrographs {#stage-hydrographs}
 
 The Stage hydrographs tab, read when `flag_stage_hydrograph = 1`, has the same layout: time (min), water depth (m), and the easting and northing (m) of each boundary cell. All cells of a boundary receive the same imposed depth. Keep all 50 blocks, even empty ones.
+
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/stage-hydrographs.png')}><img src={useBaseUrl('/img/workbook/stage-hydrographs.png')} width="1700" style={{maxWidth: '100%', height: 'auto'}} alt="The Stage hydrographs tab of the case workbook" /></a>
+</p>
+
+<p align="center">
+  <em>The Stage hydrographs tab of the Stanford example workbook. Click the picture to open it full size. The Stanford case does not use this tab; it keeps the template's columns.</em>
+</p>
+
 
 Stage hydrographs represent downstream control, backwater and other hydraulic constraints.
 

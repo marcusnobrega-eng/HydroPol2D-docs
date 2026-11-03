@@ -1,6 +1,7 @@
 ---
 title: Configurações da Planilha do Caso
 ---
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # Configurações da Planilha do Caso
 
@@ -18,6 +19,15 @@ Casos antigos, com `General_Data.xlsx`, a sua aba `Flags` e planilhas separadas,
 ---
 
 ## A planilha em resumo {#the-workbook-at-a-glance}
+
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/start-here.png')}><img src={useBaseUrl('/img/workbook/start-here.png')} width="997" style={{maxWidth: '100%', height: 'auto'}} alt="A aba Start here da planilha do caso" /></a>
+</p>
+
+<p align="center">
+  <em>A aba Start here da planilha do exemplo Stanford. Clique na imagem para abri-la em tamanho real.</em>
+</p>
+
 
 | Grupo | Abas |
 |---|---|
@@ -49,6 +59,15 @@ As tabelas abaixo são geradas a partir do catálogo que monta a planilha (`tool
 ### Run control {#tab-run-control}
 
 Período de simulação, passo de tempo, desempenho e o que o modelo registra.
+
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/run-control.png')}><img src={useBaseUrl('/img/workbook/run-control.png')} width="1193" style={{maxWidth: '100%', height: 'auto'}} alt="A aba Run control da planilha do caso" /></a>
+</p>
+
+<p align="center">
+  <em>A aba Run control da planilha do exemplo Stanford. Clique na imagem para abri-la em tamanho real.</em>
+</p>
+
 
 #### Simulation period {#simulation-period}
 
@@ -113,6 +132,15 @@ Período de simulação, passo de tempo, desempenho e o que o modelo registra.
 
 Caminhos dos mapas GeoTIFF. Deixe vazios os mapas opcionais para usar as tabelas de classes ou os escalares.
 
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/input-maps.png')}><img src={useBaseUrl('/img/workbook/input-maps.png')} width="1619" style={{maxWidth: '100%', height: 'auto'}} alt="A aba Input maps da planilha do caso" /></a>
+</p>
+
+<p align="center">
+  <em>A aba Input maps da planilha do exemplo Stanford. Clique na imagem para abri-la em tamanho real.</em>
+</p>
+
+
 #### Required maps {#required-maps}
 
 | Configuração | Variável | Unidade | Padrão | Usado quando | Descrição |
@@ -173,6 +201,15 @@ Caminhos dos mapas GeoTIFF. Deixe vazios os mapas opcionais para usar as tabelas
 ### Soil and groundwater {#tab-soil-and-groundwater}
 
 Infiltração, evapotranspiração, águas subterrâneas, subsuperfície em camadas e aquífero profundo. Cada mapa fica logo abaixo do valor que ele substitui.
+
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/soil-and-groundwater.png')}><img src={useBaseUrl('/img/workbook/soil-and-groundwater.png')} width="1524" style={{maxWidth: '100%', height: 'auto'}} alt="A aba Soil and groundwater da planilha do caso" /></a>
+</p>
+
+<p align="center">
+  <em>A aba Soil and groundwater da planilha do exemplo Stanford. Clique na imagem para abri-la em tamanho real.</em>
+</p>
+
 
 #### Infiltration and evapotranspiration {#infiltration-and-evapotranspiration}
 
@@ -301,6 +338,15 @@ Fica em cinza enquanto `flag_deep_aquifer` vale 0.
 
 Esquema de roteamento, saídas, canais de rio, tratamento do terreno e estruturas.
 
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/surface-flow.png')}><img src={useBaseUrl('/img/workbook/surface-flow.png')} width="1193" style={{maxWidth: '100%', height: 'auto'}} alt="A aba Surface flow da planilha do caso" /></a>
+</p>
+
+<p align="center">
+  <em>A aba Surface flow da planilha do exemplo Stanford. Clique na imagem para abri-la em tamanho real.</em>
+</p>
+
+
 #### Routing scheme {#routing-scheme}
 
 | Configuração | Variável | Unidade | Padrão | Usado quando | Descrição |
@@ -378,6 +424,15 @@ Esquema de roteamento, saídas, canais de rio, tratamento do terreno e estrutura
 
 Origem da chuva e da evapotranspiração, e as listas de arquivos de mapas.
 
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/rain-and-et.png')}><img src={useBaseUrl('/img/workbook/rain-and-et.png')} width="1653" style={{maxWidth: '100%', height: 'auto'}} alt="A aba Rain and ET da planilha do caso" /></a>
+</p>
+
+<p align="center">
+  <em>A aba Rain and ET da planilha do exemplo Stanford. Clique na imagem para abri-la em tamanho real. A imagem termina nos títulos das colunas da primeira lista de mapas.</em>
+</p>
+
+
 #### Rainfall source {#rainfall-source}
 
 | Configuração | Variável | Unidade | Padrão | Usado quando | Descrição |
@@ -404,6 +459,15 @@ Origem da chuva e da evapotranspiração, e as listas de arquivos de mapas.
 
 Chuvas sintéticas a partir de uma relação IDF local i = K RP^a / (b + duração)^c.
 
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/design-storm.png')}><img src={useBaseUrl('/img/workbook/design-storm.png')} width="1193" style={{maxWidth: '100%', height: 'auto'}} alt="A aba Design storm da planilha do caso" /></a>
+</p>
+
+<p align="center">
+  <em>A aba Design storm da planilha do exemplo Stanford. Clique na imagem para abri-la em tamanho real.</em>
+</p>
+
+
 #### Hyetograph {#hyetograph}
 
 | Configuração | Variável | Unidade | Padrão | Usado quando | Descrição |
@@ -426,6 +490,15 @@ Chuvas sintéticas a partir de uma relação IDF local i = K RP^a / (b + duraç�
 ### Water quality {#tab-water-quality}
 
 Build-up e wash-off de poluentes.
+
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/water-quality.png')}><img src={useBaseUrl('/img/workbook/water-quality.png')} width="1331" style={{maxWidth: '100%', height: 'auto'}} alt="A aba Water quality da planilha do caso" /></a>
+</p>
+
+<p align="center">
+  <em>A aba Water quality da planilha do exemplo Stanford. Clique na imagem para abri-la em tamanho real.</em>
+</p>
+
 
 #### Water quality {#water-quality}
 
@@ -453,6 +526,15 @@ Fica em cinza enquanto `flag_waterquality` vale 0.
 ### Risk and gauges {#tab-risk-and-gauges}
 
 Risco de instabilidade humana e pontos de observação.
+
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/risk-and-gauges.png')}><img src={useBaseUrl('/img/workbook/risk-and-gauges.png')} width="1193" style={{maxWidth: '100%', height: 'auto'}} alt="A aba Risk and gauges da planilha do caso" /></a>
+</p>
+
+<p align="center">
+  <em>A aba Risk and gauges da planilha do exemplo Stanford. Clique na imagem para abri-la em tamanho real.</em>
+</p>
+
 
 #### Human instability {#human-instability}
 

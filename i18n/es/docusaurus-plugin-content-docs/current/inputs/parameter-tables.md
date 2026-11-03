@@ -1,6 +1,7 @@
 ---
 title: Tablas de parámetros
 ---
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # Tablas de parámetros
 
@@ -46,6 +47,15 @@ Para las clases asignadas, los valores ráster y los índices de tabla deben coi
 La tabla LULC define las propiedades relacionadas con la superficie que controlan la resistencia al flujo, la intercepción, la impermeabilidad, el comportamiento relacionado con los contaminantes y la profundidad de la zona de las raíces cuando el almacenamiento de suelo en capas está activo.
 ### Estructura de ejemplo
 
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/land-use-classes.png')}><img src={useBaseUrl('/img/workbook/land-use-classes.png')} width="1481" style={{maxWidth: '100%', height: 'auto'}} alt="La pestaña Land use classes del libro del caso" /></a>
+</p>
+
+<p align="center">
+  <em>La pestaña Land use classes del libro del ejemplo Stanford. Haga clic en la imagen para abrirla en tamaño completo.</em>
+</p>
+
+
 | Cobertura terrestre | Índice | $n$<br />$(\mathrm{s\,m^{-1/3}})$ | $h_0$<br />$(\mathrm{mm})$ | $d_0$<br />$(\mathrm{mm})$ | $C_1$ | $C_2$ | $C_3$ | $C_4$ | $\mathrm{index\_impervious}$ | $\mathrm{root\_depth\_m}$ | $K_c$ |
 |:----------:|:-----:|:---------------------------------:|:--------------------------:|:--------------------------:|:-----:|:-----:|:-----:|:-----:|:----------------------------:|:--------------------------:|:----:|
 | Cobertura de árboles | 10 | 0,10 | 0 | 0 | 10 | 0,20 | 800 | 1.20 | 50 | 1,50 | 1,05 |
@@ -80,6 +90,15 @@ En la implementación actual, `root_depth_m` es la forma admitida de proporciona
 
 La tabla de suelos define las propiedades hidráulicas básicas utilizadas para estimar la infiltración, el almacenamiento vadoso en capas, la recarga y el comportamiento del agua subterránea.
 ### Estructura de ejemplo
+
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/soil-classes.png')}><img src={useBaseUrl('/img/workbook/soil-classes.png')} width="1481" style={{maxWidth: '100%', height: 'auto'}} alt="La pestaña Soil classes del libro del caso" /></a>
+</p>
+
+<p align="center">
+  <em>La pestaña Soil classes del libro del ejemplo Stanford. Haga clic en la imagen para abrirla en tamaño completo.</em>
+</p>
+
 
 | Tipo de suelo | Índice | $K_{\mathrm{sat}}$<br />$(\mathrm{mm\,h^{-1}})$ | $n$ | $\alpha$<br />$(\mathrm{m^{-1}})$ | $\theta_{\mathrm{sat}}$ | $\theta_{\mathrm{r}}$ | $\theta_{\mathrm{i}}$ | $S_{\mathrm{y}}$ | $K_{\mathrm{g,sat}}$<br />$(\mathrm{mm\,h^{-1}})$ | $\mathrm{DTB}$<br />$(\mathrm{m})$ | $K_s$ cerca | $K_s$ raíz | $K_s$ transmisión |
 |:---------:|:-----:|:-----------------------------------------------:|:---:|:----------------------------------:|:----------------------:|:--------------------:|:--------------------:|:---------------:|:---------------------------------------------------:|:--------------------------------:|:------------:|:----------:|:--------------------:|
@@ -166,6 +185,15 @@ En HydroPol2D, la mayoría de las modificaciones prácticas al comportamiento de
 
 La pestaña Human instability (antes `human_risk.xlsx`) tiene una columna de valores por método. El modelo lee los valores por posición, así que mantenga cada celda en su lugar. Vea [Inestabilidad Humana](../theory/human-instability) para las ecuaciones.
 
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/human-instability.png')}><img src={useBaseUrl('/img/workbook/human-instability.png')} width="1252" style={{maxWidth: '100%', height: 'auto'}} alt="La pestaña Human instability del libro del caso" /></a>
+</p>
+
+<p align="center">
+  <em>La pestaña Human instability del libro del ejemplo Stanford. Haga clic en la imagen para abrirla en tamaño completo.</em>
+</p>
+
+
 | Columna | Se lee cuando | Valores |
 |---|---|---|
 | Method No. 1 (columna B) | `flag_human_instability = 1` | una persona representativa, 9 valores |
@@ -206,6 +234,15 @@ El modelo calcula el ancho de cada cuerpo, $w = \sqrt{16\,m / (3\pi \rho_{\mathr
 ## Tabla de la malla {#mesh-table}
 
 La pestaña Mesh (antes `Voronoi_Settings.xlsx`) solo se lee con `flag_voronoi = 1`. Sus valores de compatibilidad deben coincidir con los metadatos de la malla preparada: la verificación previa detiene una simulación cuyo libro apunta a otra malla. La pestaña elige una malla preparada; nunca genera ni modifica una malla.
+
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/mesh.png')}><img src={useBaseUrl('/img/workbook/mesh.png')} width="1700" style={{maxWidth: '100%', height: 'auto'}} alt="La pestaña Mesh del libro del caso" /></a>
+</p>
+
+<p align="center">
+  <em>La pestaña Mesh del libro del ejemplo Stanford. Haga clic en la imagen para abrirla en tamaño completo.</em>
+</p>
+
 
 | Sección | Parámetro | Plantilla | Unidad | Se usa cuando | Descripción |
 |---|---|---|---|---|---|
@@ -280,6 +317,15 @@ Esto significa que el solucionador inercial local es modificado localmente por e
 ### Estructura de la tabla de entrada
 
 Las condiciones de contorno internas se definen en la pestaña Control structures del libro del caso (`BC_Control_structure.xlsx` en el formato anterior), que se lee cuando `flag_reservoir = 1`. Cada fila es una estructura. El caudal de salida es $Q = k_1 (h - h_{0,1})^{k_2}$ hacia la celda $(x_{d,1}, y_{d,1})$ y $Q = k_3 (h - h_{0,2})^{k_4}$ hacia la celda $(x_{d,2}, y_{d,2})$, con coordenadas en la proyección del DEM.
+
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/control-structures.png')}><img src={useBaseUrl('/img/workbook/control-structures.png')} width="1700" style={{maxWidth: '100%', height: 'auto'}} alt="La pestaña Control structures del libro del caso" /></a>
+</p>
+
+<p align="center">
+  <em>La pestaña Control structures del libro del ejemplo Stanford. Haga clic en la imagen para abrirla en tamaño completo.</em>
+</p>
+
 
 #### Estructura de la mesa
 

@@ -1,6 +1,7 @@
 ---
 title: Case Workbook Settings
 ---
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # Case Workbook Settings
 
@@ -16,6 +17,15 @@ Older cases, with `General_Data.xlsx`, its `Flags` sheet and separate workbooks,
 ---
 
 ## The workbook at a glance {#the-workbook-at-a-glance}
+
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/start-here.png')}><img src={useBaseUrl('/img/workbook/start-here.png')} width="997" style={{maxWidth: '100%', height: 'auto'}} alt="The Start here tab of the case workbook" /></a>
+</p>
+
+<p align="center">
+  <em>The Start here tab of the Stanford example workbook. Click the picture to open it full size.</em>
+</p>
+
 
 | Group | Tabs |
 |---|---|
@@ -49,6 +59,15 @@ The tables below are generated from the catalog that builds the workbook (`tools
 ### Run control {#tab-run-control}
 
 Simulation period, time step, performance and what the model records.
+
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/run-control.png')}><img src={useBaseUrl('/img/workbook/run-control.png')} width="1193" style={{maxWidth: '100%', height: 'auto'}} alt="The Run control tab of the case workbook" /></a>
+</p>
+
+<p align="center">
+  <em>The Run control tab of the Stanford example workbook. Click the picture to open it full size.</em>
+</p>
+
 
 #### Simulation period
 
@@ -113,6 +132,15 @@ Simulation period, time step, performance and what the model records.
 
 Paths to the GeoTIFF maps. Leave optional maps empty to use the class tables or scalars.
 
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/input-maps.png')}><img src={useBaseUrl('/img/workbook/input-maps.png')} width="1619" style={{maxWidth: '100%', height: 'auto'}} alt="The Input maps tab of the case workbook" /></a>
+</p>
+
+<p align="center">
+  <em>The Input maps tab of the Stanford example workbook. Click the picture to open it full size.</em>
+</p>
+
+
 #### Required maps
 
 | Setting | Key | Unit | Default | Used when | Description |
@@ -173,6 +201,15 @@ Paths to the GeoTIFF maps. Leave optional maps empty to use the class tables or 
 ### Soil and groundwater {#tab-soil-and-groundwater}
 
 Infiltration, evapotranspiration, groundwater, the layered subsurface and the deep aquifer. Each map sits under the value it overrides.
+
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/soil-and-groundwater.png')}><img src={useBaseUrl('/img/workbook/soil-and-groundwater.png')} width="1524" style={{maxWidth: '100%', height: 'auto'}} alt="The Soil and groundwater tab of the case workbook" /></a>
+</p>
+
+<p align="center">
+  <em>The Soil and groundwater tab of the Stanford example workbook. Click the picture to open it full size.</em>
+</p>
+
 
 #### Infiltration and evapotranspiration
 
@@ -301,6 +338,15 @@ Greyed out while `flag_deep_aquifer` is 0.
 
 Routing scheme, outlets, river channels, terrain treatment and structures.
 
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/surface-flow.png')}><img src={useBaseUrl('/img/workbook/surface-flow.png')} width="1193" style={{maxWidth: '100%', height: 'auto'}} alt="The Surface flow tab of the case workbook" /></a>
+</p>
+
+<p align="center">
+  <em>The Surface flow tab of the Stanford example workbook. Click the picture to open it full size.</em>
+</p>
+
+
 #### Routing scheme
 
 | Setting | Key | Unit | Default | Used when | Description |
@@ -378,6 +424,15 @@ Routing scheme, outlets, river channels, terrain treatment and structures.
 
 Where rainfall and evapotranspiration come from, and the lists of map files.
 
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/rain-and-et.png')}><img src={useBaseUrl('/img/workbook/rain-and-et.png')} width="1653" style={{maxWidth: '100%', height: 'auto'}} alt="The Rain and ET tab of the case workbook" /></a>
+</p>
+
+<p align="center">
+  <em>The Rain and ET tab of the Stanford example workbook. Click the picture to open it full size. The picture ends at the column titles of the first map list.</em>
+</p>
+
+
 #### Rainfall source
 
 | Setting | Key | Unit | Default | Used when | Description |
@@ -404,6 +459,15 @@ Where rainfall and evapotranspiration come from, and the lists of map files.
 
 Synthetic storms from a local IDF relation i = K RP^a / (b + duration)^c.
 
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/design-storm.png')}><img src={useBaseUrl('/img/workbook/design-storm.png')} width="1193" style={{maxWidth: '100%', height: 'auto'}} alt="The Design storm tab of the case workbook" /></a>
+</p>
+
+<p align="center">
+  <em>The Design storm tab of the Stanford example workbook. Click the picture to open it full size.</em>
+</p>
+
+
 #### Hyetograph
 
 | Setting | Key | Unit | Default | Used when | Description |
@@ -426,6 +490,15 @@ Synthetic storms from a local IDF relation i = K RP^a / (b + duration)^c.
 ### Water quality {#tab-water-quality}
 
 Pollutant build-up and wash-off.
+
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/water-quality.png')}><img src={useBaseUrl('/img/workbook/water-quality.png')} width="1331" style={{maxWidth: '100%', height: 'auto'}} alt="The Water quality tab of the case workbook" /></a>
+</p>
+
+<p align="center">
+  <em>The Water quality tab of the Stanford example workbook. Click the picture to open it full size.</em>
+</p>
+
 
 #### Water quality
 
@@ -453,6 +526,15 @@ Greyed out while `flag_waterquality` is 0.
 ### Risk and gauges {#tab-risk-and-gauges}
 
 Human-instability risk and observation points.
+
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/risk-and-gauges.png')}><img src={useBaseUrl('/img/workbook/risk-and-gauges.png')} width="1193" style={{maxWidth: '100%', height: 'auto'}} alt="The Risk and gauges tab of the case workbook" /></a>
+</p>
+
+<p align="center">
+  <em>The Risk and gauges tab of the Stanford example workbook. Click the picture to open it full size.</em>
+</p>
+
 
 #### Human instability
 

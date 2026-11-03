@@ -1,6 +1,7 @@
 ---
 title: Tabelas de parâmetros
 ---
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # Tabelas de parâmetros
 
@@ -46,6 +47,15 @@ Para classes mapeadas, os valores raster e os índices de tabela devem correspon
 A tabela LULC define propriedades relacionadas à superfície que controlam a resistência ao fluxo, interceptação, impermeabilidade, comportamento relacionado a poluentes e profundidade da zona radicular quando o armazenamento em camadas do solo está ativo.
 ### Estrutura de exemplo
 
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/land-use-classes.png')}><img src={useBaseUrl('/img/workbook/land-use-classes.png')} width="1481" style={{maxWidth: '100%', height: 'auto'}} alt="A aba Land use classes da planilha do caso" /></a>
+</p>
+
+<p align="center">
+  <em>A aba Land use classes da planilha do exemplo Stanford. Clique na imagem para abri-la em tamanho real.</em>
+</p>
+
+
 | Cobertura do solo | Índice | $n$<br />$(\mathrm{s\,m^{-1/3}})$ | $h_0$<br />$(\mathrm{mm})$ | $d_0$<br />$(\mathrm{mm})$ | $C_1$ | $C_2$ | $C_3$ | $C_4$ | $\mathrm{index\_impervious}$ | $\mathrm{root\_depth\_m}$ | $K_c$ |
 |:----------:|:-----:|:---------------------------------:|:--------------------------:|:--------------------------:|:-----:|:-----:|:-----:|:-----:|:----------------------------:|:--------------------------:|:----:|
 | Cobertura de árvore | 10 | 0,10 | 0 | 0 | 10 | 0,20 | 800 | 1,20 | 50 | 1,50 | 1,05 |
@@ -80,6 +90,15 @@ Na implementação atual, `root_depth_m` é a forma suportada de fornecer entrad
 
 A tabela de solos define as propriedades hidráulicas básicas usadas para estimar a infiltração, o armazenamento vadoso em camadas, a recarga e o comportamento das águas subterrâneas.
 ### Estrutura de exemplo
+
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/soil-classes.png')}><img src={useBaseUrl('/img/workbook/soil-classes.png')} width="1481" style={{maxWidth: '100%', height: 'auto'}} alt="A aba Soil classes da planilha do caso" /></a>
+</p>
+
+<p align="center">
+  <em>A aba Soil classes da planilha do exemplo Stanford. Clique na imagem para abri-la em tamanho real.</em>
+</p>
+
 
 | Tipo de solo | Índice | $K_{\mathrm{sat}}$<br />$(\mathrm{mm\,h^{-1}})$ | $n$ | $\alpha$<br />$(\mathrm{m^{-1}})$ | $\theta_{\mathrm{sat}}$ | $\theta_{\mathrm{r}}$ | $\theta_{\mathrm{i}}$ | $S_{\mathrm{y}}$ | $K_{\mathrm{g,sat}}$<br />$(\mathrm{mm\,h^{-1}})$ | $\mathrm{DTB}$<br />$(\mathrm{m})$ | $K_s$ perto | $K_s$ raiz | transmissão $K_s$ |
 |:---------:|:-----:|:-----------------------------------------------:|:---:|:----------------------------------:|:----------------------:|:--------------------:|:--------------------:|:---------------:|:---------------------------------------------------:|:--------------------------------:|:------------:|:----------:|:--------------------:|
@@ -166,6 +185,15 @@ No HydroPol2D, as modificações mais práticas no comportamento do modelo são 
 
 A aba Human instability (antes `human_risk.xlsx`) tem uma coluna de valores por método. O modelo lê os valores pela posição, então mantenha cada célula no lugar. Veja [Instabilidade Humana](../theory/human-instability) para as equações.
 
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/human-instability.png')}><img src={useBaseUrl('/img/workbook/human-instability.png')} width="1252" style={{maxWidth: '100%', height: 'auto'}} alt="A aba Human instability da planilha do caso" /></a>
+</p>
+
+<p align="center">
+  <em>A aba Human instability da planilha do exemplo Stanford. Clique na imagem para abri-la em tamanho real.</em>
+</p>
+
+
 | Coluna | Lida quando | Valores |
 |---|---|---|
 | Method No. 1 (coluna B) | `flag_human_instability = 1` | uma pessoa representativa, 9 valores |
@@ -206,6 +234,15 @@ O modelo calcula a largura de cada corpo, $w = \sqrt{16\,m / (3\pi \rho_{\mathrm
 ## Tabela da malha {#mesh-table}
 
 A aba Mesh (antes `Voronoi_Settings.xlsx`) só é lida com `flag_voronoi = 1`. Os valores de compatibilidade precisam coincidir com os metadados da malha preparada: a verificação prévia interrompe uma simulação cuja planilha aponta para outra malha. A aba escolhe uma malha preparada; ela nunca gera nem altera uma malha.
+
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/mesh.png')}><img src={useBaseUrl('/img/workbook/mesh.png')} width="1700" style={{maxWidth: '100%', height: 'auto'}} alt="A aba Mesh da planilha do caso" /></a>
+</p>
+
+<p align="center">
+  <em>A aba Mesh da planilha do exemplo Stanford. Clique na imagem para abri-la em tamanho real.</em>
+</p>
+
 
 | Seção | Parâmetro | Padrão | Unidade | Usado quando | Descrição |
 |---|---|---|---|---|---|
@@ -280,6 +317,15 @@ Isto significa que o solucionador inercial local é modificado localmente pelo c
 ### Estrutura da tabela de entrada
 
 As condições de contorno internas são definidas na aba Control structures da planilha do caso (`BC_Control_structure.xlsx` no formato antigo), lida quando `flag_reservoir = 1`. Cada linha é uma estrutura. A vazão de saída é $Q = k_1 (h - h_{0,1})^{k_2}$ para a célula $(x_{d,1}, y_{d,1})$ e $Q = k_3 (h - h_{0,2})^{k_4}$ para a célula $(x_{d,2}, y_{d,2})$, com coordenadas na projeção do DEM.
+
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/control-structures.png')}><img src={useBaseUrl('/img/workbook/control-structures.png')} width="1700" style={{maxWidth: '100%', height: 'auto'}} alt="A aba Control structures da planilha do caso" /></a>
+</p>
+
+<p align="center">
+  <em>A aba Control structures da planilha do exemplo Stanford. Clique na imagem para abri-la em tamanho real.</em>
+</p>
+
 
 #### Estrutura da tabela
 

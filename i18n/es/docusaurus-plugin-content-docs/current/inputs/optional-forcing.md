@@ -1,6 +1,7 @@
 ---
 title: Forzamientos opcionales
 ---
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 # Forzamientos opcionales
 
@@ -28,6 +29,15 @@ Se usa una sola fuente de lluvia a la vez. Una serie que los interruptores del c
 
 ## Lluvia {#rainfall}
 
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/rain-series.png')}><img src={useBaseUrl('/img/workbook/rain-series.png')} width="746" style={{maxWidth: '100%', height: 'auto'}} alt="La pestaña Rain series del libro del caso" /></a>
+</p>
+
+<p align="center">
+  <em>La pestaña Rain series del libro del ejemplo Stanford. Haga clic en la imagen para abrirla en tamaño completo.</em>
+</p>
+
+
 ### Serie uniforme {#uniform-series}
 
 La pestaña Rain series contiene un pluviómetro, con la intensidad de lluvia (mm/h) en el tiempo. La lluvia se aplica de manera uniforme sobre el dominio. La pestaña se lee cuando la lluvia está activada y no se elige tormenta de diseño, mapa, lluvia satelital ni lluvia espacial.
@@ -41,6 +51,15 @@ Antes del 2026-10-29, MATLAB leía los tiempos de lluvia, caudal de entrada y ma
 ### Pluviómetros {#rain-gauges}
 
 La pestaña Rain gauges contiene varios pluviómetros, interpolados a cada celda por el inverso de la distancia ponderado. Se lee cuando `flag_spatial_rainfall = 1` y no se dan mapas de lluvia. Cada pluviómetro ocupa una columna, con su índice, su nombre y sus coordenadas (m, en la proyección del DEM), seguidos de su intensidad (mm/h) en cada tiempo (min) de la columna B.
+
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/rain-gauges.png')}><img src={useBaseUrl('/img/workbook/rain-gauges.png')} width="1700" style={{maxWidth: '100%', height: 'auto'}} alt="La pestaña Rain gauges del libro del caso" /></a>
+</p>
+
+<p align="center">
+  <em>La pestaña Rain gauges del libro del ejemplo Stanford. Haga clic en la imagen para abrirla en tamaño completo. El caso Stanford no usa esta pestaña; conserva las columnas de la plantilla.</em>
+</p>
+
 
 ### Mapas de lluvia {#rainfall-maps}
 
@@ -76,6 +95,15 @@ donde $i$ es la intensidad (mm/h), $\mathrm{RP}$ el período de retorno (años) 
 
 Con `flag_ETP = 1` y sin mapas de ET, HydroPol2D calcula la evapotranspiración con Penman–Monteith a partir de datos meteorológicos diarios de una o más estaciones, interpolados a la malla por el inverso de la distancia ponderado. En la pestaña Climate stations, la fila 2 nombra el bloque de cada estación (índice, coordenadas este y norte en m), la fila 3 contiene los encabezados de sus columnas y cada fila a partir de la fila 4 corresponde a un día. Las variables típicas son la temperatura del aire, la radiación, la humedad relativa y la velocidad del viento.
 
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/climate-stations.png')}><img src={useBaseUrl('/img/workbook/climate-stations.png')} width="1700" style={{maxWidth: '100%', height: 'auto'}} alt="La pestaña Climate stations del libro del caso" /></a>
+</p>
+
+<p align="center">
+  <em>La pestaña Climate stations del libro del ejemplo Stanford. Haga clic en la imagen para abrirla en tamaño completo. El caso Stanford no usa esta pestaña; conserva las columnas de la plantilla.</em>
+</p>
+
+
 ### Mapas de evaporación y transpiración {#evaporation-and-transpiration-maps}
 
 Con `flag_input_ETP_map = 1`, el modelo lee dos listas de la pestaña Rain and ET, Transpiration maps y Evaporation maps. Cada fila contiene el tiempo en días desde la fecha de inicio y la ruta de un GeoTIFF en mm/día. Ambas listas deben tener los mismos tiempos. Los flujos se aplican directamente al agua superficial y a la humedad del suelo, por lo que no se necesita forzamiento meteorológico.
@@ -92,11 +120,29 @@ En `General_Data.xlsx`, las listas de lluvia, transpiración y evaporación comp
 
 La pestaña Inflow hydrographs, que se lee cuando `flag_inflow = 1`, admite hasta 50 estaciones. Cada estación es un bloque de cinco columnas con el tiempo (min), el caudal (m³/s) y las coordenadas este y norte (m) de cada celda por la que entra el caudal, una celda por fila. El caudal se reparte entre esas celdas. Se deben conservar los 50 bloques, incluso los vacíos.
 
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/inflow-hydrographs.png')}><img src={useBaseUrl('/img/workbook/inflow-hydrographs.png')} width="1700" style={{maxWidth: '100%', height: 'auto'}} alt="La pestaña Inflow hydrographs del libro del caso" /></a>
+</p>
+
+<p align="center">
+  <em>La pestaña Inflow hydrographs del libro del ejemplo Stanford. Haga clic en la imagen para abrirla en tamaño completo. El caso Stanford no usa esta pestaña; los nombres de estaciones de la plantilla se omitieron de la imagen.</em>
+</p>
+
+
 Los hidrogramas de entrada representan contornos aguas arriba, aportes de ríos y descargas por rotura de presa o controladas.
 
 ### Hidrogramas de nivel {#stage-hydrographs}
 
 La pestaña Stage hydrographs, que se lee cuando `flag_stage_hydrograph = 1`, tiene la misma disposición, con el tiempo (min), la profundidad del agua (m) y las coordenadas este y norte (m) de cada celda del contorno. Todas las celdas de un contorno reciben la misma profundidad impuesta. Se deben conservar los 50 bloques, incluso los vacíos.
+
+<p align="center">
+  <a href={useBaseUrl('/img/workbook/stage-hydrographs.png')}><img src={useBaseUrl('/img/workbook/stage-hydrographs.png')} width="1700" style={{maxWidth: '100%', height: 'auto'}} alt="La pestaña Stage hydrographs del libro del caso" /></a>
+</p>
+
+<p align="center">
+  <em>La pestaña Stage hydrographs del libro del ejemplo Stanford. Haga clic en la imagen para abrirla en tamaño completo. El caso Stanford no usa esta pestaña; conserva las columnas de la plantilla.</em>
+</p>
+
 
 Los hidrogramas de nivel representan el control aguas abajo, el remanso y otras restricciones hidráulicas.
 
