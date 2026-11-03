@@ -310,7 +310,7 @@ Esquema de roteamento, saídas, canais de rio, tratamento do terreno e estrutura
 | Roteamento por autômatos celulares | `flag_CA` | 0 / 1 | obrigatório | sempre | Seleciona a opção de roteamento hidrodinâmico por autômatos celulares. Não a ative junto com o roteamento inercial local ou de momento completo. |
 | Onda cinemática | `flag_kinematic` | 0 / 1 | obrigatório | sempre | Seleciona a alternativa de roteamento por onda cinemática. Não a combine com o roteamento inercial local, de momento completo ou por autômatos celulares. |
 | Onda difusiva | `flag_diffusive` | 0 / 1 | obrigatório | sempre | Seleciona a alternativa de roteamento por onda difusiva. Não a combine com o roteamento inercial local, de momento completo ou por autômatos celulares. |
-| Direções de escoamento D8 | `flag_D8` | 0 / 1 | obrigatório | sempre | Ativa o roteamento no terreno e o pré-processamento da drenagem D8 onde se aplicam. O roteamento inercial local continua baseado em faces. |
+| Direções de escoamento D8 | `flag_D8` | 0 / 1 | obrigatório | sempre | Aposentado: mantenha em 0. O D8 antigo em raster estava incompleto, e 1 interrompe a simulação. O roteamento inercial local D8 é `flag_d8_local_inertial`, definido no script de bypass (veja [Limitações](../validation/limitations#matlab-optional-modules)). |
 
 #### Outlets and boundaries {#outlets-and-boundaries}
 

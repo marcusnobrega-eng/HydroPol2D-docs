@@ -59,7 +59,7 @@ Generated from the workbook catalog (`tools/workbook_builder/input_catalog.yaml`
 | `flag_CA` | Routing scheme | 0 / 1 | required | Selects the cellular-automata hydrodynamic routing option. Do not enable it together with local inertial or full momentum routing. |
 | `flag_kinematic` | Routing scheme | 0 / 1 | required | Selects the kinematic-wave routing alternative. Do not combine it with local inertial, full momentum, or cellular automata routing. |
 | `flag_diffusive` | Routing scheme | 0 / 1 | required | Selects the diffusive-wave routing alternative. Do not combine it with local inertial, full momentum, or cellular automata routing. |
-| `flag_D8` | Routing scheme | 0 / 1 | required | Enables D8 terrain-routing and drainage preprocessing where applicable. Local-inertial routing itself remains face based. |
+| `flag_D8` | Routing scheme | 0 / 1 | required | Retired: keep at 0. The old raster D8 was incomplete, and 1 stops the run. D8 local-inertial routing is `flag_d8_local_inertial`, set in the bypass script (see [Limitations](../validation/limitations#matlab-optional-modules)). |
 | `flag_boundary` | Outlets and boundaries | 0 / 1 | required | Activates the configured open/perimeter boundary treatment. Define the outlet mask and outlet slope carefully because this setting controls water removal at the domain edge. |
 | `flag_critical` | Outlets and boundaries | 0 / 1 | required | Uses the critical-flow outlet treatment where the selected routing solver supports it. This is distinct from the normal-flow outlet selected with flag_outlet_type. |
 | `flag_neal_channel` | River channel (sub-grid) | 0 / 1 | required | Activates the Neal (2012) embedded rectangular channel and floodplain extension. It requires flag_inertial = 1, structured raster topology, and valid river-width and river-depth rasters. |
@@ -122,7 +122,7 @@ Generated from the workbook catalog (`tools/workbook_builder/input_catalog.yaml`
 - Only one major routing family should be active at a time: `flag_full_momentum`, `flag_inertial`, `flag_diffusive`, `flag_kinematic`, or `flag_CA`.
 - Select at most one subgrid formulation: Neal channel, structured lookup, or Voronoi lookup.
 - `flag_voronoi = 1` selects the mesh topology; `flag_voronoi_subgrid = 1` additionally enables Voronoi lookup hydraulics.
-- `flag_D8` is a secondary, limited-scope routing pathway, not another report-ready routing family.
+- `flag_D8` is retired; keep it at 0. D8 local-inertial routing (`flag_d8_local_inertial`), urban drainage, detention ponds and green infrastructure are set in the bypass script, not in the workbook (see [Limitations](../validation/limitations#matlab-optional-modules)).
 - `flag_numerical_scheme` (`1` Bates, `2` upwind, `3` centered) applies to the local-inertial family only.
 - Snow needs the internal meteorological forcing: `flag_ETP = 1` and `flag_input_ETP_map = 0`. Snow parameters are columns of the land-use class table.
 - `flag_implicit_water_table_flux` and the other layered-subsurface settings are read only with `flag_layered_subsurface = 1`.

@@ -20,6 +20,16 @@ No HydroPol2D-Python, a malha roda os módulos opcionais da grade regular no seu
 - um reservatório, uma boca de lobo, um compartimento de infraestrutura verde ou um dispositivo de bacia passa para a célula da malha que contém a maior parte da sua célula raster, e uma bacia ocupa as células da malha que cobre pela metade ou mais;
 - com expoente de lavagem diferente de 1, a lavagem depende de quantas arestas a água atravessa ao sair de uma célula, de modo que uma malha Voronoi (cerca de seis arestas por célula) lava de forma diferente da grade (quatro faces).
 
+## Módulos opcionais no MATLAB {#matlab-optional-modules}
+
+Desde 2026-11-02, o HydroPol2D (MATLAB) roda drenagem urbana, bacias de detenção, infraestrutura verde e roteamento inercial local D8 na grade regular, com as equações do HydroPol2D-Python. Cada um foi comparado com o núcleo do Python (VAL-UD-001, VAL-POND-001, VAL-GI-001 e a verificação do D8). Nenhum foi comparado com observações. Limites em aberto:
+
+- os quatro são configurados no script de bypass (a estrutura `InputData_Bypass` de `Config/input_data_bypass_script.m`). A planilha do caso não tem entradas para eles, então `flag_urban_drainage`, `flag_detention_ponds` ou `flag_green_infrastructure` = 1 no modo Excel interrompe a simulação, e `flag_d8_local_inertial` não é lido da planilha;
+- a drenagem urbana roda só com o solucionador inercial local, sem o subgrade de canal e sem qualidade da água;
+- o roteamento inercial local D8 (`flag_d8_local_inertial = 1`) exige `flag_inertial = 1` e o esquema de Bates. Ele não roda com o subgrade de canal, qualidade da água, risco humano, neve, hidrogramas de vazão ou de nível, postos observados, troca rio-aquífero, redução do DEM, drenagem urbana, bacias de detenção ou infraestrutura verde. `flag_d8_full_domain = 0` mantém um grafo de rio D8 dentro de uma planície D4; 1 coloca todas as células no grafo D8;
+- o D8 antigo em raster (`flag_D8`) foi aposentado, e `flag_D8 = 1` interrompe a simulação;
+- uma simulação em malha Voronoi ou quadtree recusa drenagem urbana, bacias de detenção e infraestrutura verde. Reservatórios, qualidade da água, risco humano (modo 1) e neve rodam nas malhas do MATLAB.
+
 ## Subsuperfície em Camadas e Calibração por Recessão {#layered-subsurface-and-recession-calibration}
 
 A subsuperfície em camadas tem testes controlados e paridade Python-MATLAB em domínios sintéticos em V, e não validação de campo. Os limites ainda em aberto são estes.

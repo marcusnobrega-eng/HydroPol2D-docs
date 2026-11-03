@@ -310,7 +310,7 @@ Routing scheme, outlets, river channels, terrain treatment and structures.
 | Cellular-automata routing | `flag_CA` | 0 / 1 | required | always | Selects the cellular-automata hydrodynamic routing option. Do not enable it together with local inertial or full momentum routing. |
 | Kinematic wave | `flag_kinematic` | 0 / 1 | required | always | Selects the kinematic-wave routing alternative. Do not combine it with local inertial, full momentum, or cellular automata routing. |
 | Diffusive wave | `flag_diffusive` | 0 / 1 | required | always | Selects the diffusive-wave routing alternative. Do not combine it with local inertial, full momentum, or cellular automata routing. |
-| D8 flow directions | `flag_D8` | 0 / 1 | required | always | Enables D8 terrain-routing and drainage preprocessing where applicable. Local-inertial routing itself remains face based. |
+| D8 flow directions | `flag_D8` | 0 / 1 | required | always | Retired: keep at 0. The old raster D8 was incomplete, and 1 stops the run. D8 local-inertial routing is `flag_d8_local_inertial`, set in the bypass script (see [Limitations](../validation/limitations#matlab-optional-modules)). |
 
 #### Outlets and boundaries
 

@@ -310,7 +310,7 @@ Esquema de enrutamiento, salidas, canales de río, tratamiento del terreno y est
 | Enrutamiento por autómatas celulares | `flag_CA` | 0 / 1 | obligatorio | siempre | Selecciona la opción de enrutamiento hidrodinámico por autómatas celulares. No se debe activar junto con el enrutamiento inercial local o de momento completo. |
 | Onda cinemática | `flag_kinematic` | 0 / 1 | obligatorio | siempre | Selecciona la alternativa de enrutamiento por onda cinemática. No se debe combinar con el enrutamiento inercial local, de momento completo o por autómatas celulares. |
 | Onda difusiva | `flag_diffusive` | 0 / 1 | obligatorio | siempre | Selecciona la alternativa de enrutamiento por onda difusiva. No se debe combinar con el enrutamiento inercial local, de momento completo o por autómatas celulares. |
-| Direcciones de flujo D8 | `flag_D8` | 0 / 1 | obligatorio | siempre | Activa el enrutamiento del terreno D8 y el preprocesamiento del drenaje cuando corresponde. El enrutamiento inercial local sigue basado en caras. |
+| Direcciones de flujo D8 | `flag_D8` | 0 / 1 | obligatorio | siempre | Retirado: manténgalo en 0. El D8 ráster antiguo estaba incompleto, y 1 detiene la simulación. El enrutamiento inercial local D8 es `flag_d8_local_inertial`, definido en el script de bypass (vea [Limitaciones](../validation/limitations#matlab-optional-modules)). |
 
 #### Outlets and boundaries {#outlets-and-boundaries}
 

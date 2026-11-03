@@ -59,7 +59,7 @@ Tabelas geradas a partir do catálogo da planilha (`tools/workbook_builder/input
 | `flag_CA` | Routing scheme | 0 / 1 | obrigatório | Seleciona a opção de roteamento hidrodinâmico por autômatos celulares. Não a ative junto com o roteamento inercial local ou de momento completo. |
 | `flag_kinematic` | Routing scheme | 0 / 1 | obrigatório | Seleciona a alternativa de roteamento por onda cinemática. Não a combine com o roteamento inercial local, de momento completo ou por autômatos celulares. |
 | `flag_diffusive` | Routing scheme | 0 / 1 | obrigatório | Seleciona a alternativa de roteamento por onda difusiva. Não a combine com o roteamento inercial local, de momento completo ou por autômatos celulares. |
-| `flag_D8` | Routing scheme | 0 / 1 | obrigatório | Ativa o roteamento no terreno e o pré-processamento da drenagem D8 onde se aplicam. O roteamento inercial local continua baseado em faces. |
+| `flag_D8` | Routing scheme | 0 / 1 | obrigatório | Aposentado: mantenha em 0. O D8 antigo em raster estava incompleto, e 1 interrompe a simulação. O roteamento inercial local D8 é `flag_d8_local_inertial`, definido no script de bypass (veja [Limitações](../validation/limitations#matlab-optional-modules)). |
 | `flag_boundary` | Outlets and boundaries | 0 / 1 | obrigatório | Ativa o tratamento configurado do contorno aberto ou do perímetro. Defina com cuidado a máscara e a declividade da saída, porque esta configuração controla a retirada de água na borda do domínio. |
 | `flag_critical` | Outlets and boundaries | 0 / 1 | obrigatório | Usa o tratamento de saída em fluxo crítico onde o solver de roteamento selecionado o suporta. É diferente da saída em fluxo normal selecionada com flag_outlet_type. |
 | `flag_neal_channel` | River channel (sub-grid) | 0 / 1 | obrigatório | Ativa a extensão de Neal (2012), com canal retangular embutido e planície de inundação. Requer flag_inertial = 1, topologia raster estruturada e rasters válidos de largura e profundidade do rio. |
@@ -120,7 +120,7 @@ Tabelas geradas a partir do catálogo da planilha (`tools/workbook_builder/input
 - Apenas uma família principal de roteamento deve estar ativa por vez, entre `flag_full_momentum`, `flag_inertial`, `flag_diffusive`, `flag_kinematic` e `flag_CA`.
 - Selecione no máximo uma formulação subgrade, entre canal de Neal, tabela de consulta estruturada e tabela de consulta Voronoi.
 - `flag_voronoi = 1` seleciona a topologia da malha. `flag_voronoi_subgrid = 1` ativa, além disso, a hidráulica por tabela de consulta na malha Voronoi.
-- `flag_D8` é um caminho de roteamento secundário e de escopo limitado, e não mais uma família de roteamento pronta para relatórios.
+- `flag_D8` foi aposentado; mantenha-o em 0. O roteamento inercial local D8 (`flag_d8_local_inertial`), a drenagem urbana, as bacias de detenção e a infraestrutura verde são definidos no script de bypass, não na planilha (veja [Limitações](../validation/limitations#matlab-optional-modules)).
 - `flag_numerical_scheme` (`1` Bates, `2` upwind, `3` centrado) vale apenas para a família inercial local.
 - A neve precisa da forçante meteorológica interna, com `flag_ETP = 1` e `flag_input_ETP_map = 0`. Os parâmetros de neve são colunas da tabela de classes de uso da terra.
 - `flag_implicit_water_table_flux` e as demais configurações da subsuperfície em camadas são lidas apenas com `flag_layered_subsurface = 1`.

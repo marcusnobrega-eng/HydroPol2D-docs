@@ -59,7 +59,7 @@ Las tablas se generan a partir del catálogo del libro de Excel (`tools/workbook
 | `flag_CA` | Routing scheme | 0 / 1 | obligatorio | Selecciona la opción de enrutamiento hidrodinámico por autómatas celulares. No se debe activar junto con el enrutamiento inercial local o de momento completo. |
 | `flag_kinematic` | Routing scheme | 0 / 1 | obligatorio | Selecciona la alternativa de enrutamiento por onda cinemática. No se debe combinar con el enrutamiento inercial local, de momento completo o por autómatas celulares. |
 | `flag_diffusive` | Routing scheme | 0 / 1 | obligatorio | Selecciona la alternativa de enrutamiento por onda difusiva. No se debe combinar con el enrutamiento inercial local, de momento completo o por autómatas celulares. |
-| `flag_D8` | Routing scheme | 0 / 1 | obligatorio | Activa el enrutamiento del terreno D8 y el preprocesamiento del drenaje cuando corresponde. El enrutamiento inercial local sigue basado en caras. |
+| `flag_D8` | Routing scheme | 0 / 1 | obligatorio | Retirado: manténgalo en 0. El D8 ráster antiguo estaba incompleto, y 1 detiene la simulación. El enrutamiento inercial local D8 es `flag_d8_local_inertial`, definido en el script de bypass (vea [Limitaciones](../validation/limitations#matlab-optional-modules)). |
 | `flag_boundary` | Outlets and boundaries | 0 / 1 | obligatorio | Activa el tratamiento configurado del contorno abierto o perimetral. La máscara y la pendiente de salida deben definirse con cuidado, porque este parámetro controla la salida de agua en el borde del dominio. |
 | `flag_critical` | Outlets and boundaries | 0 / 1 | obligatorio | Usa el tratamiento de salida de flujo crítico donde el solucionador de enrutamiento seleccionado lo admite. Es distinto de la salida de flujo normal seleccionada con flag_outlet_type. |
 | `flag_neal_channel` | River channel (sub-grid) | 0 / 1 | obligatorio | Activa la extensión de canal rectangular embebido y llanura de inundación de Neal (2012). Requiere flag_inertial = 1, topología ráster estructurada y rásteres válidos de ancho y profundidad del río. |
@@ -120,7 +120,7 @@ Las tablas se generan a partir del catálogo del libro de Excel (`tools/workbook
 - Solo una familia principal de enrutamiento debe estar activa a la vez, entre `flag_full_momentum`, `flag_inertial`, `flag_diffusive`, `flag_kinematic` y `flag_CA`.
 - Se debe seleccionar como máximo una formulación de submalla, entre el canal de Neal, la tabla de consulta estructurada y la tabla de consulta de Voronoi.
 - `flag_voronoi = 1` selecciona la topología de la malla. `flag_voronoi_subgrid = 1` activa además la hidráulica con tablas de consulta de Voronoi.
-- `flag_D8` es una ruta de enrutamiento secundaria y de alcance limitado, no otra familia de enrutamiento lista para informes.
+- `flag_D8` está retirado; manténgalo en 0. El enrutamiento inercial local D8 (`flag_d8_local_inertial`), el drenaje urbano, los estanques de detención y la infraestructura verde se definen en el script de bypass, no en el libro de cálculo (vea [Limitaciones](../validation/limitations#matlab-optional-modules)).
 - `flag_numerical_scheme` (`1` Bates, `2` upwind, `3` centrado) se aplica solo a la familia inercial local.
 - La nieve necesita el forzamiento meteorológico interno, es decir, `flag_ETP = 1` y `flag_input_ETP_map = 0`. Los parámetros de nieve son columnas de la tabla de clases de uso del suelo.
 - `flag_implicit_water_table_flux` y los demás parámetros del subsuelo en capas solo se leen con `flag_layered_subsurface = 1`.

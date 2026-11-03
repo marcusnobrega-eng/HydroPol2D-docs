@@ -20,6 +20,16 @@ En HydroPol2D-Python, la malla ejecuta los módulos opcionales de la malla rást
 - un embalse, un sumidero, un compartimento de infraestructura verde o un dispositivo de estanque pasa a la celda de la malla que contiene la mayor parte de su celda ráster, y un estanque ocupa las celdas de la malla que cubre en la mitad o más;
 - con un exponente de lavado distinto de 1, el lavado depende de cuántas aristas atraviesa el agua al salir de una celda, de modo que una malla de Voronoi (unas seis aristas por celda) lava de forma distinta que la malla ráster (cuatro caras).
 
+## Módulos opcionales en MATLAB {#matlab-optional-modules}
+
+Desde el 2026-11-02, HydroPol2D (MATLAB) ejecuta drenaje urbano, estanques de detención, infraestructura verde y enrutamiento inercial local D8 en la malla ráster regular, con las ecuaciones de HydroPol2D-Python. Cada uno se comparó con el núcleo de Python (VAL-UD-001, VAL-POND-001, VAL-GI-001 y la verificación del D8). Ninguno se ha comparado con observaciones. Límites abiertos:
+
+- los cuatro se configuran en el script de bypass (la estructura `InputData_Bypass` de `Config/input_data_bypass_script.m`). El libro de cálculo del caso no tiene entradas para ellos, así que `flag_urban_drainage`, `flag_detention_ponds` o `flag_green_infrastructure` = 1 en modo Excel detiene la simulación, y `flag_d8_local_inertial` no se lee del libro;
+- el drenaje urbano se ejecuta solo con el solucionador inercial local, sin la submalla de canal y sin calidad del agua;
+- el enrutamiento inercial local D8 (`flag_d8_local_inertial = 1`) requiere `flag_inertial = 1` y el esquema de Bates. No se ejecuta con la submalla de canal, calidad del agua, riesgo humano, nieve, hidrogramas de caudal o de nivel, estaciones observadas, intercambio río-acuífero, reducción del DEM, drenaje urbano, estanques de detención ni infraestructura verde. `flag_d8_full_domain = 0` mantiene un grafo fluvial D8 dentro de una llanura D4; 1 pone todas las celdas en el grafo D8;
+- el D8 ráster antiguo (`flag_D8`) está retirado, y `flag_D8 = 1` detiene la simulación;
+- una simulación en malla de Voronoi o quadtree rechaza el drenaje urbano, los estanques de detención y la infraestructura verde. Los embalses, la calidad del agua, el riesgo humano (modo 1) y la nieve se ejecutan en las mallas de MATLAB.
+
 ## Subsuelo en capas y calibración por recesión {#layered-subsurface-and-recession-calibration}
 
 El subsuelo en capas cuenta con pruebas controladas y paridad entre Python y MATLAB en dominios sintéticos en V, pero no con validación de campo. Sus límites abiertos son los siguientes.

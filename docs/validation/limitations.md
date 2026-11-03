@@ -40,6 +40,30 @@ been checked against observations on an irregular mesh. Open limits:
   leaves a cell through, so a Voronoi mesh (about six edges per cell) washes off
   differently from the grid (four faces).
 
+## Optional modules in MATLAB {#matlab-optional-modules}
+
+Since 2026-11-02, HydroPol2D (MATLAB) runs urban drainage, detention ponds, green
+infrastructure and D8 local-inertial routing on the regular grid, with the equations of
+HydroPol2D-Python. Each is checked against the Python kernel (VAL-UD-001, VAL-POND-001,
+VAL-GI-001 and the D8 check). None has been checked against observations. Open limits:
+
+- all four are set up in the bypass script (the `InputData_Bypass` structure of
+  `Config/input_data_bypass_script.m`). The case workbook has no inputs for them, so
+  `flag_urban_drainage`, `flag_detention_ponds` or `flag_green_infrastructure` = 1 in
+  Excel mode stops the run, and `flag_d8_local_inertial` is not read from the workbook;
+- urban drainage runs with the local-inertial solver only, without the channel subgrid
+  and without water quality;
+- D8 local-inertial routing (`flag_d8_local_inertial = 1`) needs `flag_inertial = 1` and
+  the Bates scheme. It does not run with the channel subgrid, water quality, human risk,
+  snow, inflow or stage hydrographs, observed gauges, river-aquifer exchange, DEM
+  reduction, urban drainage, detention ponds or green infrastructure.
+  `flag_d8_full_domain = 0` keeps a D8 river graph inside a D4 floodplain; 1 puts every
+  cell on the D8 graph;
+- the older raster D8 (`flag_D8`) is retired, and `flag_D8 = 1` stops the run;
+- a Voronoi or quadtree mesh run refuses urban drainage, detention ponds and green
+  infrastructure. Reservoirs, water quality, human risk (mode 1) and snow run on MATLAB
+  meshes.
+
 ## Layered Subsurface and Recession Calibration
 
 The layered subsurface has controlled tests and Python-MATLAB parity on
