@@ -50,15 +50,17 @@ Los parámetros de la pestaña Mesh deben coincidir con los metadatos guardados 
 
 ## Ejecutar cualquier libro sin editar el lanzador {#run-any-workbook-without-editing-the-launcher}
 
-`HydroPol2D_V115.m` lee `Input_Data_Sheets/HydroPol2D_Inputs.xlsx` por defecto. Para ejecutar otro caso, se definen las rutas en MATLAB y se ejecuta el lanzador normal.
+`run_HydroPol2D.m` lee `Input_Data_Sheets/HydroPol2D_Inputs.xlsx` por defecto. Para ejecutar otro caso, se definen las rutas en MATLAB y se ejecuta el lanzador normal.
 
 ```matlab
 setenv('HYDROPOL_RUN_MODE','excel')
 setenv('HYDROPOL_INPUT_EXCEL_FILE','/absolute/path/to/HydroPol2D_Inputs.xlsx')
 setenv('HYDROPOL_EXPORT_ROOT_DIR','/absolute/path/to/Outputs/my_run')
 setenv('HYDROPOL_SKIP_POSTPROCESS','')
-run('HydroPol2D_V115.m')
+run('run_HydroPol2D.m')
 ```
+
+Antes de la versión 1.19.0-rc2, el script principal se llamaba `HydroPol2D_V115.m`. Ese nombre todavía funciona.
 
 Con `HYDROPOL_SKIP_POSTPROCESS` igual a `1`, se hace una simulación de diagnóstico solo del solucionador. Para la simulación completa normal, se deja vacío.
 
@@ -76,7 +78,7 @@ El constructor traslada cada valor, ruta de mapa, lista de mapas y estación, y 
 
 Los casos creados antes del 2026-10-20 usan `General_Data.xlsx`, con su hoja `Flags` y libros de Excel separados (`SOIL_parameters.xlsx`, `LULC_parameters.xlsx`, `Rainfall_Intensity_Data.xlsx` y los demás). Siguen funcionando sin cambios.
 
-- `HydroPol2D_V115.m` usa `General_Data.xlsx` cuando la carpeta de entrada no tiene `HydroPol2D_Inputs.xlsx`, o el archivo que indica `HYDROPOL_INPUT_EXCEL_FILE`.
+- `run_HydroPol2D.m` usa `General_Data.xlsx` cuando la carpeta de entrada no tiene `HydroPol2D_Inputs.xlsx`, o el archivo que indica `HYDROPOL_INPUT_EXCEL_FILE`.
 - Cada lector toma su pestaña del libro del caso cuando el caso lo tiene y, si no, del libro de Excel anterior.
 - Los libros de Excel complementarios deben estar en la misma carpeta que `General_Data.xlsx`. Las rutas relativas se resuelven desde esa carpeta.
 
@@ -84,10 +86,10 @@ Los casos creados antes del 2026-10-20 usan `General_Data.xlsx`, con su hoja `Fl
 
 Para estudios con scripts, ensambles o una configuración controlada línea por línea en Git, se usa el modo bypass.
 
-1. Definir `run_mode = 'bypass'` en `HydroPol2D_V115.m`.
+1. Definir `run_mode = 'bypass'` en `run_HydroPol2D.m`.
 2. Definir los controles de procesos y numéricos en `Config/input_data_bypass_script.m`.
 3. Definir las rutas de rásteres y de forzamientos en `Config/input_paths_bypass.m`.
-4. Ejecutar `HydroPol2D_V115.m`.
+4. Ejecutar `run_HydroPol2D.m`.
 
 El ejemplo en V tiene su propia configuración en código. Se ejecuta `addpath('Examples/VTilted_Excel')` y luego `run_code('regular')` o `run_code('voronoi')`.
 

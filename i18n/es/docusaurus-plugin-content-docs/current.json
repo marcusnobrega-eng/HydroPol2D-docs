@@ -42,5 +42,9 @@
   "sidebar.tutorialSidebar.category.Theory": {
     "message": "Teoría",
     "description": "The label for category 'Theory' in sidebar 'tutorialSidebar'"
+  },
+  "sidebar.tutorialSidebar.category.Case Builder": {
+    "message": "Case Builder",
+    "description": "The label for category 'Case Builder' in sidebar 'tutorialSidebar'"
   }
 }

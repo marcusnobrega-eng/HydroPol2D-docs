@@ -36,7 +36,7 @@ Los casos antiguos, con `General_Data.xlsx`, su hoja `Flags` y libros de Excel s
 | Tablas de clases (5) | Soil classes, Land use classes, Human instability, Mesh, Control structures |
 | Series (5) | Rain series, Rain gauges, Climate stations, Inflow hydrographs, Stage hydrographs |
 
-`HydroPol2D_V115.m` lee `Input_Data_Sheets/HydroPol2D_Inputs.xlsx` por defecto. `HYDROPOL_INPUT_EXCEL_FILE` lo dirige a otro libro de Excel.
+`run_HydroPol2D.m` lee `Input_Data_Sheets/HydroPol2D_Inputs.xlsx` por defecto. `HYDROPOL_INPUT_EXCEL_FILE` lo dirige a otro libro de Excel.
 
 ---
 

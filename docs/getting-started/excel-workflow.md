@@ -50,15 +50,17 @@ The Mesh tab settings must match the metadata stored in the UGRID file. HydroPol
 
 ## Run any workbook without editing the launcher {#run-any-workbook-without-editing-the-launcher}
 
-`HydroPol2D_V115.m` reads `Input_Data_Sheets/HydroPol2D_Inputs.xlsx` by default. To run another case, set the paths in MATLAB and run the normal launcher:
+`run_HydroPol2D.m` reads `Input_Data_Sheets/HydroPol2D_Inputs.xlsx` by default. To run another case, set the paths in MATLAB and run the normal launcher:
 
 ```matlab
 setenv('HYDROPOL_RUN_MODE','excel')
 setenv('HYDROPOL_INPUT_EXCEL_FILE','/absolute/path/to/HydroPol2D_Inputs.xlsx')
 setenv('HYDROPOL_EXPORT_ROOT_DIR','/absolute/path/to/Outputs/my_run')
 setenv('HYDROPOL_SKIP_POSTPROCESS','')
-run('HydroPol2D_V115.m')
+run('run_HydroPol2D.m')
 ```
+
+Before version 1.19.0-rc2 the main script was called `HydroPol2D_V115.m`. That name still works.
 
 Set `HYDROPOL_SKIP_POSTPROCESS` to `1` for a solver-only diagnostic run. Leave it empty for the normal full run.
 
@@ -76,7 +78,7 @@ The builder carries every value, map path, map list and gauge over, and copies t
 
 Cases made before 2026-10-20 use `General_Data.xlsx` with its `Flags` sheet and separate workbooks (`SOIL_parameters.xlsx`, `LULC_parameters.xlsx`, `Rainfall_Intensity_Data.xlsx` and the others). They still run unchanged:
 
-- `HydroPol2D_V115.m` uses `General_Data.xlsx` when the input folder has no `HydroPol2D_Inputs.xlsx`, or the file that `HYDROPOL_INPUT_EXCEL_FILE` names.
+- `run_HydroPol2D.m` uses `General_Data.xlsx` when the input folder has no `HydroPol2D_Inputs.xlsx`, or the file that `HYDROPOL_INPUT_EXCEL_FILE` names.
 - Each reader takes its tab from the case workbook when the case has one, and the older workbook otherwise.
 - Keep the companion workbooks in the same folder as `General_Data.xlsx`. Relative paths are resolved from that folder.
 
@@ -84,10 +86,10 @@ Cases made before 2026-10-20 use `General_Data.xlsx` with its `Flags` sheet and 
 
 For scripted studies, ensembles, or configuration tracked line by line in Git, use bypass mode:
 
-1. Set `run_mode = 'bypass'` in `HydroPol2D_V115.m`.
+1. Set `run_mode = 'bypass'` in `run_HydroPol2D.m`.
 2. Set process and numerical controls in `Config/input_data_bypass_script.m`.
 3. Set raster and forcing paths in `Config/input_paths_bypass.m`.
-4. Run `HydroPol2D_V115.m`.
+4. Run `run_HydroPol2D.m`.
 
 The V-tilted example has its own code configuration: `addpath('Examples/VTilted_Excel')`, then `run_code('regular')` or `run_code('voronoi')`.
 

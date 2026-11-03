@@ -29,6 +29,13 @@ const sidebars = {
     },
     {
       type: 'category',
+      label: 'Case Builder',
+      items: [
+        'builder/overview',
+      ],
+    },
+    {
+      type: 'category',
       label: 'Inputs',
       items: [
         'inputs/overview',

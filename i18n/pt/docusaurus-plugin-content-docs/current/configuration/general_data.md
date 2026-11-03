@@ -36,7 +36,7 @@ Casos antigos, com `General_Data.xlsx`, a sua aba `Flags` e planilhas separadas,
 | Tabelas de classes (5) | Soil classes, Land use classes, Human instability, Mesh, Control structures |
 | Séries (5) | Rain series, Rain gauges, Climate stations, Inflow hydrographs, Stage hydrographs |
 
-`HydroPol2D_V115.m` lê `Input_Data_Sheets/HydroPol2D_Inputs.xlsx` por padrão. `HYDROPOL_INPUT_EXCEL_FILE` aponta para outra planilha.
+`run_HydroPol2D.m` lê `Input_Data_Sheets/HydroPol2D_Inputs.xlsx` por padrão. `HYDROPOL_INPUT_EXCEL_FILE` aponta para outra planilha.
 
 ---
 
