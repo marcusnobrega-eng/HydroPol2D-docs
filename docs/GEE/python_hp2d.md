@@ -1,5 +1,8 @@
 ---
 title: HP2D Input Maps + Forcing w/ Python
+# Hidden until the script is fixed and tested in Earth Engine: it exports in EPSG:4326, writes
+# soil moisture as mm over 0-2.89 m (Python reads theta, MATLAB mm above theta_r) and imports no time.
+draft: true
 ---
 
 # Domain Generation with Google Earth Engine (Python)

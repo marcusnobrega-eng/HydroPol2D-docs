@@ -1,5 +1,7 @@
 ---
 title: Cuenca de San Francisquito - Evento Controlado LiDAR de 10 m
+# Hidden until the 10 m case is rerun with the current model; its numbers are from an older code.
+draft: true
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
 

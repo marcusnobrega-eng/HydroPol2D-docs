@@ -1,5 +1,7 @@
 ---
 title: San Francisquito Catchment - 10 m LiDAR Controlled Event
+# Hidden until the 10 m case is rerun with the current model; its numbers are from an older code.
+draft: true
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
 

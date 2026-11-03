@@ -85,16 +85,14 @@ const sidebars = {
       items: [
         'GEE/overview',
         'GEE/DailyForcing',
-        'GEE/GPM',
-        'GEE/python_hp2d'
+        'GEE/GPM'
       ],
     },
     {
       type: 'category',
       label: 'Examples',
       items: [
-        'Examples/RainfallRunoff',
-        'Examples/RainfallRunoffRealLidar'
+        'Examples/RainfallRunoff'
       ],
     },
     {
