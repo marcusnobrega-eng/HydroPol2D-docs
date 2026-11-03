@@ -86,10 +86,6 @@ A simulação salvou `97` quadros de mapa, um a cada 15 min. O resumo da simula�
 
 As vazões são as amostras de 15 min do hidrograma de saída. Ele tem dois picos: 402,84 m³/s em 75 min, quando a chuva termina, e 473,69 m³/s em 3,5 h. Entre eles, a vazão cai para 110 m³/s em 2 h e depois volta a subir.
 
-:::warning[Alterado em 2026-11-02]
-Esta página informava uma profundidade máxima de 0,64 m e uma vazão máxima de 335,03 m³/s. Esses números vinham de um DEM de 30 m mais antigo, de origem não registrada, que diferia do 3DEP em 7,3 m RMS, e de uma versão mais antiga do modelo em MATLAB. O resumo antigo também tomava a profundidade máxima só do último bloco de mapas salvos, então 0,64 m estava baixo demais.
-:::
-
 ## Como executar
 
 O caso está no repositório do HydroPol2D em MATLAB, em `Examples/Stanford`. No MATLAB, a partir da raiz do repositório:

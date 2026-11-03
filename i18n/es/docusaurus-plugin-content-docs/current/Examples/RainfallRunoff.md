@@ -86,10 +86,6 @@ La simulación guardó `97` cuadros de mapa, uno cada 15 min. El resumen de la s
 
 Los caudales son las muestras de 15 min del hidrograma de salida. Tiene dos picos: 402,84 m³/s a los 75 min, cuando termina la lluvia, y 473,69 m³/s a las 3,5 h. Entre ellos, el caudal baja a 110 m³/s a las 2 h y luego vuelve a subir.
 
-:::warning[Cambiado el 2026-11-02]
-Esta página indicaba una profundidad máxima de 0,64 m y un caudal máximo de 335,03 m³/s. Esas cifras venían de un DEM de 30 m más antiguo, de origen no registrado, que difería del 3DEP en 7,3 m RMS, y de una versión más antigua del modelo en MATLAB. El resumen antiguo además tomaba la profundidad máxima solo del último bloque de mapas guardados, así que 0,64 m era demasiado bajo.
-:::
-
 ## Cómo ejecutarlo
 
 El caso está en el repositorio de HydroPol2D en MATLAB, en `Examples/Stanford`. En MATLAB, desde la raíz del repositorio:

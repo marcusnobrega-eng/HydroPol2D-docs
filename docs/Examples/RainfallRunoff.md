@@ -86,10 +86,6 @@ The simulation saved `97` map frames, one every 15 min. The run summary gives:
 
 The outlet flows are the 15 min samples of the outlet hydrograph. It has two peaks: 402.84 m³/s at 75 min, when the rain stops, and 473.69 m³/s at 3.5 h. Between them the flow falls to 110 m³/s at 2 h and then rises again.
 
-:::warning[Changed on 2026-11-02]
-This page used to report a maximum depth of 0.64 m and a peak outlet flow of 335.03 m³/s. Those numbers came from an older 30 m DEM of unrecorded source, which differed from 3DEP by 7.3 m RMS, and from an older MATLAB model. The old run summary also took the maximum depth from the last chunk of saved maps only, so 0.64 m was too low.
-:::
-
 ## How to run it
 
 The case is in the HydroPol2D MATLAB repository, in `Examples/Stanford`. In MATLAB, from the root of the repository:
