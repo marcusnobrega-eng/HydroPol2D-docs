@@ -51,19 +51,19 @@ The LULC table defines surface-related properties controlling flow resistance, i
 
 ### Example structure
 
-| Land Cover | Index | $n$<br />$(\mathrm{s\,m^{-1/3}})$ | $h_0$<br />$(\mathrm{mm})$ | $d_0$<br />$(\mathrm{mm})$ | $C_1$ | $C_2$ | $C_3$ | $C_4$ | $\mathrm{index\_impervious}$ | $\mathrm{root\_depth\_m}$ |
-|:----------:|:-----:|:---------------------------------:|:--------------------------:|:--------------------------:|:-----:|:-----:|:-----:|:-----:|:----------------------------:|:--------------------------:|
-| Tree cover | 10 | 0.10 | 0 | 0 | 10 | 0.20 | 800 | 1.20 | 50 | 1.50 |
-| Shrubland | 20 | 0.08 | 0 | 0 | 12 | 0.20 | 900 | 1.20 | NaN | 1.00 |
-| Grassland | 30 | 0.06 | 0 | 0 | 15 | 0.22 | 1000 | 1.20 | NaN | 0.60 |
-| Cropland | 40 | 0.05 | 0 | 0 | 30 | 0.25 | 1400 | 1.30 | NaN | 1.00 |
-| Built-up | 50 | 0.03 | 0 | 0 | 80 | 0.30 | 2000 | 1.30 | NaN | 0.00 |
-| Bare / sparse vegetation | 60 | 0.035 | 0 | 0 | 45 | 0.25 | 1600 | 1.25 | NaN | 0.10 |
-| Snow and ice | 70 | 0.02 | 0 | 0 | 1 | 0.10 | 200 | 1.10 | NaN | 0.00 |
-| Permanent water bodies | 80 | 0.035 | 0 | 0 | 0 | 0 | 0 | 0 | NaN | 0.00 |
-| Herbaceous wetland | 90 | 0.12 | 0 | 0 | 8 | 0.18 | 700 | 1.20 | NaN | 0.40 |
-| Mangroves | 95 | 0.15 | 0 | 0 | 8 | 0.18 | 700 | 1.20 | NaN | 1.00 |
-| Moss and lichen | 100 | 0.08 | 0 | 0 | 5 | 0.15 | 500 | 1.15 | NaN | 0.15 |
+| Land Cover | Index | $n$<br />$(\mathrm{s\,m^{-1/3}})$ | $h_0$<br />$(\mathrm{mm})$ | $d_0$<br />$(\mathrm{mm})$ | $C_1$ | $C_2$ | $C_3$ | $C_4$ | $\mathrm{index\_impervious}$ | $\mathrm{root\_depth\_m}$ | $K_c$ |
+|:----------:|:-----:|:---------------------------------:|:--------------------------:|:--------------------------:|:-----:|:-----:|:-----:|:-----:|:----------------------------:|:--------------------------:|:----:|
+| Tree cover | 10 | 0.10 | 0 | 0 | 10 | 0.20 | 800 | 1.20 | 50 | 1.50 | 1.05 |
+| Shrubland | 20 | 0.08 | 0 | 0 | 12 | 0.20 | 900 | 1.20 | NaN | 1.00 | 0.70 |
+| Grassland | 30 | 0.06 | 0 | 0 | 15 | 0.22 | 1000 | 1.20 | NaN | 0.60 | 0.85 |
+| Cropland | 40 | 0.05 | 0 | 0 | 30 | 0.25 | 1400 | 1.30 | NaN | 1.00 | 1.00 |
+| Built-up | 50 | 0.03 | 0 | 0 | 80 | 0.30 | 2000 | 1.30 | NaN | 0.00 | 0 |
+| Bare / sparse vegetation | 60 | 0.035 | 0 | 0 | 45 | 0.25 | 1600 | 1.25 | NaN | 0.10 | 0.30 |
+| Snow and ice | 70 | 0.02 | 0 | 0 | 1 | 0.10 | 200 | 1.10 | NaN | 0.00 | 0 |
+| Permanent water bodies | 80 | 0.035 | 0 | 0 | 0 | 0 | 0 | 0 | NaN | 0.00 | 0 |
+| Herbaceous wetland | 90 | 0.12 | 0 | 0 | 8 | 0.18 | 700 | 1.20 | NaN | 0.40 | 1.00 |
+| Mangroves | 95 | 0.15 | 0 | 0 | 8 | 0.18 | 700 | 1.20 | NaN | 1.00 | 1.05 |
+| Moss and lichen | 100 | 0.08 | 0 | 0 | 5 | 0.15 | 500 | 1.15 | NaN | 0.15 | 0.40 |
 
 *Table 1. HydroPol2D LULC parameter table. The `Index` values must match the categorical values in the LULC raster.*
 
@@ -73,8 +73,9 @@ The LULC table defines surface-related properties controlling flow resistance, i
 - $h_0$: interception parameter
 - $d_0$: initial surface storage parameter
 - $C_1$–$C_4$: coefficients associated with the pollutant build-up and wash-off formulation
-- $\mathrm{index\_impervious}$: identifier used to associate a class with impervious behavior
+- $\mathrm{index\_impervious}$: the `Index` of the class treated as fully impervious, entered once (the template uses the first data row, 50 = built-up) with the column blank in every other row. That class has no soil-infiltration storage
 - $\mathrm{root\_depth\_m}$: vegetation-controlled root-zone depth used by the layered soil/vadose model
+- $K_c$: crop and land-cover coefficient. It scales the internally computed reference ET to the potential soil ET of unponded, pervious cells. It is not applied to prescribed ET maps, and ponded water evaporates separately. Use 0 for impervious, permanent-water and snow or ice classes
 
 The values shown above correspond to the current HydroPol2D parameter table and should be revised as needed for the adopted classification scheme and study area.
 
@@ -143,6 +144,11 @@ The soil table defines the base hydraulic properties used to estimate infiltrati
 - `Ks_multiplier_near_surface`: multiplier applied to base $K_{\mathrm{sat}}$ in the near-surface layer
 - `Ks_multiplier_root_zone`: multiplier applied to base $K_{\mathrm{sat}}$ in the root-zone layer
 - `Ks_multiplier_transmission`: multiplier applied to base $K_{\mathrm{sat}}$ in the transmission layer
+- `Ltop_m`: thickness $L_{\mathrm{top}}$ of the near-surface soil layer (m). It is also the length scale of the infiltration capacity of [Hydrologic Model, Section 4.5](../theory/hydrologic-model#45-darcy-based-infiltration-capacity). The template uses 0.05 m for every class
+- `dh_max_m`: cap $\Delta h_{\max}$ on the driving head difference in that infiltration capacity (m). Default 1 m
+- `l_vg`: Mualem pore-connectivity parameter $l$ of the van Genuchten–Mualem unsaturated conductivity (dimensionless; 0.5 is the usual value)
+
+The Soil classes tab has 17 columns in this order: name, `Index`, $K_{\mathrm{sat}}$, $n$, $\alpha$, $\theta_{\mathrm{sat}}$, $\theta_{\mathrm{r}}$, $\theta_{\mathrm{i}}$, $S_{\mathrm{y}}$, $K_{\mathrm{g,sat}}$, DTB, the three multipliers, `Ltop_m`, `dh_max_m` and `l_vg`. The model reads them by position.
 
 The categorical soil class defines the base hydraulic properties for the column. The layered implementation assigns those properties to the near-surface, root-zone, and transmission-zone layers, then applies optional conductivity multipliers where they are provided.
 
@@ -190,6 +196,74 @@ Parameter tables are the main mechanism used to:
 - test alternative physical assumptions without modifying the code.
 
 In HydroPol2D, most practical modifications to model behavior are made by editing these tables.
+
+---
+
+## Human Instability Table {#human-instability-table}
+
+The Human instability tab (was `human_risk.xlsx`) has one column of values per method. The model reads the values by position, so keep every cell in place. See [Human Instability](../theory/human-instability) for the equations.
+
+| Column | Read when | Values |
+|---|---|---|
+| Method No. 1 (column B) | `flag_human_instability = 1` | one representative person, 9 values |
+| Method No. 2 (column E) | never | mode 2 is not implemented |
+| Method No. 3 (column J) | `flag_human_instability = 3` | water, friction and drag, then 8 body types |
+
+**Method No. 1.**
+
+| Key | Unit | Template | Meaning |
+|---|---|---|---|
+| `ro_water` | kg/m³ | 1000 | Water density $\rho_{\mathrm{w}}$ |
+| `gravity` | m/s² | 9.81 | Gravity $g$ |
+| `mu` | – | 0.5 | Ground-contact friction coefficient $\mu$ |
+| `Cd` | – | 1.1 | Drag coefficient $C_d$ |
+| `ro_person` | kg/m³ | 1000 | Body density |
+| `weight_person` | kg | 75 | Body mass |
+| `height_person` | m | 1.75 | Body height |
+| `width1_person` | m | 0.3 | Body width facing the flow ($w_1$ in the drag force) |
+| `width2_person` | m | 0.3 | Body thickness along the flow; with $w_1$ it sets the submerged volume |
+
+**Method No. 3.** `ro_water` (1000 kg/m³), `gravity` (9.81 m/s²), `mu` (0.46) and `Cd` (1), then a mass `m_` and a height `y_` for each body type:
+
+| Body type | Mass key | Template (kg) | Height key | Template (m) |
+|---|---|---|---|---|
+| Child, male | `m_c_m` | 22.915 | `y_c_m` | 1.160 |
+| Teenager, male | `m_t_m` | 56.645 | `y_t_m` | 1.587 |
+| Adult man | `m_a_m` | 84.587 | `y_a_m` | 1.720 |
+| Older man | `m_o_m` | 76.892 | `y_o_m` | 1.667 |
+| Child, female | `m_c_f` | 22.719 | `y_c_f` | 1.155 |
+| Teenager, female | `m_t_f` | 59.271 | `y_t_f` | 1.571 |
+| Adult woman | `m_a_f` | 76.858 | `y_a_f` | 1.602 |
+| Older woman | `m_o_f` | 70.284 | `y_o_f` | 1.547 |
+
+The model derives each body's width $w = \sqrt{16\,m / (3\pi \rho_{\mathrm{w}}\, y)}$ and thickness $w/2$ from its mass and height.
+
+---
+
+## Mesh Table {#mesh-table}
+
+The Mesh tab (was `Voronoi_Settings.xlsx`) is read only when `flag_voronoi = 1`. Its mesh-compatibility values must match the metadata of the prepared mesh: the preflight check stops a run whose workbook names a different mesh. The tab selects a prepared mesh; it never builds or changes one.
+
+| Section | Parameter | Template | Unit | Used when | Description |
+|---|---|---|---|---|---|
+| Prepared case | Voronoi case file | – | .mat | `flag_voronoi = 1` | Prepared case with the UGRID mesh, overlap data, forcing and initial state |
+| Mesh compatibility | Background width | 2000 | m | preflight | Target background-cell width stored in the mesh metadata; it does not resize the mesh |
+| Mesh compatibility | Minimum cell width | 100 | m | preflight | Smallest permitted hydraulic width |
+| Mesh compatibility | Adjacent size ratio | 2 | – | preflight | Largest target-size ratio between neighbouring cells |
+| Mesh compatibility | Urban target width | 200 | m | preflight | Target cell width in urban refinement regions |
+| Mesh compatibility | Urban buffer | 1000 | m | preflight | Transition distance around urban refinement regions |
+| Mesh compatibility | Unresolved rivers | `neal_subgrid` | `none` or `neal_subgrid` | preflight | River treatment stored in the mesh: none, or the Neal subgrid for channels narrower than a cell |
+| Optional subgrid | Voronoi subgrid table | – | path | `flag_voronoi_subgrid = 1` | Cell and face property table (HEC-RAS style); blank for flat-prism cells |
+| Output | Write native archive | 1 | 0 or 1 | mesh output | Keep the native unstructured NetCDF result |
+| Output | Native output interval s | 300 | s | mesh output | Time between frames of the NetCDF archive |
+| Output | Write final GeoTIFFs | 1 | 0 or 1 | mesh output | Final maps through the conservative mesh-to-raster overlap |
+| Output | Write temporal GeoTIFFs | 1 | 0 or 1 | mesh output | Maps at each raster-stack interval |
+| Output | Raster stack interval s | 3600 | s | mesh output | Raster export interval, a whole multiple of the native interval |
+| Output | Write figures | 1 | 0 or 1 | mesh output | Result figures |
+| Output | Write videos | 1 | 0 or 1 | mesh output | Result animations (needs video support) |
+| Output | Write gauge hydrographs | 1 | 0 or 1 | mesh output | Gauge and outlet hydrographs |
+
+The row "River cells across" (Legacy) is not read: the loaded UGRID geometry sets the river resolution.
 
 ---
 

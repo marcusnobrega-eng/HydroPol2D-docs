@@ -46,19 +46,19 @@ Para las clases asignadas, los valores ráster y los índices de tabla deben coi
 La tabla LULC define las propiedades relacionadas con la superficie que controlan la resistencia al flujo, la intercepción, la impermeabilidad, el comportamiento relacionado con los contaminantes y la profundidad de la zona de las raíces cuando el almacenamiento de suelo en capas está activo.
 ### Estructura de ejemplo
 
-| Cobertura terrestre | Índice | $n$<br />$(\mathrm{s\,m^{-1/3}})$ | $h_0$<br />$(\mathrm{mm})$ | $d_0$<br />$(\mathrm{mm})$ | $C_1$ | $C_2$ | $C_3$ | $C_4$ | $\mathrm{index\_impervious}$ | $\mathrm{root\_depth\_m}$ |
-|:----------:|:-----:|:---------------------------------:|:--------------------------:|:--------------------------:|:-----:|:-----:|:-----:|:-----:|:----------------------------:|:--------------------------:|
-| Cobertura de árboles | 10 | 0,10 | 0 | 0 | 10 | 0,20 | 800 | 1.20 | 50 | 1,50 |
-| Matorral | 20 | 0,08 | 0 | 0 | 12 | 0,20 | 900 | 1.20 | Yaya | 1.00 |
-| Pradera | 30 | 0,06 | 0 | 0 | 15 | 0,22 | 1000 | 1.20 | Yaya | 0,60 |
-| Tierras de cultivo | 40 | 0,05 | 0 | 0 | 30 | 0,25 | 1400 | 1.30 | Yaya | 1.00 |
-| Construido | 50 | 0,03 | 0 | 0 | 80 | 0,30 | 2000 | 1.30 | Yaya | 0.00 |
-| Vegetación desnuda/escasa | 60 | 0.035 | 0 | 0 | 45 | 0,25 | 1600 | 1.25 | Yaya | 0,10 |
-| Nieve y hielo | 70 | 0,02 | 0 | 0 | 1 | 0,10 | 200 | 1.10 | Yaya | 0.00 |
-| Cuerpos de agua permanentes | 80 | 0.035 | 0 | 0 | 0 | 0 | 0 | 0 | Yaya | 0.00 |
-| Humedal herbáceo | 90 | 0,12 | 0 | 0 | 8 | 0,18 | 700 | 1.20 | Yaya | 0,40 |
-| Manglares | 95 | 0,15 | 0 | 0 | 8 | 0,18 | 700 | 1.20 | Yaya | 1.00 |
-| musgo y liquen | 100 | 0,08 | 0 | 0 | 5 | 0,15 | 500 | 1.15 | Yaya | 0,15 |
+| Cobertura terrestre | Índice | $n$<br />$(\mathrm{s\,m^{-1/3}})$ | $h_0$<br />$(\mathrm{mm})$ | $d_0$<br />$(\mathrm{mm})$ | $C_1$ | $C_2$ | $C_3$ | $C_4$ | $\mathrm{index\_impervious}$ | $\mathrm{root\_depth\_m}$ | $K_c$ |
+|:----------:|:-----:|:---------------------------------:|:--------------------------:|:--------------------------:|:-----:|:-----:|:-----:|:-----:|:----------------------------:|:--------------------------:|:----:|
+| Cobertura de árboles | 10 | 0,10 | 0 | 0 | 10 | 0,20 | 800 | 1.20 | 50 | 1,50 | 1,05 |
+| Matorral | 20 | 0,08 | 0 | 0 | 12 | 0,20 | 900 | 1.20 | NaN | 1.00 | 0,70 |
+| Pradera | 30 | 0,06 | 0 | 0 | 15 | 0,22 | 1000 | 1.20 | NaN | 0,60 | 0,85 |
+| Tierras de cultivo | 40 | 0,05 | 0 | 0 | 30 | 0,25 | 1400 | 1.30 | NaN | 1.00 | 1,00 |
+| Construido | 50 | 0,03 | 0 | 0 | 80 | 0,30 | 2000 | 1.30 | NaN | 0.00 | 0 |
+| Vegetación desnuda/escasa | 60 | 0.035 | 0 | 0 | 45 | 0,25 | 1600 | 1.25 | NaN | 0,10 | 0,30 |
+| Nieve y hielo | 70 | 0,02 | 0 | 0 | 1 | 0,10 | 200 | 1.10 | NaN | 0.00 | 0 |
+| Cuerpos de agua permanentes | 80 | 0.035 | 0 | 0 | 0 | 0 | 0 | 0 | NaN | 0.00 | 0 |
+| Humedal herbáceo | 90 | 0,12 | 0 | 0 | 8 | 0,18 | 700 | 1.20 | NaN | 0,40 | 1,00 |
+| Manglares | 95 | 0,15 | 0 | 0 | 8 | 0,18 | 700 | 1.20 | NaN | 1.00 | 1,05 |
+| musgo y liquen | 100 | 0,08 | 0 | 0 | 5 | 0,15 | 500 | 1.15 | NaN | 0,15 | 0,40 |
 
 *Tabla 1. Tabla de parámetros HydroPol2D LULC. Los valores `Index` deben coincidir con los valores categóricos en el ráster LULC.*
 ### Definiciones de variables
@@ -67,8 +67,9 @@ La tabla LULC define las propiedades relacionadas con la superficie que controla
 - $h_0$: parámetro de interceptación
 - $d_0$: parámetro de almacenamiento en superficie inicial
 - $C_1$–$C_4$: coeficientes asociados con la formulación de acumulación y lavado de contaminantes
-- $\mathrm{index\_impervious}$: identificador utilizado para asociar una clase con un comportamiento impermeable
+- $\mathrm{index\_impervious}$: el `Index` de la clase tratada como totalmente impermeable, indicado una sola vez (la plantilla usa la primera fila de datos, 50 = zona construida), con la columna vacía en las demás filas. Esa clase no tiene almacenamiento de infiltración en el suelo
 - $\mathrm{root\_depth\_m}$: profundidad de la zona de raíces controlada por la vegetación utilizada por el modelo de suelo/vadose en capas
+- $K_c$: coeficiente de cultivo y de cobertura del suelo. Convierte la ET de referencia calculada internamente en la ET potencial del suelo de las celdas permeables sin lámina de agua. No se aplica a mapas de ET prescritos, y el agua encharcada se evapora aparte. Use 0 para las clases impermeables, de agua permanente y de nieve o hielo
 
 Los valores mostrados arriba corresponden a la tabla de parámetros HydroPol2D actual y deben revisarse según sea necesario para el esquema de clasificación adoptado y el área de estudio.
 En la implementación actual, `root_depth_m` es la forma admitida de proporcionar información de profundidad de raíz al modelo. No existe una ruta ráster de profundidad de raíz separada; La profundidad de la raíz se asigna por clase LULC y luego se asigna a la cuadrícula a través del ráster categórico LULC.
@@ -111,6 +112,11 @@ La tabla de suelos define las propiedades hidráulicas básicas utilizadas para 
 - `Ks_multiplier_near_surface`: multiplicador aplicado a la base $K_{\mathrm{sat}}$ en la capa cercana a la superficie
 - `Ks_multiplier_root_zone`: multiplicador aplicado a la base $K_{\mathrm{sat}}$ en la capa de la zona raíz
 - `Ks_multiplier_transmission`: multiplicador aplicado a la base $K_{\mathrm{sat}}$ en la capa de transmisión
+- `Ltop_m`: espesor $L_{\mathrm{top}}$ de la capa de suelo cercana a la superficie (m). Es también la escala de longitud de la capacidad de infiltración del [Modelo Hidrológico, Sección 4.5](../theory/hydrologic-model#45-darcy-based-infiltration-capacity). La plantilla usa 0,05 m en todas las clases
+- `dh_max_m`: límite $\Delta h_{\max}$ de la diferencia de carga que impulsa esa capacidad de infiltración (m). Por defecto 1 m
+- `l_vg`: parámetro de conectividad de poros $l$ de Mualem en la conductividad no saturada de van Genuchten–Mualem (adimensional; 0,5 es el valor habitual)
+
+La pestaña Soil classes tiene 17 columnas en este orden: nombre, `Index`, $K_{\mathrm{sat}}$, $n$, $\alpha$, $\theta_{\mathrm{sat}}$, $\theta_{\mathrm{r}}$, $\theta_{\mathrm{i}}$, $S_{\mathrm{y}}$, $K_{\mathrm{g,sat}}$, DTB, los tres multiplicadores, `Ltop_m`, `dh_max_m` y `l_vg`. El modelo las lee por posición.
 
 La clase categórica de suelo define las propiedades hidráulicas básicas de la columna. La implementación en capas asigna esas propiedades a las capas cercanas a la superficie, zona de raíz y zona de transmisión, luego aplica multiplicadores de conductividad opcionales donde se proporcionan.
 LULC controla la profundidad de la zona de la raíz. La profundidad del lecho rocoso y la posición actual del nivel freático limitan los espesores de las capas finales, por lo que las geometrías de las capas físicamente imposibles colapsan o truncan en lugar de producir un almacenamiento negativo.
@@ -153,6 +159,74 @@ Las tablas de parámetros son el principal mecanismo utilizado para:
 - probar supuestos físicos alternativos sin modificar el código.
 
 En HydroPol2D, la mayoría de las modificaciones prácticas al comportamiento del modelo se realizan editando estas tablas.
+
+---
+
+## Tabla de inestabilidad humana {#human-instability-table}
+
+La pestaña Human instability (antes `human_risk.xlsx`) tiene una columna de valores por método. El modelo lee los valores por posición, así que mantenga cada celda en su lugar. Vea [Inestabilidad Humana](../theory/human-instability) para las ecuaciones.
+
+| Columna | Se lee cuando | Valores |
+|---|---|---|
+| Method No. 1 (columna B) | `flag_human_instability = 1` | una persona representativa, 9 valores |
+| Method No. 2 (columna E) | nunca | el modo 2 no está implementado |
+| Method No. 3 (columna J) | `flag_human_instability = 3` | agua, fricción y arrastre, luego 8 tipos de cuerpo |
+
+**Method No. 1.**
+
+| Clave | Unidad | Plantilla | Significado |
+|---|---|---|---|
+| `ro_water` | kg/m³ | 1000 | Densidad del agua $\rho_{\mathrm{w}}$ |
+| `gravity` | m/s² | 9,81 | Gravedad $g$ |
+| `mu` | – | 0,5 | Coeficiente de fricción con el suelo $\mu$ |
+| `Cd` | – | 1,1 | Coeficiente de arrastre $C_d$ |
+| `ro_person` | kg/m³ | 1000 | Densidad del cuerpo |
+| `weight_person` | kg | 75 | Masa del cuerpo |
+| `height_person` | m | 1,75 | Altura del cuerpo |
+| `width1_person` | m | 0,3 | Ancho del cuerpo frente al flujo ($w_1$ en la fuerza de arrastre) |
+| `width2_person` | m | 0,3 | Espesor del cuerpo en el sentido del flujo; con $w_1$ fija el volumen sumergido |
+
+**Method No. 3.** `ro_water` (1000 kg/m³), `gravity` (9,81 m/s²), `mu` (0,46) y `Cd` (1), luego una masa `m_` y una altura `y_` para cada tipo de cuerpo:
+
+| Tipo de cuerpo | Clave de masa | Plantilla (kg) | Clave de altura | Plantilla (m) |
+|---|---|---|---|---|
+| Niño | `m_c_m` | 22,915 | `y_c_m` | 1,160 |
+| Adolescente, hombre | `m_t_m` | 56,645 | `y_t_m` | 1,587 |
+| Hombre adulto | `m_a_m` | 84,587 | `y_a_m` | 1,720 |
+| Hombre mayor | `m_o_m` | 76,892 | `y_o_m` | 1,667 |
+| Niña | `m_c_f` | 22,719 | `y_c_f` | 1,155 |
+| Adolescente, mujer | `m_t_f` | 59,271 | `y_t_f` | 1,571 |
+| Mujer adulta | `m_a_f` | 76,858 | `y_a_f` | 1,602 |
+| Mujer mayor | `m_o_f` | 70,284 | `y_o_f` | 1,547 |
+
+El modelo calcula el ancho de cada cuerpo, $w = \sqrt{16\,m / (3\pi \rho_{\mathrm{w}}\, y)}$, y su espesor, $w/2$, a partir de la masa y la altura.
+
+---
+
+## Tabla de la malla {#mesh-table}
+
+La pestaña Mesh (antes `Voronoi_Settings.xlsx`) solo se lee con `flag_voronoi = 1`. Sus valores de compatibilidad deben coincidir con los metadatos de la malla preparada: la verificación previa detiene una simulación cuyo libro apunta a otra malla. La pestaña elige una malla preparada; nunca genera ni modifica una malla.
+
+| Sección | Parámetro | Plantilla | Unidad | Se usa cuando | Descripción |
+|---|---|---|---|---|---|
+| Prepared case | Voronoi case file | – | .mat | `flag_voronoi = 1` | Caso preparado con la malla UGRID, los datos de superposición, el forzado y el estado inicial |
+| Mesh compatibility | Background width | 2000 | m | verificación previa | Ancho objetivo de las celdas de fondo guardado en los metadatos; no cambia el tamaño de la malla |
+| Mesh compatibility | Minimum cell width | 100 | m | verificación previa | Menor ancho hidráulico permitido |
+| Mesh compatibility | Adjacent size ratio | 2 | – | verificación previa | Mayor razón de tamaño objetivo entre celdas vecinas |
+| Mesh compatibility | Urban target width | 200 | m | verificación previa | Ancho objetivo de las celdas en las regiones urbanas refinadas |
+| Mesh compatibility | Urban buffer | 1000 | m | verificación previa | Distancia de transición alrededor de las regiones urbanas refinadas |
+| Mesh compatibility | Unresolved rivers | `neal_subgrid` | `none` o `neal_subgrid` | verificación previa | Tratamiento de ríos guardado en la malla: ninguno, o la submalla de Neal para canales más angostos que una celda |
+| Optional subgrid | Voronoi subgrid table | – | ruta | `flag_voronoi_subgrid = 1` | Tabla de propiedades de celdas y caras (al estilo de HEC-RAS); vacía para celdas prismáticas planas |
+| Output | Write native archive | 1 | 0 o 1 | salida de la malla | Conserva el resultado NetCDF nativo no estructurado |
+| Output | Native output interval s | 300 | s | salida de la malla | Intervalo entre cuadros del archivo NetCDF |
+| Output | Write final GeoTIFFs | 1 | 0 o 1 | salida de la malla | Mapas finales mediante la superposición conservativa malla-ráster |
+| Output | Write temporal GeoTIFFs | 1 | 0 o 1 | salida de la malla | Mapas en cada intervalo de la pila ráster |
+| Output | Raster stack interval s | 3600 | s | salida de la malla | Intervalo de exportación ráster, múltiplo entero del intervalo nativo |
+| Output | Write figures | 1 | 0 o 1 | salida de la malla | Figuras de resultados |
+| Output | Write videos | 1 | 0 o 1 | salida de la malla | Animaciones de resultados (requiere soporte de video) |
+| Output | Write gauge hydrographs | 1 | 0 o 1 | salida de la malla | Hidrogramas de las estaciones y de la salida |
+
+La fila "River cells across" (Legacy) no se lee: la geometría UGRID cargada fija la resolución del río.
 
 ---
 

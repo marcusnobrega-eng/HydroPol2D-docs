@@ -23,7 +23,7 @@ interprete de forma distinta las propiedades de la malla.
 |---|---|---|
 | HydroBathyDEM | Generador de producción de mallas regulares y de Voronoi, productos de terreno, superposición conservativa de rásteres, tablas de submalla, UGRID, capas de inspección en GeoPackage y control de calidad de la malla. | `0.4.0rc1` |
 | HydroPol2D-Python | Motor del modelo en Python y Studio. Valida y utiliza el paquete de malla; no regenera la geometría hidráulica de la malla. | `0.9.0rc2` |
-| HydroPol2D-MATLAB | Implementación de referencia en MATLAB que utiliza de forma compatible el mismo paquete de malla. | `1.19.0-rc1` |
+| HydroPol2D-MATLAB | Implementación de referencia en MATLAB que utiliza de forma compatible el mismo paquete de malla. | `1.19.0-rc2` |
 | HydroPolMesh | Prototipo de migración archivado. Las capacidades útiles ya validadas se están conservando en HydroBathyDEM; no es una dependencia de ejecución en producción. | prototipo |
 
 La versión estable `v1.17.0` de MATLAB sigue siendo la referencia numérica

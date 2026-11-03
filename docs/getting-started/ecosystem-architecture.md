@@ -23,7 +23,7 @@ interpreting mesh properties differently.
 |---|---|---|
 | HydroBathyDEM | Production generator for regular and Voronoi meshes, terrain products, conservative raster overlap, subgrid tables, UGRID, GeoPackage inspection layers, and mesh QA. | `0.4.0rc1` |
 | HydroPol2D-Python | Python model engine and Studio. It validates and consumes the mesh package; it does not regenerate hydraulic mesh geometry. | `0.9.0rc2` |
-| HydroPol2D-MATLAB | MATLAB reference implementation and compatible consumer of the same mesh package. | `1.19.0-rc1` |
+| HydroPol2D-MATLAB | MATLAB reference implementation and compatible consumer of the same mesh package. | `1.19.0-rc2` |
 | HydroPolMesh | Archived migration prototype. Useful validated capabilities are being retained in HydroBathyDEM; it is not a production runtime dependency. | prototype |
 
 The stable MATLAB `v1.17.0` release remains the numerical reference while the
