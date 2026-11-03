@@ -7,67 +7,101 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 
 ## Objetivo
 
-Este ejemplo presenta una simulación controlada de lluvia y escorrentía para la cuenca San Francisquito, cerca de Stanford, California. Muestra cómo se configura HydroPol2D para un dominio realista de cuenca bajo una tormenta prescrita.
+Este ejemplo presenta una simulación controlada de lluvia y escorrentía para la cuenca del San Francisquito Creek, cerca de Stanford, California. Muestra cómo responde HydroPol2D, en una cuenca real, a una tormenta cuyo momento y volumen se conocen con exactitud.
 
 ## Configuración del caso
 
-El caso `Stanford_30m_100mmh_1h_24h` utiliza:
+El caso `Stanford_30m_Website_100mmh_1h_24h` utiliza:
+
 | Ítem | Valor |
 |---|---|
-| Dominio | Subcuenca San Francisquito, California, EE.UU. |
-| Resolución de cuadrícula | 30 m |
-| Tipo de forzado | Precipitación espacialmente invariante |
-| Evento de lluvia | 100 mm/h durante 1 hora |
+| Dominio | Cuenca del San Francisquito Creek, California, EE. UU. |
+| Cuadrícula | 30 m, NAD83 / California Albers (EPSG:3310) |
+| Tipo de forzado | Lluvia espacialmente uniforme |
+| Evento de lluvia | 100 mm/h de 15 a 75 min (100 mm) |
 | Duración de la simulación | 24 h |
-| Intervalo de salida del mapa | 15 min |
+| Intervalo de salida de los mapas | 15 min |
 | Familia de enrutamiento | Inercial local |
 | Tratamiento de salida | Salida por el perímetro |
+| Procesos | Infiltración activada; agua subterránea, evapotranspiración, nieve y calidad del agua desactivadas |
+
 ## Datos de entrada
 
-Las entradas estáticas se prepararon a partir de un flujo de trabajo Google Earth Engine y se alinearon con una cuadrícula 30 m sobre la cuenca. Las principales capas utilizadas en el ejemplo actual son:
-- DEM;
-- uso y cobertura del suelo;
-- textura del suelo;
-- profundidad hasta el lecho de roca o la profundidad del suelo.
+Dos entradas son mapas (Figura 1):
 
-La simulación utiliza la formulación actual de suelo en capas y zona vadosa de HydroPol2D. Los valores de los parámetros provienen de la configuración Stanford distribuida con el modelo.
-## Lo que este caso pretende mostrar
+- **Terreno.** El DEM de terreno desnudo del USGS 3D Elevation Program (3DEP), leído del servicio 3DEPElevation a 10 m y promediado a la cuadrícula de 30 m (descargado el 2026-11-02, dominio público de EE. UU.).
+- **Uso y cobertura del suelo.** ESA WorldCover 2020 (v100), CC BY 4.0. © ESA WorldCover project 2020 / Contains modified Copernicus Sentinel data (2020) processed by ESA WorldCover consortium. Los códigos de clase 10 a 90 de la tabla de uso del suelo son los de WorldCover.
+
+Las demás entradas son valores uniformes definidos para el ejemplo, sin datos externos: una clase de suelo (la clase 8 de la tabla de suelos), una profundidad hasta la roca de 1,5 m, un LAI de 1, un albedo de 0,25 y una humedad inicial del suelo de 0,1104. Los demás parámetros vienen del libro de cálculo del caso Stanford que se distribuye con el modelo en MATLAB.
+
+<p align="center">
+  <img src={useBaseUrl('/img/examples/stanford-30m-inputs.es.svg')} width="680" alt="Dos mapas de la cuenca del San Francisquito Creek: terreno del USGS 3DEP con sombreado del relieve y cobertura del suelo de ESA WorldCover con la fracción de cada clase" />
+</p>
+
+<p align="center">
+  <em>Figura 1. Las dos entradas espaciales en la cuadrícula de 30 m. Arriba: terreno del USGS 3DEP. Abajo: cobertura del suelo de ESA WorldCover 2020, con la fracción de cada clase en el dominio. El círculo marca el lago Searsville, donde está la mayor profundidad de la simulación.</em>
+</p>
+
+## Qué pretende mostrar este caso
 
 Este caso destaca:
-- generación de escorrentía bajo un forzamiento simple y conocido;
+
+- la generación de escorrentía bajo un forzado simple y conocido;
 - la interacción entre topografía, rugosidad e infiltración;
-- la organización espacial de la profundidad, velocidad, peligro e infiltración acumulativa de la inundación enrutada;
-- comportamiento de recesión prolongada después de que termina el pulso de lluvia.
-## Mapas de entrada
+- la organización espacial de la profundidad, la velocidad, el peligro y la infiltración acumulada de la inundación;
+- el comportamiento de recesión larga después de que termina el pulso de lluvia.
 
-### Figura 1 - Terreno y drenaje
-![Hidrología del terreno](../assets/figures/Examples/RainfallRunoff/Figure_1_Terrain_Hydrology-1.png)
-### Figura 2 - Propiedades de la superficie
-![Propiedades de la superficie](../assets/figures/Examples/RainfallRunoff/Figure_2_Surface_Properties%20%281%29-1.png)
-### Figura 3A - Propiedades hidráulicas del suelo
-![Propiedades hidráulicas del suelo](../assets/figures/Examples/RainfallRunoff/Figure_3A_Soil_Hydraulic_Properties%20%281%29-1.png)
-### Figura 3B - Retención y almacenamiento del suelo
-![Propiedades de retención y almacenamiento del suelo](../assets/figures/Examples/RainfallRunoff/Figure_3B_Soil_Retention_Storage_Properties%20%281%29-1.png)
-## Vídeo de simulación
+## Video de la simulación
 
-La siguiente animación muestra la simulación a 30 m. Los paneles presentan la profundidad de la inundación, la velocidad, la métrica de peligro y la infiltración acumulativa.
+La animación siguiente muestra la simulación a 30 m. Los paneles muestran la profundidad de inundación, la velocidad, la métrica de peligro y la infiltración acumulada sobre el sombreado del DEM. La imagen fija es t = 3,5 h, el momento del caudal máximo en la salida.
+
 <div style={{ textAlign: 'center' }}>
   <video
     width="90%"
     controls
     poster={useBaseUrl('/videos/stanford_30m_website_100mmh_1h_24h_panels.png')}>
     <source src={useBaseUrl('/videos/stanford_30m_website_100mmh_1h_24h_panels.mp4')} type="video/mp4" />
-    Su navegador no soporta la etiqueta de video.
+    Su navegador no admite la etiqueta de video.
   </video>
-<p><em>Simulación controlada de lluvia en Stanford, 30 m: profundidad de inundación, velocidad, peligro e infiltración acumulativa.</em></p>
+
+  <p><em>Simulación de lluvia controlada en Stanford, 30 m: profundidad de inundación, velocidad, peligro e infiltración acumulada.</em></p>
 </div>
-Cada panel usa una sola escala de color para toda la secuencia. La escala se basa en el percentil `99th` de todos los fotogramas guardados.
+
+Cada panel usa una sola escala de colores para toda la secuencia. La escala se basa en el percentil `99` de todos los cuadros guardados.
+
 ## Resultados resumidos
 
-La simulación produjo `97` fotogramas de mapa guardados. Las métricas principales son:
+La simulación guardó `97` cuadros de mapa, uno cada 15 min. El resumen de la simulación da:
 
-- un área de drenaje de `156.823 km²`;
-- una lluvia total de `100 mm`;
-- una profundidad máxima de inundación de `0.64 m`;
-- un caudal máximo de salida de `335.03 m³/s`;
-- figuras de preprocesamiento para el terreno, las propiedades de la superficie y las propiedades del suelo.
+| Resultado | Valor |
+|---|---|
+| Área de drenaje | `156,823 km²` |
+| Lluvia aplicada | `100,00 mm` |
+| Coeficiente de escorrentía | `0,47` |
+| Caudal máximo en la salida | `473,69 m³/s` a las 3,5 h |
+| Primer pico en la salida | `402,84 m³/s` a los 75 min, cuando termina la lluvia |
+| Profundidad máxima de inundación | `5,87 m`, en la cuenca del lago Searsville (37,410° N, 122,234° O) |
+| Área que superó 1 m de profundidad en algún momento | `4,3 km²` (2,7 % del dominio) |
+| Error de volumen | `-6,45 × 10⁻¹²` de la entrada |
+
+Los caudales son las muestras de 15 min del hidrograma de salida. Tiene dos picos: 402,84 m³/s a los 75 min, cuando termina la lluvia, y 473,69 m³/s a las 3,5 h. Entre ellos, el caudal baja a 110 m³/s a las 2 h y luego vuelve a subir.
+
+:::warning[Cambiado el 2026-11-02]
+Esta página indicaba una profundidad máxima de 0,64 m y un caudal máximo de 335,03 m³/s. Esas cifras venían de un DEM de 30 m más antiguo, de origen no registrado, que difería del 3DEP en 7,3 m RMS, y de una versión más antigua del modelo en MATLAB. El resumen antiguo además tomaba la profundidad máxima solo del último bloque de mapas guardados, así que 0,64 m era demasiado bajo.
+:::
+
+## Cómo ejecutarlo
+
+El caso está en el repositorio de HydroPol2D en MATLAB, en `Examples/Stanford`. En MATLAB, desde la raíz del repositorio:
+
+```matlab
+addpath(fullfile(pwd,'Examples','Stanford'))
+run_stanford_local_case('Resolution',30,'SimulationMinutes',1440, ...
+  'RainfallTimeseriesPath',fullfile('Examples','Stanford','Forcing','Rainfall','Rainfall_Intensity_Website_100mmh_1h_24h.csv'), ...
+  'RecordTimeMapsMinutes',15,'RecordTimeHydrographsMinutes',15, ...
+  'OutputTag','Stanford_30m_Website_100mmh_1h_24h')
+```
+
+Los resultados se guardan en `Examples/Stanford/Outputs/Reruns_CurrentModel/Stanford_30m_Website_100mmh_1h_24h/Modeling_Results`: mapas de profundidad, velocidad y peligro cada 15 min, el hidrograma de salida (`Tables_CSV/Outlet_Hydrograph_Data_Outlet.csv`) y el resumen de la simulación (`Tables_CSV/Summary_Table.csv`).
+
+Una simulación más corta de la misma tormenta, de 3 h en lugar de 24 h, se inicia con `run('Examples/Stanford/run_excel.m')` y tarda unos 14 min en un portátil. El README del repositorio indica sus resultados esperados.
