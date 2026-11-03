@@ -594,7 +594,7 @@ Se $\ell$ não for fornecido, um valor padrão de $\ell = 0.5$ será usado.
 
 ---
 
-### 4.5 Capacidade de infiltração baseada em Darcy
+### 4.5 Capacidade de infiltração baseada em Darcy {#45-darcy-based-infiltration-capacity}
 
 A capacidade de infiltração representa o fluxo máximo que pode ser transmitido ao solo dado o estado hidráulico atual. No código atual, isso não se baseia apenas em um único valor $K(\theta)$. Em vez disso, HydroPol2D usa:
 - uma sucção de balde representativa $\psi_{\mathrm{m}}$ com base no armazenamento atual da camada próxima à superfície, de modo que $\theta$ e $\psi_{\mathrm{m}}$ abaixo são os dessa camada (só a formulação de fallback herdada, de armazenamento único, usa todo o armazenamento vadoso da Seção 4.2),
