@@ -53,7 +53,7 @@ Este caso destaca:
 
 ## Vídeo de simulação
 
-A animação abaixo mostra a simulação em 30 m. Os painéis mostram profundidade de inundação, velocidade, métrica de perigo e infiltração cumulativa sobre o sombreamento do DEM. O quadro de capa é t = 3,5 h, o instante da vazão máxima na saída.
+A animação abaixo mostra a simulação em 30 m. Os painéis mostram profundidade de inundação, velocidade, métrica de perigo e infiltração cumulativa sobre o sombreamento do DEM. O quadro de capa é t = 3,5 h, o instante da vazão máxima que sai pela borda do domínio.
 
 <div style={{ textAlign: 'center' }}>
   <video
@@ -78,13 +78,13 @@ A simulação salvou `97` quadros de mapa, um a cada 15 min. O resumo da simula�
 | Área de drenagem | `156,823 km²` |
 | Chuva aplicada | `100,00 mm` |
 | Coeficiente de escoamento | `0,47` |
-| Vazão máxima na saída | `473,69 m³/s` em 3,5 h |
-| Primeiro pico na saída | `402,84 m³/s` em 75 min, quando a chuva termina |
+| Vazão máxima que sai pela borda do domínio | `473,69 m³/s` em 3,5 h |
+| Primeiro pico dessa vazão | `402,84 m³/s` em 75 min, quando a chuva termina |
 | Profundidade máxima de inundação | `5,87 m`, na bacia do Lago Searsville (37,410° N, 122,234° W) |
 | Área que passou de 1 m de profundidade em algum instante | `4,3 km²` (2,7% do domínio) |
 | Erro de volume | `-6,45 × 10⁻¹²` da entrada |
 
-As vazões são as amostras de 15 min do hidrograma de saída. Ele tem dois picos: 402,84 m³/s em 75 min, quando a chuva termina, e 473,69 m³/s em 3,5 h. Entre eles, a vazão cai para 110 m³/s em 2 h e depois volta a subir.
+Toda célula na borda do domínio deixa a água sair (saída pelo perímetro), então o hidrograma é a vazão que sai pela borda do domínio, e não só a vazão na foz do córrego. As vazões são suas amostras de 15 min. O primeiro pico, 402,84 m³/s em 75 min, é o escoamento das encostas saindo ao longo de toda a borda. Depois a vazão cai para 110 m³/s em 2 h. Em seguida, a onda de cheia chega a um trecho em que o San Francisquito Creek corre na borda norte do domínio. A água que transborda ali sai do modelo, e a vazão volta a subir até 473,69 m³/s em 3,5 h.
 
 ## Como executar
 
@@ -98,6 +98,6 @@ run_stanford_local_case('Resolution',30,'SimulationMinutes',1440, ...
   'OutputTag','Stanford_30m_Website_100mmh_1h_24h')
 ```
 
-Os resultados vão para `Examples/Stanford/Outputs/Reruns_CurrentModel/Stanford_30m_Website_100mmh_1h_24h/Modeling_Results`: mapas de profundidade, velocidade e perigo a cada 15 min, o hidrograma de saída (`Tables_CSV/Outlet_Hydrograph_Data_Outlet.csv`) e o resumo da simulação (`Tables_CSV/Summary_Table.csv`).
+Os resultados vão para `Examples/Stanford/Outputs/Reruns_CurrentModel/Stanford_30m_Website_100mmh_1h_24h/Modeling_Results`: mapas de profundidade, velocidade e perigo a cada 15 min, o hidrograma da vazão que sai pela borda do domínio (`Tables_CSV/Outlet_Hydrograph_Data_Outlet.csv`) e o resumo da simulação (`Tables_CSV/Summary_Table.csv`).
 
 Uma simulação mais curta da mesma chuva, de 3 h em vez de 24 h, começa com `run('Examples/Stanford/run_excel.m')` e leva cerca de 14 min em um laptop. O README do repositório lista os resultados esperados.

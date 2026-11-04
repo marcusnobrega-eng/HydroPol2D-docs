@@ -53,7 +53,7 @@ This case highlights:
 
 ## Simulation video
 
-The animation below shows the 30 m simulation. The panels show flood depth, velocity, hazard metric, and cumulative infiltration over a hillshade of the DEM. The still frame is t = 3.5 h, the time of the peak outlet flow.
+The animation below shows the 30 m simulation. The panels show flood depth, velocity, hazard metric, and cumulative infiltration over a hillshade of the DEM. The still frame is t = 3.5 h, the time of the peak outflow across the domain edge.
 
 <div style={{ textAlign: 'center' }}>
   <video
@@ -78,13 +78,13 @@ The simulation saved `97` map frames, one every 15 min. The run summary gives:
 | Drainage area | `156.823 km²` |
 | Rain applied | `100.00 mm` |
 | Runoff coefficient | `0.47` |
-| Peak outlet flow | `473.69 m³/s` at 3.5 h |
-| First outlet peak | `402.84 m³/s` at 75 min, when the rain stops |
+| Peak outflow across the domain edge | `473.69 m³/s` at 3.5 h |
+| First peak of that outflow | `402.84 m³/s` at 75 min, when the rain stops |
 | Maximum flood depth | `5.87 m`, in the Searsville Lake basin (37.410° N, 122.234° W) |
 | Area that was deeper than 1 m at some time | `4.3 km²` (2.7% of the domain) |
 | Volume error | `-6.45 × 10⁻¹²` of the inflow |
 
-The outlet flows are the 15 min samples of the outlet hydrograph. It has two peaks: 402.84 m³/s at 75 min, when the rain stops, and 473.69 m³/s at 3.5 h. Between them the flow falls to 110 m³/s at 2 h and then rises again.
+Every cell on the domain edge lets water leave (perimeter outlet), so the hydrograph is the outflow across the domain edge, not the flow at the creek mouth alone. The flows are its 15 min samples. The first peak, 402.84 m³/s at 75 min, is hillslope runoff leaving along the whole edge. The flow then falls to 110 m³/s at 2 h. After that the creek's flood wave reaches a stretch where San Francisquito Creek runs on the north edge of the domain. The water that overtops the bank there leaves the model, and the outflow rises again to 473.69 m³/s at 3.5 h.
 
 ## How to run it
 
@@ -98,6 +98,6 @@ run_stanford_local_case('Resolution',30,'SimulationMinutes',1440, ...
   'OutputTag','Stanford_30m_Website_100mmh_1h_24h')
 ```
 
-The results go to `Examples/Stanford/Outputs/Reruns_CurrentModel/Stanford_30m_Website_100mmh_1h_24h/Modeling_Results`: maps of depth, velocity and hazard every 15 min, the outlet hydrograph (`Tables_CSV/Outlet_Hydrograph_Data_Outlet.csv`) and the run summary (`Tables_CSV/Summary_Table.csv`).
+The results go to `Examples/Stanford/Outputs/Reruns_CurrentModel/Stanford_30m_Website_100mmh_1h_24h/Modeling_Results`: maps of depth, velocity and hazard every 15 min, the hydrograph of the outflow across the domain edge (`Tables_CSV/Outlet_Hydrograph_Data_Outlet.csv`) and the run summary (`Tables_CSV/Summary_Table.csv`).
 
 A shorter run of the same storm, 3 h instead of 24 h, starts with `run('Examples/Stanford/run_excel.m')` and takes about 14 min on a laptop. The README of the repository lists its expected results.

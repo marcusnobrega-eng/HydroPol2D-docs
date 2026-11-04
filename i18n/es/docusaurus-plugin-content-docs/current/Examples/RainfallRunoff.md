@@ -53,7 +53,7 @@ Este caso destaca:
 
 ## Video de la simulación
 
-La animación siguiente muestra la simulación a 30 m. Los paneles muestran la profundidad de inundación, la velocidad, la métrica de peligro y la infiltración acumulada sobre el sombreado del DEM. La imagen fija es t = 3,5 h, el momento del caudal máximo en la salida.
+La animación siguiente muestra la simulación a 30 m. Los paneles muestran la profundidad de inundación, la velocidad, la métrica de peligro y la infiltración acumulada sobre el sombreado del DEM. La imagen fija es t = 3,5 h, el momento del caudal máximo que sale por el borde del dominio.
 
 <div style={{ textAlign: 'center' }}>
   <video
@@ -78,13 +78,13 @@ La simulación guardó `97` cuadros de mapa, uno cada 15 min. El resumen de la s
 | Área de drenaje | `156,823 km²` |
 | Lluvia aplicada | `100,00 mm` |
 | Coeficiente de escorrentía | `0,47` |
-| Caudal máximo en la salida | `473,69 m³/s` a las 3,5 h |
-| Primer pico en la salida | `402,84 m³/s` a los 75 min, cuando termina la lluvia |
+| Caudal máximo que sale por el borde del dominio | `473,69 m³/s` a las 3,5 h |
+| Primer pico de ese caudal | `402,84 m³/s` a los 75 min, cuando termina la lluvia |
 | Profundidad máxima de inundación | `5,87 m`, en la cuenca del lago Searsville (37,410° N, 122,234° O) |
 | Área que superó 1 m de profundidad en algún momento | `4,3 km²` (2,7 % del dominio) |
 | Error de volumen | `-6,45 × 10⁻¹²` de la entrada |
 
-Los caudales son las muestras de 15 min del hidrograma de salida. Tiene dos picos: 402,84 m³/s a los 75 min, cuando termina la lluvia, y 473,69 m³/s a las 3,5 h. Entre ellos, el caudal baja a 110 m³/s a las 2 h y luego vuelve a subir.
+Cada celda del borde del dominio deja salir el agua (salida por el perímetro), así que el hidrograma es el caudal que sale por el borde del dominio, no solo el caudal en la desembocadura del arroyo. Los caudales son sus muestras de 15 min. El primer pico, 402,84 m³/s a los 75 min, es la escorrentía de las laderas que sale a lo largo de todo el borde. Luego el caudal baja a 110 m³/s a las 2 h. Después, la onda de crecida llega a un tramo donde el San Francisquito Creek corre por el borde norte del dominio. El agua que desborda allí sale del modelo, y el caudal vuelve a subir hasta 473,69 m³/s a las 3,5 h.
 
 ## Cómo ejecutarlo
 
@@ -98,6 +98,6 @@ run_stanford_local_case('Resolution',30,'SimulationMinutes',1440, ...
   'OutputTag','Stanford_30m_Website_100mmh_1h_24h')
 ```
 
-Los resultados se guardan en `Examples/Stanford/Outputs/Reruns_CurrentModel/Stanford_30m_Website_100mmh_1h_24h/Modeling_Results`: mapas de profundidad, velocidad y peligro cada 15 min, el hidrograma de salida (`Tables_CSV/Outlet_Hydrograph_Data_Outlet.csv`) y el resumen de la simulación (`Tables_CSV/Summary_Table.csv`).
+Los resultados se guardan en `Examples/Stanford/Outputs/Reruns_CurrentModel/Stanford_30m_Website_100mmh_1h_24h/Modeling_Results`: mapas de profundidad, velocidad y peligro cada 15 min, el hidrograma del caudal que sale por el borde del dominio (`Tables_CSV/Outlet_Hydrograph_Data_Outlet.csv`) y el resumen de la simulación (`Tables_CSV/Summary_Table.csv`).
 
 Una simulación más corta de la misma tormenta, de 3 h en lugar de 24 h, se inicia con `run('Examples/Stanford/run_excel.m')` y tarda unos 14 min en un portátil. El README del repositorio indica sus resultados esperados.
