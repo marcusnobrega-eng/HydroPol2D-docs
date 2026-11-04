@@ -56,7 +56,7 @@ On Windows, use Ctrl for Cmd.
 | File | Quit | Cmd+Q (Alt+F4 on Windows) |
 | View | Setup, Run, Results, Calibrate | Cmd+1, Cmd+2, Cmd+3, Cmd+4 |
 | View | Theme: Match system, Dark, Light | |
-| Help | About HydroPol2D Studio (version and licence) | |
+| Help | About HydroPol2D Studio (version and license) | |
 | Help | Documentation (this website) | |
 | Help | Open the log folder | |
 

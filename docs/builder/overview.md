@@ -9,8 +9,8 @@ You choose a city or a catchment. The Builder draws the model area, downloads an
 prepares the rainfall and weather, and checks the case before you run it. It writes cases for
 HydroPol2D-MATLAB and for HydroPol2D-Python, the model engine inside HydroPol2D Studio.
 
-:::info[Licence]
-The Case Builder is a proprietary product. To get a licence, write to Marcus N. Gomes Jr. at
+:::info[License]
+The Case Builder is a proprietary product. To get a license, write to Marcus N. Gomes Jr. at
 [marcusnobrega.engcivil@gmail.com](mailto:marcusnobrega.engcivil@gmail.com). This page is an
 overview. A full user guide will come with the first licensed release.
 :::
