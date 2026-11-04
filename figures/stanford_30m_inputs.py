@@ -86,13 +86,14 @@ def map_axes(sheet: Sheet, x: float, y: float, bounds) -> object:
     return ax
 
 
-def draw(lang: str, matlab_repo: Path, preview: Path | None) -> Path:
-    t = LABELS[lang]
-    static = matlab_repo / "Examples" / "Stanford" / "Static"
+def draw(lang: str, matlab_repo: Path, preview: Path | None, *, static_folder: str = "Static",
+         cell_m: float = 30.0, name: str = "stanford-30m-inputs", labels: dict = LABELS) -> Path:
+    t = labels[lang]
+    static = matlab_repo / "Examples" / "Stanford" / static_folder
     dem, bounds = read(static / "DEM.tif")
     lulc, _ = read(static / "LULC.tif")
     extent = (bounds.left, bounds.right, bounds.bottom, bounds.top)
-    s = Sheet(W, H, "stanford-30m-inputs")
+    s = Sheet(W, H, name)
 
     # a: terrain with a hillshade
     ax_x = 28
@@ -103,7 +104,7 @@ def draw(lang: str, matlab_repo: Path, preview: Path | None) -> Path:
     lo, hi = np.nanpercentile(dem, 0.5), np.nanpercentile(dem, 99.5)
     filled = np.where(valid, dem, np.nanmin(dem))
     rgb = LightSource(azdeg=315, altdeg=45).shade(
-        filled, cmap=ELEVATION_CMAP, blend_mode="soft", vert_exag=2.0, dx=30.0, dy=30.0,
+        filled, cmap=ELEVATION_CMAP, blend_mode="soft", vert_exag=2.0, dx=cell_m, dy=cell_m,
         vmin=lo, vmax=hi)
     rgb[..., 3] = valid.astype(float)
     ax.imshow(rgb, extent=extent, interpolation="nearest", zorder=1)
