@@ -99,7 +99,8 @@ const sidebars = {
       type: 'category',
       label: 'Examples',
       items: [
-        'Examples/RainfallRunoff'
+        'Examples/RainfallRunoff',
+        'Examples/RainfallRunoffRealLidar'
       ],
     },
     {
