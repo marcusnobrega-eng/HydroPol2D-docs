@@ -32,6 +32,16 @@ const sidebars = {
       label: 'Case Builder',
       items: [
         'builder/overview',
+        'builder/install-and-license',
+        'builder/model-area',
+        'builder/settings',
+        'builder/preview-and-cost',
+        'builder/prepare-a-case',
+        'builder/data-accounts',
+        'builder/check-a-case',
+        'builder/run-the-case',
+        'builder/command-line',
+        'builder/troubleshooting',
       ],
     },
     {
